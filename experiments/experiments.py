@@ -1,7 +1,7 @@
 # Main functions for each experiment
 
 from models.activations import load_model_and_tokenizer, get_activations, compute_rdm
-from visualisation import plot_rdm
+from visualisations.visualisation import plot_rdm
 import torch
 import matplotlib.pyplot as plt
 from sklearn.manifold import MDS, TSNE
