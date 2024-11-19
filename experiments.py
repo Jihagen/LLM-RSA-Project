@@ -1,6 +1,6 @@
 # Main functions for each experiment
 
-from activations import load_model_and_tokenizer, get_activations, compute_rdm
+from models.activations import load_model_and_tokenizer, get_activations, compute_rdm
 from visualisation import plot_rdm
 import torch
 import matplotlib.pyplot as plt
