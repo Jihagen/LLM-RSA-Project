@@ -1,6 +1,6 @@
 # LLM-EEG Master Project for Neuroscience Lab at FAU 
 ---
-## Neural and Artificial Correlates in Language Processing: A Comparative Study of LLMs and EEG Data
+## Neural and Artificial Correlates in Language Processing: A Comparative Study of LLMs and EEG data
 
 ---
 Research Question:
