@@ -1,11 +1,15 @@
 # run_experiments.py
 
+import logging
 import sys
 import os
 from utils.file_manager import FileManager
 from models import load_model_and_tokenizer
 from experiments import run_layer_identification_experiment
 import traceback
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def main():
     # Add project root to sys.path
@@ -18,7 +22,7 @@ def main():
         # "bert-base-uncased",
         # "distilbert-base-uncased",
         # "roberta-base",
-        "xlm-roberta-base",
+        # "xlm-roberta-base",
         "gpt2",
         "gpt-neo-1.3B",
         "gpt-j-6B",
@@ -36,13 +40,14 @@ def main():
 
     # Iterate through the list of LLMs and run the experiment
     for model_name in llms_to_test:
-        print(f"Testing model: {model_name}")
+        logging.info(f"Testing model: {model_name}")
         try:
             model, tokenizer = load_model_and_tokenizer(model_name)
+            logging.debug(f"Loaded model and tokenizer for {model_name}")
             run_layer_identification_experiment(model, tokenizer, dataset_name=dataset_name, split=split)
         except Exception as e:
-            print(f"Failed to test model {model_name}: {e}")
-            traceback.print_exc()
+            logging.error(f"Failed to test model {model_name}: {e}")
+            logging.debug(traceback.format_exc())
 
 if __name__ == "__main__":
     main()

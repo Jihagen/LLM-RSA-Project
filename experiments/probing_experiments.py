@@ -1,6 +1,8 @@
 import csv
 import random
 import os
+import logging
+import traceback
 from models import get_activations
 from probing import ProbingClassifier
 from data import DatasetPreprocessor
@@ -16,10 +18,12 @@ def run_layer_identification_experiment(model, tokenizer, dataset_name, split, r
         split (str): Dataset split to use (e.g., "train").
         results_dir (str): Directory to save results.
     """
+    logging.info(f"Running layer identification experiment for model: {model.name_or_path}")
+
     # Create preprocessor dynamically
     preprocessor = DatasetPreprocessor(tokenizer, dataset_name)
     texts, labels = preprocessor.load_and_prepare(split)
-    #texts, labels = texts[:100], labels[:100]  # Use a subset for quick testing
+    logging.debug(f"Loaded and prepared dataset: {dataset_name}, split: {split}")
 
     # Prepare results storage
     os.makedirs(results_dir, exist_ok=True)
@@ -34,13 +38,14 @@ def run_layer_identification_experiment(model, tokenizer, dataset_name, split, r
         probing = ProbingClassifier()
         for layer_idx in range(model.config.num_hidden_layers):
             try:
+                logging.debug(f"Processing layer {layer_idx}")
                 # Extract activations for the current layer
                 activations = get_activations(model, tokenizer, texts, layer_indices=[layer_idx])
                 layer_activations = activations[layer_idx]
 
                 # Skip if activations have an invalid shape
                 if layer_activations.size(0) != len(labels):
-                    print(f"Skipping Layer {layer_idx} due to shape mismatch: {layer_activations.shape}")
+                    logging.warning(f"Skipping Layer {layer_idx} due to shape mismatch: {layer_activations.shape}")
                     continue
 
                 # Prepare data for the probing classifier
@@ -48,12 +53,11 @@ def run_layer_identification_experiment(model, tokenizer, dataset_name, split, r
 
                 # Train and evaluate the probing classifier
                 accuracy, f1 = probing.train(X, y)
-                print(f"Layer {layer_idx} Activations Shape: {layer_activations.shape}")
-                print(f"Probing Classifier Results for Layer {layer_idx}:")
-                print(f"Accuracy: {accuracy:.3f}, F1 Score: {f1:.3f}")
+                logging.info(f"Layer {layer_idx} - Accuracy: {accuracy:.3f}, F1 Score: {f1:.3f}")
 
                 # Save results
                 writer.writerow([layer_idx, layer_activations.shape, accuracy, f1])
 
             except Exception as e:
-                print(f"Error processing Layer {layer_idx}: {e}")
+                logging.error(f"Error processing Layer {layer_idx}: {e}")
+                logging.debug(traceback.format_exc())
