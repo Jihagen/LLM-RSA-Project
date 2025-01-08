@@ -59,11 +59,11 @@ class ProbingClassifier:
         # Make predictions and evaluate
         y_pred = self.classifier.predict(X_test)
         accuracy = accuracy_score(y_test, y_pred)
-        f1 = f1_score(y_test, y_pred, average='weighted')
+        f1 = f1_score(y_test, y_pred, average='weighted', zero_division=1)
         self.results = {
             "accuracy": accuracy,
             "f1_score": f1,
-            "classification_report": classification_report(y_test, y_pred),
+            "classification_report": classification_report(y_test, y_pred, zero_division=1),
         }
         return accuracy, f1
 
