@@ -19,10 +19,10 @@ def main():
 
     # List of LLMs to test
     llms_to_test = [
-        # "bert-base-uncased",
-        # "distilbert-base-uncased",
-        # "roberta-base",
-        # "xlm-roberta-base",
+        "bert-base-uncased",
+        "distilbert-base-uncased",
+        "roberta-base",
+        "xlm-roberta-base",
         "gpt2",
         "gpt-neo-1.3B",
         "gpt-j-6B",
