@@ -7,6 +7,8 @@ from utils.file_manager import FileManager
 from models import load_model_and_tokenizer
 from experiments import run_layer_identification_experiment
 import traceback
+import torch 
+import gc 
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -19,11 +21,11 @@ def main():
 
     # List of LLMs to test
     llms_to_test = [
-        # "bert-base-uncased",
+       # "bert-base-uncased",
         # "distilbert-base-uncased",
-        # "roberta-base",
-        # "xlm-roberta-base",
-        "gpt2",
+        #"roberta-base",
+        #"xlm-roberta-base",
+        # "gpt2",
         "gpt-neo-1.3B",
         "gpt-j-6B",
         "decapoda-research/llama-7b-hf",
@@ -48,6 +50,19 @@ def main():
         except Exception as e:
             logging.error(f"Failed to test model {model_name}: {e}")
             logging.debug(traceback.format_exc())
+        
+        finally:
+            # Clear GPU cache
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+                logging.debug("Cleared GPU cache")
+            
+            # Delete model and tokenizer references
+            del model, tokenizer
+            
+            # Trigger garbage collection
+            gc.collect()
+            logging.debug("Triggered garbage collection")
 
 if __name__ == "__main__":
     main()

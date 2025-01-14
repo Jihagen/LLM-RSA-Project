@@ -1,0 +1,45 @@
+### Starting TaskPrologue of job 972392 on tg096 at Mon 13 Jan 2025 02:50:36 PM CET
+Running on cores 72-101,126-127 with governor ondemand
+Mon Jan 13 14:50:36 2025       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 565.57.01              Driver Version: 565.57.01      CUDA Version: 12.7     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-40GB          On  |   00000000:C1:00.0 Off |                    0 |
+| N/A   35C    P0             55W /  400W |       1MiB /  40960MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+### Finished TaskPrologue
+
+=== JOB_STATISTICS ===
+=== current date     : Mon 13 Jan 2025 05:44:54 PM CET
+= Job-ID             : 972392 on tinygpu
+= Job-Name           : gpt2_activations
+= Job-Command        : /home/hpc/iwi5/iwi5268h/LLM-RSA-Project/run_experiments.slurm
+= Initial workdir    : /home/hpc/iwi5/iwi5268h/LLM-RSA-Project
+= Queue/Partition    : a100
+= Slurm account      : iwi5 with QOS=normal
+= Requested resources:  for 06:00:00
+= Elapsed runtime    : 02:54:19
+= Total RAM usage    : 107.5 GiB of requested  GiB (%)   
+= Node list          : tg096
+= Subm/Elig/Start/End: 2025-01-13T13:06:11 / 2025-01-13T13:06:11 / 2025-01-13T14:50:35 / 2025-01-13T17:44:54
+======================
+=== Quota infos ======
+    Path              Used     SoftQ    HardQ    Gracetime  Filec    FileQ    FiHaQ    FileGrace    
+    /home/hpc           62.6G   104.9G   209.7G        N/A     110K     500K   1,000K        N/A    
+    /home/woody          0.0K  1000.0G  1500.0G        N/A       1    5,000K   7,500K        N/A    
+======================
+=== GPU utilization ==
+gpu_name, gpu_bus_id, pid, gpu_utilization [%], mem_utilization [%], max_memory_usage [MiB], time [ms]

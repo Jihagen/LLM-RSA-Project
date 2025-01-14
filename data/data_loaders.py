@@ -14,7 +14,7 @@ def load_wic_dataset(split: str = "train") -> List[Tuple[str, str, int]]:
     Returns:
         List[Tuple[str, str, int]]: [(sentence1, sentence2, label), ...].
     """
-    dataset = load_dataset("super_glue", "wic", split=split)
+    dataset = load_dataset("super_glue","wic", split=split, trust_remote_code=True)
     return [
         (entry["sentence1"], entry["sentence2"], entry["label"])
         for entry in dataset

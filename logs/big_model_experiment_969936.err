@@ -1,0 +1,276 @@
+/var/tmp/slurmd_spool/job969936/slurm_script: line 13: module: command not found
+2025-01-09 14:44:19,055 - INFO - Testing model: bert-base-uncased
+2025-01-09 14:44:19,060 - DEBUG - Starting new HTTPS connection (1): huggingface.co:443
+2025-01-09 14:46:26,038 - DEBUG - Starting new HTTPS connection (2): huggingface.co:443
+2025-01-09 14:48:26,303 - DEBUG - Loaded model and tokenizer for bert-base-uncased
+2025-01-09 14:48:26,303 - INFO - Running layer identification experiment for model: bert-base-uncased
+2025-01-09 14:48:26,305 - DEBUG - Starting new HTTPS connection (3): huggingface.co:443
+2025-01-09 14:50:26,443 - DEBUG - Starting new HTTPS connection (1): s3.amazonaws.com:443
+2025-01-09 14:50:50,478 - DEBUG - Starting new HTTPS connection (1): datasets-server.huggingface.co:443
+2025-01-09 14:57:30,900 - DEBUG - Starting new HTTPS connection (2): s3.amazonaws.com:443
+2025-01-09 14:57:54,936 - DEBUG - Starting new HTTPS connection (4): huggingface.co:443
+Using the latest cached version of the module from /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed (last modified on Thu Jan  9 11:51:10 2025) since it couldn't be found locally at super_glue, or remotely on the Hugging Face Hub.
+2025-01-09 14:59:55,060 - WARNING - Using the latest cached version of the module from /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed (last modified on Thu Jan  9 11:51:10 2025) since it couldn't be found locally at super_glue, or remotely on the Hugging Face Hub.
+2025-01-09 14:59:55,063 - DEBUG - Attempting to acquire lock 140424378001200 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 14:59:55,064 - DEBUG - Lock 140424378001200 acquired on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 14:59:55,112 - DEBUG - Attempting to release lock 140424378001200 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 14:59:55,112 - DEBUG - Lock 140424378001200 released on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 14:59:55,169 - DEBUG - Attempting to acquire lock 140424378001056 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/_home_hpc_iwi5_iwi5268h_.cache_huggingface_datasets_super_glue_wic_1.0.3_bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed.lock
+2025-01-09 14:59:55,194 - DEBUG - Lock 140424378001056 acquired on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/_home_hpc_iwi5_iwi5268h_.cache_huggingface_datasets_super_glue_wic_1.0.3_bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed.lock
+2025-01-09 14:59:55,198 - DEBUG - open file: /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed/dataset_info.json
+2025-01-09 14:59:55,199 - DEBUG - Attempting to release lock 140424378001056 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/_home_hpc_iwi5_iwi5268h_.cache_huggingface_datasets_super_glue_wic_1.0.3_bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed.lock
+2025-01-09 14:59:55,200 - DEBUG - Lock 140424378001056 released on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/_home_hpc_iwi5_iwi5268h_.cache_huggingface_datasets_super_glue_wic_1.0.3_bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed.lock
+2025-01-09 14:59:55,602 - DEBUG - Attempting to acquire lock 140424469909312 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 14:59:55,603 - DEBUG - Lock 140424469909312 acquired on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 14:59:55,640 - DEBUG - Attempting to release lock 140424469909312 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 14:59:55,640 - DEBUG - Lock 140424469909312 released on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 14:59:55,641 - DEBUG - Attempting to acquire lock 140424377763200 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed_builder.lock
+2025-01-09 14:59:55,668 - DEBUG - Lock 140424377763200 acquired on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed_builder.lock
+2025-01-09 14:59:55,669 - DEBUG - open file: /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed/dataset_info.json
+2025-01-09 14:59:55,670 - DEBUG - Attempting to release lock 140424377763200 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed_builder.lock
+2025-01-09 14:59:55,671 - DEBUG - Lock 140424377763200 released on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed_builder.lock
+2025-01-09 14:59:56,419 - DEBUG - Loaded and prepared dataset: wic, split: train
+2025-01-09 14:59:56,421 - DEBUG - Processing layer 0
+2025-01-09 15:03:39,688 - INFO - Layer 0 - Accuracy: 0.671, F1 Score: 0.671
+2025-01-09 15:03:39,688 - DEBUG - Processing layer 1
+2025-01-09 15:07:23,015 - INFO - Layer 1 - Accuracy: 0.596, F1 Score: 0.596
+2025-01-09 15:07:23,016 - DEBUG - Processing layer 2
+2025-01-09 15:10:41,949 - INFO - Layer 2 - Accuracy: 0.599, F1 Score: 0.599
+2025-01-09 15:10:41,954 - DEBUG - Processing layer 3
+2025-01-09 15:13:34,753 - WARNING - Skipping Layer 3 due to shape mismatch: torch.Size([1, 71, 768])
+2025-01-09 15:13:34,754 - DEBUG - Processing layer 4
+2025-01-09 15:16:32,664 - INFO - Layer 4 - Accuracy: 0.496, F1 Score: 0.329
+2025-01-09 15:16:32,665 - DEBUG - Processing layer 5
+2025-01-09 15:20:20,163 - INFO - Layer 5 - Accuracy: 0.596, F1 Score: 0.596
+2025-01-09 15:20:20,164 - DEBUG - Processing layer 6
+2025-01-09 15:23:57,135 - INFO - Layer 6 - Accuracy: 0.596, F1 Score: 0.596
+2025-01-09 15:23:57,140 - DEBUG - Processing layer 7
+2025-01-09 15:27:13,491 - INFO - Layer 7 - Accuracy: 0.671, F1 Score: 0.671
+2025-01-09 15:27:13,492 - DEBUG - Processing layer 8
+2025-01-09 15:30:10,820 - ERROR - Error processing Layer 8: 8
+2025-01-09 15:30:10,822 - DEBUG - Traceback (most recent call last):
+  File "/home/hpc/iwi5/iwi5268h/LLM-RSA-Project/experiments/probing_experiments.py", line 44, in run_layer_identification_experiment
+    layer_activations = activations[layer_idx]
+KeyError: 8
+
+2025-01-09 15:30:10,823 - DEBUG - Processing layer 9
+2025-01-09 15:33:50,379 - INFO - Layer 9 - Accuracy: 0.604, F1 Score: 0.604
+2025-01-09 15:33:50,384 - DEBUG - Processing layer 10
+2025-01-09 15:38:20,434 - INFO - Layer 10 - Accuracy: 0.596, F1 Score: 0.596
+2025-01-09 15:38:20,439 - DEBUG - Processing layer 11
+2025-01-09 15:41:35,487 - INFO - Layer 11 - Accuracy: 0.598, F1 Score: 0.598
+2025-01-09 15:41:35,493 - INFO - Testing model: distilbert-base-uncased
+2025-01-09 15:41:35,500 - DEBUG - Starting new HTTPS connection (5): huggingface.co:443
+2025-01-09 15:43:35,962 - DEBUG - Starting new HTTPS connection (6): huggingface.co:443
+2025-01-09 15:45:36,731 - DEBUG - Loaded model and tokenizer for distilbert-base-uncased
+2025-01-09 15:45:36,731 - INFO - Running layer identification experiment for model: distilbert-base-uncased
+2025-01-09 15:45:36,734 - DEBUG - Starting new HTTPS connection (7): huggingface.co:443
+2025-01-09 15:47:36,882 - DEBUG - Starting new HTTPS connection (3): s3.amazonaws.com:443
+2025-01-09 15:48:00,914 - DEBUG - Starting new HTTPS connection (2): datasets-server.huggingface.co:443
+2025-01-09 15:54:41,270 - DEBUG - Starting new HTTPS connection (4): s3.amazonaws.com:443
+2025-01-09 15:55:05,305 - DEBUG - Starting new HTTPS connection (8): huggingface.co:443
+Using the latest cached version of the module from /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed (last modified on Thu Jan  9 11:51:10 2025) since it couldn't be found locally at super_glue, or remotely on the Hugging Face Hub.
+2025-01-09 15:57:05,431 - WARNING - Using the latest cached version of the module from /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed (last modified on Thu Jan  9 11:51:10 2025) since it couldn't be found locally at super_glue, or remotely on the Hugging Face Hub.
+2025-01-09 15:57:05,436 - DEBUG - Attempting to acquire lock 140424378792256 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 15:57:05,438 - DEBUG - Lock 140424378792256 acquired on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 15:57:05,439 - DEBUG - Attempting to release lock 140424378792256 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 15:57:05,439 - DEBUG - Lock 140424378792256 released on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 15:57:05,511 - DEBUG - Attempting to acquire lock 140424453954144 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/_home_hpc_iwi5_iwi5268h_.cache_huggingface_datasets_super_glue_wic_1.0.3_bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed.lock
+2025-01-09 15:57:05,544 - DEBUG - Lock 140424453954144 acquired on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/_home_hpc_iwi5_iwi5268h_.cache_huggingface_datasets_super_glue_wic_1.0.3_bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed.lock
+2025-01-09 15:57:05,550 - DEBUG - open file: /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed/dataset_info.json
+2025-01-09 15:57:05,551 - DEBUG - Attempting to release lock 140424453954144 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/_home_hpc_iwi5_iwi5268h_.cache_huggingface_datasets_super_glue_wic_1.0.3_bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed.lock
+2025-01-09 15:57:05,552 - DEBUG - Lock 140424453954144 released on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/_home_hpc_iwi5_iwi5268h_.cache_huggingface_datasets_super_glue_wic_1.0.3_bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed.lock
+2025-01-09 15:57:05,553 - DEBUG - Attempting to acquire lock 140424378083312 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 15:57:05,555 - DEBUG - Lock 140424378083312 acquired on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 15:57:05,594 - DEBUG - Attempting to release lock 140424378083312 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 15:57:05,595 - DEBUG - Lock 140424378083312 released on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 15:57:05,596 - DEBUG - Attempting to acquire lock 140424453954432 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed_builder.lock
+2025-01-09 15:57:05,600 - DEBUG - Lock 140424453954432 acquired on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed_builder.lock
+2025-01-09 15:57:05,601 - DEBUG - open file: /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed/dataset_info.json
+2025-01-09 15:57:05,602 - DEBUG - Attempting to release lock 140424453954432 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed_builder.lock
+2025-01-09 15:57:05,602 - DEBUG - Lock 140424453954432 released on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed_builder.lock
+2025-01-09 15:57:05,989 - DEBUG - Loaded and prepared dataset: wic, split: train
+2025-01-09 15:57:05,991 - DEBUG - Processing layer 0
+2025-01-09 15:59:27,226 - INFO - Layer 0 - Accuracy: 0.674, F1 Score: 0.674
+2025-01-09 15:59:27,226 - DEBUG - Processing layer 1
+2025-01-09 16:01:25,081 - INFO - Layer 1 - Accuracy: 0.577, F1 Score: 0.577
+2025-01-09 16:01:25,082 - DEBUG - Processing layer 2
+2025-01-09 16:03:48,370 - INFO - Layer 2 - Accuracy: 0.600, F1 Score: 0.600
+2025-01-09 16:03:48,371 - DEBUG - Processing layer 3
+2025-01-09 16:05:17,567 - WARNING - Skipping Layer 3 due to shape mismatch: torch.Size([1, 71, 768])
+2025-01-09 16:05:17,567 - DEBUG - Processing layer 4
+2025-01-09 16:07:12,210 - INFO - Layer 4 - Accuracy: 0.577, F1 Score: 0.577
+2025-01-09 16:07:12,211 - DEBUG - Processing layer 5
+2025-01-09 16:09:12,235 - INFO - Layer 5 - Accuracy: 0.577, F1 Score: 0.577
+2025-01-09 16:09:12,265 - INFO - Testing model: roberta-base
+2025-01-09 16:09:12,272 - DEBUG - Starting new HTTPS connection (9): huggingface.co:443
+Some weights of RobertaModel were not initialized from the model checkpoint at roberta-base and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+2025-01-09 16:11:14,306 - DEBUG - Starting new HTTPS connection (10): huggingface.co:443
+2025-01-09 16:13:15,105 - DEBUG - Loaded model and tokenizer for roberta-base
+2025-01-09 16:13:15,105 - INFO - Running layer identification experiment for model: roberta-base
+2025-01-09 16:13:15,107 - DEBUG - Starting new HTTPS connection (11): huggingface.co:443
+2025-01-09 16:15:15,257 - DEBUG - Starting new HTTPS connection (5): s3.amazonaws.com:443
+2025-01-09 16:15:39,291 - DEBUG - Starting new HTTPS connection (3): datasets-server.huggingface.co:443
+2025-01-09 16:22:19,714 - DEBUG - Starting new HTTPS connection (6): s3.amazonaws.com:443
+2025-01-09 16:22:43,750 - DEBUG - Starting new HTTPS connection (12): huggingface.co:443
+Using the latest cached version of the module from /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed (last modified on Thu Jan  9 11:51:10 2025) since it couldn't be found locally at super_glue, or remotely on the Hugging Face Hub.
+2025-01-09 16:24:43,864 - WARNING - Using the latest cached version of the module from /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed (last modified on Thu Jan  9 11:51:10 2025) since it couldn't be found locally at super_glue, or remotely on the Hugging Face Hub.
+2025-01-09 16:24:43,872 - DEBUG - Attempting to acquire lock 140424449714448 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 16:24:43,874 - DEBUG - Lock 140424449714448 acquired on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 16:24:43,874 - DEBUG - Attempting to release lock 140424449714448 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 16:24:43,875 - DEBUG - Lock 140424449714448 released on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 16:24:43,925 - DEBUG - Attempting to acquire lock 140424452865280 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/_home_hpc_iwi5_iwi5268h_.cache_huggingface_datasets_super_glue_wic_1.0.3_bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed.lock
+2025-01-09 16:24:43,951 - DEBUG - Lock 140424452865280 acquired on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/_home_hpc_iwi5_iwi5268h_.cache_huggingface_datasets_super_glue_wic_1.0.3_bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed.lock
+2025-01-09 16:24:43,955 - DEBUG - open file: /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed/dataset_info.json
+2025-01-09 16:24:43,956 - DEBUG - Attempting to release lock 140424452865280 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/_home_hpc_iwi5_iwi5268h_.cache_huggingface_datasets_super_glue_wic_1.0.3_bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed.lock
+2025-01-09 16:24:43,957 - DEBUG - Lock 140424452865280 released on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/_home_hpc_iwi5_iwi5268h_.cache_huggingface_datasets_super_glue_wic_1.0.3_bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed.lock
+2025-01-09 16:24:43,958 - DEBUG - Attempting to acquire lock 140424452864560 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 16:24:43,959 - DEBUG - Lock 140424452864560 acquired on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 16:24:43,991 - DEBUG - Attempting to release lock 140424452864560 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 16:24:43,991 - DEBUG - Lock 140424452864560 released on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 16:24:43,992 - DEBUG - Attempting to acquire lock 140424452862688 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed_builder.lock
+2025-01-09 16:24:44,022 - DEBUG - Lock 140424452862688 acquired on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed_builder.lock
+2025-01-09 16:24:44,022 - DEBUG - open file: /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed/dataset_info.json
+2025-01-09 16:24:44,024 - DEBUG - Attempting to release lock 140424452862688 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed_builder.lock
+2025-01-09 16:24:44,024 - DEBUG - Lock 140424452862688 released on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed_builder.lock
+2025-01-09 16:24:44,402 - DEBUG - Loaded and prepared dataset: wic, split: train
+2025-01-09 16:24:44,434 - DEBUG - Processing layer 0
+2025-01-09 16:29:57,367 - INFO - Layer 0 - Accuracy: 0.641, F1 Score: 0.641
+2025-01-09 16:29:57,371 - DEBUG - Processing layer 1
+2025-01-09 16:33:51,249 - INFO - Layer 1 - Accuracy: 0.606, F1 Score: 0.606
+2025-01-09 16:33:51,250 - DEBUG - Processing layer 2
+2025-01-09 16:36:50,972 - INFO - Layer 2 - Accuracy: 0.604, F1 Score: 0.604
+2025-01-09 16:36:50,972 - DEBUG - Processing layer 3
+2025-01-09 16:39:53,948 - INFO - Layer 3 - Accuracy: 0.529, F1 Score: 0.513
+2025-01-09 16:39:53,948 - DEBUG - Processing layer 4
+2025-01-09 16:42:47,714 - INFO - Layer 4 - Accuracy: 0.496, F1 Score: 0.329
+2025-01-09 16:42:47,719 - DEBUG - Processing layer 5
+2025-01-09 16:46:48,364 - INFO - Layer 5 - Accuracy: 0.606, F1 Score: 0.606
+2025-01-09 16:46:48,368 - DEBUG - Processing layer 6
+2025-01-09 16:50:20,548 - INFO - Layer 6 - Accuracy: 0.606, F1 Score: 0.606
+2025-01-09 16:50:20,549 - DEBUG - Processing layer 7
+2025-01-09 16:54:36,177 - INFO - Layer 7 - Accuracy: 0.641, F1 Score: 0.641
+2025-01-09 16:54:36,178 - DEBUG - Processing layer 8
+2025-01-09 16:57:10,124 - ERROR - Error processing Layer 8: 8
+2025-01-09 16:57:10,127 - DEBUG - Traceback (most recent call last):
+  File "/home/hpc/iwi5/iwi5268h/LLM-RSA-Project/experiments/probing_experiments.py", line 44, in run_layer_identification_experiment
+    layer_activations = activations[layer_idx]
+KeyError: 8
+
+2025-01-09 16:57:10,127 - DEBUG - Processing layer 9
+2025-01-09 17:00:48,427 - INFO - Layer 9 - Accuracy: 0.602, F1 Score: 0.602
+2025-01-09 17:00:48,428 - DEBUG - Processing layer 10
+2025-01-09 17:04:46,151 - INFO - Layer 10 - Accuracy: 0.606, F1 Score: 0.606
+2025-01-09 17:04:46,152 - DEBUG - Processing layer 11
+2025-01-09 17:08:02,052 - INFO - Layer 11 - Accuracy: 0.604, F1 Score: 0.604
+2025-01-09 17:08:02,054 - INFO - Testing model: xlm-roberta-base
+2025-01-09 17:08:02,063 - DEBUG - Starting new HTTPS connection (13): huggingface.co:443
+2025-01-09 17:10:02,775 - DEBUG - Starting new HTTPS connection (14): huggingface.co:443
+2025-01-09 17:12:04,762 - DEBUG - Loaded model and tokenizer for xlm-roberta-base
+2025-01-09 17:12:04,763 - INFO - Running layer identification experiment for model: xlm-roberta-base
+2025-01-09 17:12:04,764 - DEBUG - Starting new HTTPS connection (15): huggingface.co:443
+2025-01-09 17:14:04,905 - DEBUG - Starting new HTTPS connection (7): s3.amazonaws.com:443
+2025-01-09 17:14:28,940 - DEBUG - Starting new HTTPS connection (4): datasets-server.huggingface.co:443
+2025-01-09 17:21:09,333 - DEBUG - Starting new HTTPS connection (8): s3.amazonaws.com:443
+2025-01-09 17:21:33,371 - DEBUG - Starting new HTTPS connection (16): huggingface.co:443
+Using the latest cached version of the module from /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed (last modified on Thu Jan  9 11:51:10 2025) since it couldn't be found locally at super_glue, or remotely on the Hugging Face Hub.
+2025-01-09 17:23:33,508 - WARNING - Using the latest cached version of the module from /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed (last modified on Thu Jan  9 11:51:10 2025) since it couldn't be found locally at super_glue, or remotely on the Hugging Face Hub.
+2025-01-09 17:23:33,510 - DEBUG - Attempting to acquire lock 140424489929408 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 17:23:33,512 - DEBUG - Lock 140424489929408 acquired on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 17:23:33,512 - DEBUG - Attempting to release lock 140424489929408 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 17:23:33,512 - DEBUG - Lock 140424489929408 released on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 17:23:33,578 - DEBUG - Attempting to acquire lock 140424469925696 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/_home_hpc_iwi5_iwi5268h_.cache_huggingface_datasets_super_glue_wic_1.0.3_bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed.lock
+2025-01-09 17:23:33,612 - DEBUG - Lock 140424469925696 acquired on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/_home_hpc_iwi5_iwi5268h_.cache_huggingface_datasets_super_glue_wic_1.0.3_bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed.lock
+2025-01-09 17:23:33,616 - DEBUG - open file: /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed/dataset_info.json
+2025-01-09 17:23:33,618 - DEBUG - Attempting to release lock 140424469925696 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/_home_hpc_iwi5_iwi5268h_.cache_huggingface_datasets_super_glue_wic_1.0.3_bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed.lock
+2025-01-09 17:23:33,618 - DEBUG - Lock 140424469925696 released on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/_home_hpc_iwi5_iwi5268h_.cache_huggingface_datasets_super_glue_wic_1.0.3_bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed.lock
+2025-01-09 17:23:33,619 - DEBUG - Attempting to acquire lock 140424470829232 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 17:23:33,621 - DEBUG - Lock 140424470829232 acquired on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 17:23:33,662 - DEBUG - Attempting to release lock 140424470829232 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 17:23:33,663 - DEBUG - Lock 140424470829232 released on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 17:23:33,664 - DEBUG - Attempting to acquire lock 140424470828896 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed_builder.lock
+2025-01-09 17:23:33,665 - DEBUG - Lock 140424470828896 acquired on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed_builder.lock
+2025-01-09 17:23:33,665 - DEBUG - open file: /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed/dataset_info.json
+2025-01-09 17:23:33,666 - DEBUG - Attempting to release lock 140424470828896 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed_builder.lock
+2025-01-09 17:23:33,667 - DEBUG - Lock 140424470828896 released on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed_builder.lock
+2025-01-09 17:23:34,047 - DEBUG - Loaded and prepared dataset: wic, split: train
+2025-01-09 17:23:34,070 - DEBUG - Processing layer 0
+/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/sklearn/linear_model/_logistic.py:465: ConvergenceWarning: lbfgs failed to converge (status=1):
+STOP: TOTAL NO. of ITERATIONS REACHED LIMIT.
+
+Increase the number of iterations (max_iter) or scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+  n_iter_i = _check_optimize_result(
+2025-01-09 17:28:30,625 - INFO - Layer 0 - Accuracy: 0.643, F1 Score: 0.643
+2025-01-09 17:28:30,625 - DEBUG - Processing layer 1
+2025-01-09 17:32:14,390 - INFO - Layer 1 - Accuracy: 0.601, F1 Score: 0.601
+2025-01-09 17:32:14,391 - DEBUG - Processing layer 2
+2025-01-09 17:35:08,589 - INFO - Layer 2 - Accuracy: 0.606, F1 Score: 0.606
+2025-01-09 17:35:08,590 - DEBUG - Processing layer 3
+2025-01-09 17:38:07,669 - INFO - Layer 3 - Accuracy: 0.519, F1 Score: 0.487
+2025-01-09 17:38:07,670 - DEBUG - Processing layer 4
+2025-01-09 17:40:52,293 - INFO - Layer 4 - Accuracy: 0.496, F1 Score: 0.329
+2025-01-09 17:40:52,303 - DEBUG - Processing layer 5
+2025-01-09 17:44:37,744 - INFO - Layer 5 - Accuracy: 0.601, F1 Score: 0.601
+2025-01-09 17:44:37,745 - DEBUG - Processing layer 6
+2025-01-09 17:48:38,164 - INFO - Layer 6 - Accuracy: 0.601, F1 Score: 0.601
+2025-01-09 17:48:38,164 - DEBUG - Processing layer 7
+/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/sklearn/linear_model/_logistic.py:465: ConvergenceWarning: lbfgs failed to converge (status=1):
+STOP: TOTAL NO. of ITERATIONS REACHED LIMIT.
+
+Increase the number of iterations (max_iter) or scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+  n_iter_i = _check_optimize_result(
+2025-01-09 17:54:13,701 - INFO - Layer 7 - Accuracy: 0.643, F1 Score: 0.643
+2025-01-09 17:54:13,701 - DEBUG - Processing layer 8
+2025-01-09 17:57:06,876 - ERROR - Error processing Layer 8: 8
+2025-01-09 17:57:06,879 - DEBUG - Traceback (most recent call last):
+  File "/home/hpc/iwi5/iwi5268h/LLM-RSA-Project/experiments/probing_experiments.py", line 44, in run_layer_identification_experiment
+    layer_activations = activations[layer_idx]
+KeyError: 8
+
+2025-01-09 17:57:06,879 - DEBUG - Processing layer 9
+2025-01-09 18:01:11,006 - INFO - Layer 9 - Accuracy: 0.607, F1 Score: 0.607
+2025-01-09 18:01:11,011 - DEBUG - Processing layer 10
+2025-01-09 18:05:14,276 - INFO - Layer 10 - Accuracy: 0.604, F1 Score: 0.604
+2025-01-09 18:05:14,281 - DEBUG - Processing layer 11
+2025-01-09 18:10:34,572 - INFO - Layer 11 - Accuracy: 0.594, F1 Score: 0.594
+2025-01-09 18:10:34,609 - INFO - Testing model: gpt2
+2025-01-09 18:10:34,615 - DEBUG - Starting new HTTPS connection (17): huggingface.co:443
+2025-01-09 18:12:38,275 - DEBUG - Starting new HTTPS connection (18): huggingface.co:443
+2025-01-09 18:14:39,450 - DEBUG - Loaded model and tokenizer for gpt2
+2025-01-09 18:14:39,452 - INFO - Running layer identification experiment for model: gpt2
+2025-01-09 18:14:39,455 - DEBUG - Starting new HTTPS connection (19): huggingface.co:443
+2025-01-09 18:16:39,611 - DEBUG - Starting new HTTPS connection (9): s3.amazonaws.com:443
+2025-01-09 18:17:03,646 - DEBUG - Starting new HTTPS connection (5): datasets-server.huggingface.co:443
+2025-01-09 18:23:44,068 - DEBUG - Starting new HTTPS connection (10): s3.amazonaws.com:443
+2025-01-09 18:24:08,119 - DEBUG - Starting new HTTPS connection (20): huggingface.co:443
+Using the latest cached version of the module from /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed (last modified on Thu Jan  9 11:51:10 2025) since it couldn't be found locally at super_glue, or remotely on the Hugging Face Hub.
+2025-01-09 18:26:08,257 - WARNING - Using the latest cached version of the module from /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed (last modified on Thu Jan  9 11:51:10 2025) since it couldn't be found locally at super_glue, or remotely on the Hugging Face Hub.
+2025-01-09 18:26:08,262 - DEBUG - Attempting to acquire lock 140424451136000 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 18:26:08,263 - DEBUG - Lock 140424451136000 acquired on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 18:26:08,264 - DEBUG - Attempting to release lock 140424451136000 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 18:26:08,264 - DEBUG - Lock 140424451136000 released on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 18:26:08,320 - DEBUG - Attempting to acquire lock 140424453309824 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/_home_hpc_iwi5_iwi5268h_.cache_huggingface_datasets_super_glue_wic_1.0.3_bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed.lock
+2025-01-09 18:26:08,345 - DEBUG - Lock 140424453309824 acquired on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/_home_hpc_iwi5_iwi5268h_.cache_huggingface_datasets_super_glue_wic_1.0.3_bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed.lock
+2025-01-09 18:26:08,349 - DEBUG - open file: /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed/dataset_info.json
+2025-01-09 18:26:08,351 - DEBUG - Attempting to release lock 140424453309824 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/_home_hpc_iwi5_iwi5268h_.cache_huggingface_datasets_super_glue_wic_1.0.3_bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed.lock
+2025-01-09 18:26:08,351 - DEBUG - Lock 140424453309824 released on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/_home_hpc_iwi5_iwi5268h_.cache_huggingface_datasets_super_glue_wic_1.0.3_bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed.lock
+2025-01-09 18:26:08,352 - DEBUG - Attempting to acquire lock 140424378761904 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 18:26:08,354 - DEBUG - Lock 140424378761904 acquired on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 18:26:08,392 - DEBUG - Attempting to release lock 140424378761904 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 18:26:08,392 - DEBUG - Lock 140424378761904 released on /home/hpc/iwi5/iwi5268h/.cache/huggingface/modules/datasets_modules/datasets/super_glue.lock
+2025-01-09 18:26:08,393 - DEBUG - Attempting to acquire lock 140424453309920 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed_builder.lock
+2025-01-09 18:26:08,395 - DEBUG - Lock 140424453309920 acquired on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed_builder.lock
+2025-01-09 18:26:08,395 - DEBUG - open file: /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed/dataset_info.json
+2025-01-09 18:26:08,396 - DEBUG - Attempting to release lock 140424453309920 on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed_builder.lock
+2025-01-09 18:26:08,396 - DEBUG - Lock 140424453309920 released on /home/hpc/iwi5/iwi5268h/.cache/huggingface/datasets/super_glue/wic/1.0.3/bb9675f958ebfee0d5d6dc5476fafe38c79123727a7258d515c450873dbdbbed_builder.lock
+2025-01-09 18:26:08,797 - DEBUG - Loaded and prepared dataset: wic, split: train
+2025-01-09 18:26:08,820 - DEBUG - Processing layer 0
+/var/tmp/slurmd_spool/job969936/slurm_script: line 23: 2343660 Killed                  python run_experiments.py
+slurmstepd: error: Detected 1 oom_kill event in StepId=969936.batch. Some of the step tasks have been OOM Killed.

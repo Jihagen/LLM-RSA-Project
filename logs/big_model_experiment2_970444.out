@@ -1,0 +1,46 @@
+### Starting TaskPrologue of job 970444 on tg084 at Thu 09 Jan 2025 08:04:09 PM CET
+Running on cores 12-13,28-29,44-45,60-61 with governor ondemand
+Thu Jan  9 20:04:10 2025       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 560.35.03              Driver Version: 560.35.03      CUDA Version: 12.6     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 3080        On  |   00000000:DA:00.0 Off |                  N/A |
+| 30%   34C    P8             21W /  300W |       2MiB /  10240MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+### Finished TaskPrologue
+
+=== JOB_STATISTICS ===
+=== current date     : Thu 09 Jan 2025 08:24:18 PM CET
+= Job-ID             : 970444 on tinygpu
+= Job-Name           : big_model_experiment2
+= Job-Command        : /home/hpc/iwi5/iwi5268h/LLM-RSA-Project/run_experiments.slurm
+= Initial workdir    : /home/hpc/iwi5/iwi5268h/LLM-RSA-Project
+= Queue/Partition    : rtx3080
+= Slurm account      : iwi5 with QOS=normal
+= Requested resources:  for 04:00:00
+= Elapsed runtime    : 00:20:10
+= Total RAM usage    : 42.3 GiB of requested  GiB (%)   
+= Node list          : tg084
+= Subm/Elig/Start/End: 2025-01-09T20:03:56 / 2025-01-09T20:03:56 / 2025-01-09T20:04:08 / 2025-01-09T20:24:18
+======================
+=== Quota infos ======
+    Path              Used     SoftQ    HardQ    Gracetime  Filec    FileQ    FiHaQ    FileGrace    
+    /home/hpc           62.7G   104.9G   209.7G        N/A     110K     500K   1,000K        N/A    
+    /home/vault          0.0K  1048.6G  2097.2G        N/A       1      200K     400K        N/A    
+    /home/woody          0.0K  1000.0G  1500.0G        N/A       1    5,000K   7,500K        N/A    
+======================
+=== GPU utilization ==
+gpu_name, gpu_bus_id, pid, gpu_utilization [%], mem_utilization [%], max_memory_usage [MiB], time [ms]
