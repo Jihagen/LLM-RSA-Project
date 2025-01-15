@@ -1,0 +1,108 @@
+/var/tmp/slurmd_spool/job973090/slurm_script: line 13: module: command not found
+2025-01-14 13:09:22,565 - INFO - Testing model: gpt-neo-1.3B
+2025-01-14 13:09:22,570 - DEBUG - Starting new HTTPS connection (1): huggingface.co:443
+2025-01-14 13:11:22,722 - DEBUG - Starting new HTTPS connection (2): huggingface.co:443
+2025-01-14 13:13:22,857 - ERROR - Failed to test model gpt-neo-1.3B: We couldn't connect to 'https://huggingface.co' to load this file, couldn't find it in the cached files and it looks like gpt-neo-1.3B is not the path to a directory containing a file named config.json.
+Checkout your internet connection or see how to run the library in offline mode at 'https://huggingface.co/docs/transformers/installation#offline-mode'.
+2025-01-14 13:13:23,070 - DEBUG - Traceback (most recent call last):
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/urllib3/connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+socket.timeout: timed out
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+    raise new_e
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/urllib3/connection.py", line 704, in connect
+    self.sock = sock = self._new_conn()
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/urllib3/connection.py", line 207, in _new_conn
+    raise ConnectTimeoutError(
+urllib3.exceptions.ConnectTimeoutError: (<urllib3.connection.HTTPSConnection object at 0x7fb4ae0f30d0>, 'Connection to huggingface.co timed out. (connect timeout=10)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/requests/adapters.py", line 667, in send
+    resp = conn.urlopen(
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/urllib3/util/retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /gpt-neo-1.3B/resolve/main/config.json (Caused by ConnectTimeoutError(<urllib3.connection.HTTPSConnection object at 0x7fb4ae0f30d0>, 'Connection to huggingface.co timed out. (connect timeout=10)'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/huggingface_hub/file_download.py", line 1374, in _get_metadata_or_catch_error
+    metadata = get_hf_file_metadata(
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/huggingface_hub/file_download.py", line 1294, in get_hf_file_metadata
+    r = _request_wrapper(
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/huggingface_hub/file_download.py", line 278, in _request_wrapper
+    response = _request_wrapper(
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/huggingface_hub/file_download.py", line 301, in _request_wrapper
+    response = get_session().request(method=method, url=url, **params)
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/huggingface_hub/utils/_http.py", line 93, in send
+    return super().send(request, *args, **kwargs)
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/requests/adapters.py", line 688, in send
+    raise ConnectTimeout(e, request=request)
+requests.exceptions.ConnectTimeout: (MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /gpt-neo-1.3B/resolve/main/config.json (Caused by ConnectTimeoutError(<urllib3.connection.HTTPSConnection object at 0x7fb4ae0f30d0>, 'Connection to huggingface.co timed out. (connect timeout=10)'))"), '(Request ID: 5d1a086b-031f-440a-84e4-a2a51dd44cd2)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/transformers/utils/hub.py", line 403, in cached_file
+    resolved_file = hf_hub_download(
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/huggingface_hub/file_download.py", line 860, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/huggingface_hub/file_download.py", line 967, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/huggingface_hub/file_download.py", line 1485, in _raise_on_head_call_error
+    raise LocalEntryNotFoundError(
+huggingface_hub.errors.LocalEntryNotFoundError: An error happened while trying to locate the file on the Hub and we cannot find the requested files in the local cache. Please check your connection and try again or make sure your Internet connection is on.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/hpc/iwi5/iwi5268h/LLM-RSA-Project/run_experiments.py", line 47, in main
+    model, tokenizer = load_model_and_tokenizer(model_name)
+  File "/home/hpc/iwi5/iwi5268h/LLM-RSA-Project/models/models.py", line 6, in load_model_and_tokenizer
+    model = AutoModel.from_pretrained(model_name)
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/transformers/models/auto/auto_factory.py", line 526, in from_pretrained
+    config, kwargs = AutoConfig.from_pretrained(
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/transformers/models/auto/configuration_auto.py", line 1021, in from_pretrained
+    config_dict, unused_kwargs = PretrainedConfig.get_config_dict(pretrained_model_name_or_path, **kwargs)
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/transformers/configuration_utils.py", line 590, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/transformers/configuration_utils.py", line 649, in _get_config_dict
+    resolved_config_file = cached_file(
+  File "/home/hpc/iwi5/iwi5268h/miniconda3/envs/llm_rsa_env/lib/python3.9/site-packages/transformers/utils/hub.py", line 446, in cached_file
+    raise EnvironmentError(
+OSError: We couldn't connect to 'https://huggingface.co' to load this file, couldn't find it in the cached files and it looks like gpt-neo-1.3B is not the path to a directory containing a file named config.json.
+Checkout your internet connection or see how to run the library in offline mode at 'https://huggingface.co/docs/transformers/installation#offline-mode'.
+
+2025-01-14 13:13:23,365 - DEBUG - Cleared GPU cache
+Traceback (most recent call last):
+  File "/home/hpc/iwi5/iwi5268h/LLM-RSA-Project/run_experiments.py", line 68, in <module>
+    main()
+  File "/home/hpc/iwi5/iwi5268h/LLM-RSA-Project/run_experiments.py", line 61, in main
+    del model, tokenizer
+UnboundLocalError: local variable 'model' referenced before assignment

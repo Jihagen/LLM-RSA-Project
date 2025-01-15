@@ -7,8 +7,6 @@
 #SBATCH --nodes=1                         # Number of nodes
 #SBATCH --cpus-per-task=8                 # Allocate 8 CPU cores
 
-#SBATCH --time=06:00:00                   # 6 hours max runtime
-
 # Load necessary modules
 module load cuda/11.8
 
