@@ -45,24 +45,21 @@ def main():
         logging.info(f"Testing model: {model_name}")
         try:
             model, tokenizer = load_model_and_tokenizer(model_name)
+            # Log the device on which the model is running
+            device = next(model.parameters()).device
+            logging.info(f"Model {model_name} is running on {device}")
             logging.debug(f"Loaded model and tokenizer for {model_name}")
             run_layer_identification_experiment(model, tokenizer, dataset_name=dataset_name, split=split)
         except Exception as e:
             logging.error(f"Failed to test model {model_name}: {e}")
             logging.debug(traceback.format_exc())
-        
         finally:
-            # Clear GPU cache
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
                 logging.debug("Cleared GPU cache")
-            
-            # Delete model and tokenizer references
             del model, tokenizer
-            
-            # Trigger garbage collection
             gc.collect()
             logging.debug("Triggered garbage collection")
-
+            
 if __name__ == "__main__":
     main()
