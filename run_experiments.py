@@ -1,65 +1,62 @@
-# run_experiments.py
-
 import logging
 import sys
 import os
+import torch
+import gc
+import traceback
 from utils.file_manager import FileManager
 from models import load_model_and_tokenizer
 from experiments import run_layer_identification_experiment
-import traceback
-import torch 
-import gc 
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def main():
-    # Add project root to sys.path
     sys.path.append(os.path.abspath(".."))
-    
+
     file_manager = FileManager()
 
-    # List of LLMs to test
-    llms_to_test = [
-       # "bert-base-uncased",
-        # "distilbert-base-uncased",
-        #"roberta-base",
-        #"xlm-roberta-base",
-        # "gpt2",
-        "gpt-neo-1.3B",
-        "gpt-j-6B",
-        "decapoda-research/llama-7b-hf",
-        "meta-llama/Llama-2-7b-hf",
-        "mistralai/Mistral-7B",
-        "tiiuae/falcon-7b",
-        "bigscience/bloom-560m",
-        "t5-base",
-    ]
+    model_configs = {
+        "gpt-neo-1.3B": {"model_type": "default"},
+        "gpt-j-6B": {"model_type": "default"},
+        "decapoda-research/llama-7b-hf": {"model_type": "auth"},
+        "meta-llama/Llama-2-7b-hf": {"model_type": "auth"},
+        "mistralai/Mistral-7B": {"model_type": "auth"},
+        "tiiuae/falcon-7b": {"model_type": "default"},
+        "bigscience/bloom-560m": {"model_type": "default"},
+        "t5-base": {"model_type": "encoder-decoder"},
+    }
 
-    # Dataset and split details
+    llms_to_test = list(model_configs.keys())
+
     dataset_name = "wic"
     split = "train"
 
-    # Iterate through the list of LLMs and run the experiment
     for model_name in llms_to_test:
         logging.info(f"Testing model: {model_name}")
+
         try:
-            model, tokenizer = load_model_and_tokenizer(model_name)
-            # Log the device on which the model is running
+            model_type = model_configs[model_name]["model_type"]
+            
+            # Load model and tokenizer
+            model, tokenizer = load_model_and_tokenizer(model_name, model_type=model_type)
             device = next(model.parameters()).device
             logging.info(f"Model {model_name} is running on {device}")
-            logging.debug(f"Loaded model and tokenizer for {model_name}")
-            run_layer_identification_experiment(model, tokenizer, dataset_name=dataset_name, split=split)
+            
+            # Run experiment in inference mode to save memory
+            with torch.inference_mode():
+                run_layer_identification_experiment(model, tokenizer, dataset_name=dataset_name, split=split, model_type=model_type)
+
         except Exception as e:
             logging.error(f"Failed to test model {model_name}: {e}")
             logging.debug(traceback.format_exc())
+
         finally:
-            if torch.cuda.is_available():
-                torch.cuda.empty_cache()
-                logging.debug("Cleared GPU cache")
+            # Free memory by deleting the model & tokenizer
             del model, tokenizer
             gc.collect()
-            logging.debug("Triggered garbage collection")
-            
+            torch.cuda.empty_cache()
+            logging.info(f"Memory cleared after testing {model_name}")
+
 if __name__ == "__main__":
     main()

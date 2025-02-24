@@ -17,6 +17,9 @@ export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$
 export CUDA_VISIBLE_DEVICES=0
 echo "CUDA_VISIBLE_DEVICES: $CUDA_VISIBLE_DEVICES"
 
+# Set proxy variables
+export http_proxy=http://proxy:80
+export https_proxy=http://proxy:80
 
 # Activate your conda environment
 source ~/miniconda3/etc/profile.d/conda.sh
