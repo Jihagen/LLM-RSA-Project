@@ -26,20 +26,21 @@ def load_model_and_tokenizer(model_name, model_type="default"):
 
     return model, tokenizer
 
-
 def get_activations(model, tokenizer, texts, layer_indices=None, model_type="default"):
     """
     Returns a dictionary of activations from specified layers.
     """
-
     device = next(model.parameters()).device
 
-    inputs = tokenizer(
-        texts, return_tensors="pt", padding=True, truncation=True
-    )
+    inputs = tokenizer(texts, return_tensors="pt", padding=True, truncation=True)
     
-    # Move tensors to the correct device and cast dtype for efficiency
-    inputs = {key: value.to(device, dtype=torch.float16) for key, value in inputs.items()}
+    # Move tensors to the correct device.
+    # For keys that represent indices (like "input_ids"), do not cast to float16.
+    for key, value in inputs.items():
+        if key in ["input_ids", "token_type_ids"]:
+            inputs[key] = value.to(device)
+        else:
+            inputs[key] = value.to(device, dtype=torch.float16)
 
     activations = {}
 
@@ -51,7 +52,7 @@ def get_activations(model, tokenizer, texts, layer_indices=None, model_type="def
                 output_tensor = output[0]
             else:
                 output_tensor = output
-            activations[idx] = output_tensor.detach().cpu()  # Store activations in CPU
+            activations[idx] = output_tensor.detach().cpu()  # Store activations on CPU
         return hook
 
     if model_type == "encoder-decoder":
@@ -68,7 +69,6 @@ def get_activations(model, tokenizer, texts, layer_indices=None, model_type="def
             if layer_indices is None or idx in layer_indices:
                 layer.register_forward_hook(hook_fn(idx))
 
-    # Use no_grad() to reduce memory usage
     with torch.no_grad():
         model(**inputs)
 
