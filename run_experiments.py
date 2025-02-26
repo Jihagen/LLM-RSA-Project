@@ -35,7 +35,7 @@ def main():
         "mistralai/Mistral-7B": {"model_type": "auth"},
         "tiiuae/falcon-7b": {"model_type": "default"},
         "bigscience/bloom-560m": {"model_type": "default"},
-        "t5-base": {"model_type": "encoder-decoder"}, 
+        #"t5-base": {"model_type": "encoder-decoder"}, 
     }
 
     llms_to_test = list(model_configs.keys())
