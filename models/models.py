@@ -1,6 +1,7 @@
 import os
 import torch
 from transformers import AutoTokenizer, AutoModel
+from torch.cuda.amp import autocast
 
 def load_model_and_tokenizer(model_name, model_type="default"):
     load_args = {}
@@ -17,6 +18,8 @@ def load_model_and_tokenizer(model_name, model_type="default"):
     # Load model in lower precision if possible
     torch_dtype = torch.bfloat16 if torch.cuda.is_available() else torch.float32
     model = AutoModel.from_pretrained(model_name, torch_dtype=torch_dtype, **load_args).to(device)
+
+    model.eval()
 
     tokenizer = AutoTokenizer.from_pretrained(model_name, **load_args)
 
@@ -69,7 +72,8 @@ def get_activations(model, tokenizer, texts, layer_indices=None, model_type="def
             if layer_indices is None or idx in layer_indices:
                 layer.register_forward_hook(hook_fn(idx))
 
-    with torch.no_grad():
+    with torch.no_grad(), autocast():
         model(**inputs)
+    torch.cuda.empty_cache() 
 
     return activations

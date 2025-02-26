@@ -28,14 +28,14 @@ def main():
         #"roberta-base": {"model_type": "default"},
         #"xlm-roberta-base": {"model_type": "default"},
         #"gpt2": {"model_type": "default"},
-        "EleutherAI/gpt-neo-1.3B": {"model_type": "default"},  # Updated identifier
-        "EleutherAI/gpt-j-6B": {"model_type": "default"},       # Updated identifier
+        "EleutherAI/gpt-neo-1.3B": {"model_type": "default"},  
+        "EleutherAI/gpt-j-6B": {"model_type": "default"},       
         "decapoda-research/llama-7b-hf": {"model_type": "auth"},
         "meta-llama/Llama-2-7b-hf": {"model_type": "auth"},
         "mistralai/Mistral-7B": {"model_type": "auth"},
         "tiiuae/falcon-7b": {"model_type": "default"},
         "bigscience/bloom-560m": {"model_type": "default"},
-        "t5-base": {"model_type": "encoder-decoder"},   # Marked for later handling
+        "t5-base": {"model_type": "encoder-decoder"}, 
     }
 
     llms_to_test = list(model_configs.keys())
@@ -58,7 +58,6 @@ def main():
             logging.error(f"Failed to test model {model_name}: {e}")
             logging.debug(traceback.format_exc())
         finally:
-            # Only delete if they were successfully assigned
             if model is not None:
                 del model, tokenizer
 
