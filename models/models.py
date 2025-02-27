@@ -32,28 +32,50 @@ def load_model_and_tokenizer(model_name, model_type="default"):
 import torch
 from torch import cuda
 from torch.amp import autocast
+import torch
+import torch.nn.functional as F
+from torch.amp import autocast
+
+def pad_and_cat(tensor_list, dim=0, pad_value=0.0):
+    """
+    Pads each tensor in tensor_list along dimension 1 (sequence length)
+    to the maximum size found, then concatenates along dimension `dim`.
+    """
+    # Find maximum sequence length among tensors
+    max_seq_len = max(t.shape[1] for t in tensor_list)
+    padded_tensors = []
+    for t in tensor_list:
+        seq_len = t.shape[1]
+        if seq_len < max_seq_len:
+            pad_amount = max_seq_len - seq_len
+            # For a 3D tensor (batch, seq, hidden), pad dimension 1 on the right.
+            t_padded = F.pad(t, (0, 0, 0, pad_amount), "constant", pad_value)
+            padded_tensors.append(t_padded)
+        else:
+            padded_tensors.append(t)
+    return torch.cat(padded_tensors, dim=dim)
 
 def get_activations(model, tokenizer, texts, layer_indices=None, model_type="default", batch_size=8):
     """
     Returns a dictionary of activations from specified layers by processing texts in batches.
+    Dynamically pads activations so that tensors from different batches can be concatenated.
     """
     device = next(model.parameters()).device
-    all_activations = {}  # Will store concatenated activations for each layer index
+    all_activations = {}  # Dictionary: layer index -> list of tensors from each batch
 
-    # We'll process texts in batches
     num_texts = len(texts)
     for start in range(0, num_texts, batch_size):
         batch_texts = texts[start:start + batch_size]
-        # Tokenize the batch
+        # Tokenize the batch (using dynamic padding per batch)
         inputs = tokenizer(batch_texts, return_tensors="pt", padding=True, truncation=True)
-        # For keys representing indices, don't cast to float16.
+        # For keys representing indices, do not cast to float16.
         for key, value in inputs.items():
             if key in ["input_ids", "token_type_ids"]:
                 inputs[key] = value.to(device)
             else:
                 inputs[key] = value.to(device, dtype=torch.float16)
         
-        batch_activations = {}
+        batch_activations = {}  # Store activations for this batch
         hook_handles = []
 
         def hook_fn(idx):
@@ -64,7 +86,7 @@ def get_activations(model, tokenizer, texts, layer_indices=None, model_type="def
                     output_tensor = output[0]
                 else:
                     output_tensor = output
-                # Store activations from this batch on CPU
+                # Save activations on CPU
                 batch_activations.setdefault(idx, []).append(output_tensor.detach().cpu())
             return hook
 
@@ -74,7 +96,7 @@ def get_activations(model, tokenizer, texts, layer_indices=None, model_type="def
                     handle = layer.register_forward_hook(hook_fn(f"encoder_{idx}"))
                     hook_handles.append(handle)
             if "decoder_input_ids" not in inputs:
-                decoder_input_ids = tokenizer(" ", return_tensors="pt").input_ids.to(device)
+                decoder_input_ids = tokenizer(" ", return_tensors="pt", padding=True, truncation=True).input_ids.to(device)
                 inputs["decoder_input_ids"] = decoder_input_ids
         else:
             for idx, (name, layer) in enumerate(model.named_modules()):
@@ -85,22 +107,24 @@ def get_activations(model, tokenizer, texts, layer_indices=None, model_type="def
         with torch.no_grad(), autocast(device_type='cuda'):
             model(**inputs)
 
-        # Remove hooks and clear cache after the batch
+        # Remove hooks and free GPU cache for this batch
         for handle in hook_handles:
             handle.remove()
         torch.cuda.empty_cache()
 
-        # Concatenate activations for this batch into the overall dictionary
+        # Collect activations from this batch into the global dictionary.
+        # For each layer index, extend the list of tensors.
         for idx, acts_list in batch_activations.items():
-            batch_concat = torch.cat(acts_list, dim=0)
             if idx in all_activations:
-                all_activations[idx] = torch.cat([all_activations[idx], batch_concat], dim=0)
+                all_activations[idx].extend(acts_list)
             else:
-                all_activations[idx] = batch_concat
-
-        # Optionally force garbage collection
+                all_activations[idx] = acts_list.copy()
+        
         import gc
         gc.collect()
 
+    # Now pad and concatenate all batch tensors for each layer.
+    for idx in all_activations:
+        all_activations[idx] = pad_and_cat(all_activations[idx], dim=0)
+    
     return all_activations
-
