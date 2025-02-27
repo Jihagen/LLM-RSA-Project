@@ -14,7 +14,6 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %
 def main():
     # Add project root to sys.path
     sys.path.append(os.path.abspath(".."))
-    import os
     print("PYTORCH_CUDA_ALLOC_CONF:", os.environ.get("PYTORCH_CUDA_ALLOC_CONF"))
 
     
