@@ -3,6 +3,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, f1_score, classification_report
 import matplotlib.pyplot as plt
+import torch 
 
 
 class ProbingClassifier:
@@ -23,19 +24,19 @@ class ProbingClassifier:
     def prepare_data(self, activations, labels):
         """
         Prepare activations and labels for training.
-
         Args:
             activations (torch.Tensor): Tensor of shape (N, features...).
             labels (list or np.ndarray): List or array of labels of size N.
-
         Returns:
             X (np.ndarray): Flattened activations.
             y (np.ndarray): Labels.
         """
-        # Flatten activations for classifier input
+        # Convert to float32 if needed
+        activations = activations.to(torch.float32)
         X = activations.view(activations.size(0), -1).cpu().numpy()
         y = np.array(labels)
         return X, y
+
 
     def train(self, X, y, test_size=0.2, random_state=42):
         """
