@@ -4,6 +4,7 @@ from transformers import AutoTokenizer, AutoModel
 from torch import cuda
 from torch.amp import autocast
 import torch.nn.functional as F
+from huggingface_hub.utils import RepositoryNotFoundError, HfHubHTTPError
 
 def load_model_and_tokenizer(model_name, model_type="default"):
     load_args = {}
@@ -19,16 +20,38 @@ def load_model_and_tokenizer(model_name, model_type="default"):
 
     # Load model in lower precision if possible
     torch_dtype = torch.bfloat16 if torch.cuda.is_available() else torch.float32
-    model = AutoModel.from_pretrained(model_name, torch_dtype=torch_dtype, **load_args).to(device)
-    model.eval()
 
-    tokenizer = AutoTokenizer.from_pretrained(model_name, **load_args)
+    try:
+        # Try loading the model normally
+        model = AutoModel.from_pretrained(model_name, torch_dtype=torch_dtype, **load_args).to(device)
+        model.eval()
+    except (RepositoryNotFoundError, HfHubHTTPError) as e:
+        raise ValueError(f"Model {model_name} not found or inaccessible: {e}")
+    except Exception as e:
+        if "custom code" in str(e).lower():  # Check if error message suggests remote code execution is needed
+            print(f"⚠️ Detected custom code requirement for {model_name}. Retrying with trust_remote_code=True...")
+            load_args["trust_remote_code"] = True
+            model = AutoModel.from_pretrained(model_name, torch_dtype=torch_dtype, **load_args).to(device)
+            model.eval()
+        else:
+            raise e  # Raise the error if it's unrelated to trust_remote_code
+    # Try loading the tokenizer normally
+    try:
+        tokenizer = AutoTokenizer.from_pretrained(model_name, **load_args)
+    except Exception as e:
+        if "custom code" in str(e).lower():
+            print(f"⚠️ Detected custom code requirement for {model_name} tokenizer. Retrying with trust_remote_code=True...")
+            load_args["trust_remote_code"] = True
+            tokenizer = AutoTokenizer.from_pretrained(model_name, **load_args)
+        else:
+            raise e  # Raise the error if it's unrelated to trust_remote_code
 
     # Ensure tokenizer has a pad token
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
     return model, tokenizer
+    
 
 def pad_and_cat(tensor_list, dim=0, pad_value=0.0):
     """
