@@ -106,20 +106,18 @@ def get_activations(model, tokenizer, texts1, texts2, layer_indices=None, model_
                     output_tensor = output[0]
                 else:
                     output_tensor = output
+                print(f"Layer {idx}: Activation shape {output_tensor.shape}")  # Debugging output
                 batch_activations[idx] = output_tensor.detach().cpu()
             return hook
+
         
         # Register hooks for the layers we want.
-        # (This example uses model.named_modules()—adjust as needed for your model structure.)
-        for name, layer in model.named_modules():
-            try:
-                # Try to interpret the module's name as a layer index.
-                idx = int(name)
-            except (ValueError, TypeError):
-                continue  # Skip modules that don’t have a numeric name.
-            if idx in layer_indices:
+        for idx, (name, layer) in enumerate(model.named_modules()):
+            if layer_indices is None or idx in layer_indices:
+                print(f"Hooking layer {idx}: {name}")  # Debugging output
                 handle = layer.register_forward_hook(hook_fn(idx))
                 hook_handles.append(handle)
+
         
         # Run the model.
         with torch.no_grad(), autocast(device_type='cuda'):
@@ -167,5 +165,9 @@ def get_activations(model, tokenizer, texts1, texts2, layer_indices=None, model_
         act_text1 = torch.cat(list_text1, dim=0)
         act_text2 = torch.cat(list_text2, dim=0)
         final_activations[idx] = (act_text1, act_text2)
-    
+   
+        print(f"Layer {idx}: Collected {len(list_text1)} batches for text1, {len(list_text2)} batches for text2")
+        if len(list_text1) > 0:
+            print(f"Example shape: {list_text1[0].shape}")
+
     return final_activations

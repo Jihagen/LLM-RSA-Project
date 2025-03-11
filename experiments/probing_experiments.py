@@ -4,8 +4,10 @@ import logging
 import traceback
 import torch
 import gc
+import pickle
 from models import get_activations
 from probing import ProbingClassifier
+from sklearn.linear_model import LogisticRegression
 from data import DatasetPreprocessor
 
 
