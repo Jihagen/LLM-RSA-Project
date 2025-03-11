@@ -38,7 +38,7 @@ class ProbingClassifier:
         return X, y
 
 
-    def train(self, X, y, test_size=0.2, random_state=42):
+    def train(self, X, y, test_size=0.2, random_state=42, return_predictions=False):
         """
         Train the probing classifier on the data.
 
@@ -66,6 +66,8 @@ class ProbingClassifier:
             "f1_score": f1,
             "classification_report": classification_report(y_test, y_pred, zero_division=1),
         }
+        if return_predictions == True:   
+            return accuracy, f1, y_pred
         return accuracy, f1
 
     def get_results(self):
