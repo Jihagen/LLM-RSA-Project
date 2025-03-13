@@ -1,0 +1,30 @@
+Beat counts per layer:
+Layer 0: 21
+Layer 1: 0
+Layer 3: 0
+Layer 4: 0
+Layer 5: 0
+Layer 6: 0
+Layer 9: 0
+Layer 10: 0
+Layer 11: 0
+Layer 12: 0
+Layer 13: 0
+Layer 14: 0
+Layer 15: 0
+Layer 16: 0
+Layer 17: 0
+Layer 20: 0
+Layer 21: 0
+Layer 22: 0
+Layer 23: 0
+Layer 24: 0
+Layer 25: 8
+Layer 26: 6
+Layer 27: 0
+Layer 28: 4
+Layer 31: 0
+
+First-degree candidates (beats all 24 other layers): []
+Second-degree candidates (beats >= 18 of other layers): [np.int64(0)]
+Third-degree candidates (beats >= 12 of other layers): [np.int64(0)]

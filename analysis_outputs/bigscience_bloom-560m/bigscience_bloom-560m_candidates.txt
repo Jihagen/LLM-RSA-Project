@@ -1,0 +1,26 @@
+Beat counts per layer:
+Layer 0: 8
+Layer 1: 0
+Layer 2: 1
+Layer 4: 1
+Layer 5: 1
+Layer 6: 1
+Layer 7: 1
+Layer 8: 1
+Layer 10: 1
+Layer 11: 2
+Layer 12: 1
+Layer 13: 1
+Layer 14: 1
+Layer 15: 1
+Layer 16: 1
+Layer 17: 1
+Layer 18: 1
+Layer 19: 1
+Layer 21: 1
+Layer 22: 1
+Layer 23: 1
+
+First-degree candidates (beats all 20 other layers): []
+Second-degree candidates (beats >= 15 of other layers): []
+Third-degree candidates (beats >= 10 of other layers): []

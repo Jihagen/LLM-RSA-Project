@@ -68,21 +68,23 @@ def load_story_dataset(split="train", config="2018"):
     return processed_data
 
 
-
-def preprocess_wic(data: List[Tuple[str, str, int]], tokenizer: PreTrainedTokenizer) -> Tuple[List[str], List[int]]:
+def preprocess_wic(data: List[Tuple[str, str, int]], tokenizer: PreTrainedTokenizer) -> Tuple[List[str], List[str], List[int]]:
     """
-    Preprocess WiC dataset samples.
+    Preprocess WiC dataset samples as text pairs.
 
     Args:
         data (List[Tuple[str, str, int]]): Raw WiC data [(sentence1, sentence2, label), ...].
         tokenizer (PreTrainedTokenizer): Tokenizer for preprocessing.
 
     Returns:
-        Tuple[List[str], List[int]]: Tokenized input texts and labels.
+        Tuple[List[str], List[str], List[int]]: Two lists of texts (for sentence1 and sentence2) and the labels.
     """
-    texts = [f"{s1} [SEP] {s2}" for s1, s2, _ in data]
+    # Instead of concatenating the two sentences with a separator,
+    # keep them as separate lists.
+    texts1 = [s1 for s1, s2, _ in data]
+    texts2 = [s2 for s1, s2, _ in data]
     labels = [label for _, _, label in data]
-    return texts, labels
+    return texts1, texts2, labels
 
 def preprocess_wikitext(data, tokenizer):
     """
