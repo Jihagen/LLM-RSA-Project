@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, f1_score, classification_report
 import matplotlib.pyplot as plt
 import torch 
-
+import random
 
 class ProbingClassifier:
     """
@@ -38,7 +38,7 @@ class ProbingClassifier:
         return X, y
 
 
-    def train(self, X, y, test_size=0.2, random_state=42, return_predictions=False):
+    def train(self, X, y, test_size=0.2, return_predictions=False):
         """
         Train the probing classifier on the data.
 
@@ -51,6 +51,8 @@ class ProbingClassifier:
         Returns:
             accuracy (float): Accuracy on the test set.
         """
+        # Generate a random seed for each run
+        random_state = random.randint(0, 100000)
         # Split into train and test sets
         X_train, X_test, y_train, y_test = train_test_split(
             X, y, test_size=test_size, random_state=random_state

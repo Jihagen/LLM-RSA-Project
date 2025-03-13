@@ -85,9 +85,30 @@ def get_activations(model, tokenizer, texts1, texts2, layer_indices=None, model_
         batch_texts2 = texts2[start:start+batch_size]
         # Tokenize the text pair.
         inputs = tokenizer(batch_texts1, batch_texts2, return_tensors="pt", padding=True, truncation=True)
-        # Save token_type_ids from inputs (shape: [batch_size, seq_len]); these indicate segment membership.
-        token_type_ids = inputs["token_type_ids"].detach().cpu()
-        # Move inputs to device.
+        
+        # Check if token_type_ids are provided; if not, generate them manually.
+        if "token_type_ids" in inputs:
+            token_type_ids = inputs["token_type_ids"].detach().cpu()
+        else:
+            # Manually create token_type_ids for text pairs.
+            input_ids = inputs["input_ids"].detach().cpu()
+            sep_id = tokenizer.sep_token_id
+            token_type_ids_list = []
+            for sample in input_ids:
+                sample = sample.tolist()
+                try:
+                    # Find the first occurrence of the separator token.
+                    sep_index = sample.index(sep_id)
+                except ValueError:
+                    sep_index = len(sample)
+                # Tokens before (and including) the separator get 0; the rest get 1.
+                tt_ids = [0] * len(sample)
+                for i in range(sep_index + 1, len(sample)):
+                    tt_ids[i] = 1
+                token_type_ids_list.append(torch.tensor(tt_ids, dtype=torch.long))
+            token_type_ids = torch.stack(token_type_ids_list, dim=0)
+        
+        # Move inputs to the device.
         for key, value in inputs.items():
             if key in ["input_ids", "token_type_ids"]:
                 inputs[key] = value.to(device)
@@ -110,14 +131,13 @@ def get_activations(model, tokenizer, texts1, texts2, layer_indices=None, model_
                 batch_activations[idx] = output_tensor.detach().cpu()
             return hook
 
-        
         # Register hooks for the layers we want.
         for idx, (name, layer) in enumerate(model.named_modules()):
+            # You may wish to refine this selection logic based on your model architecture.
             if layer_indices is None or idx in layer_indices:
                 print(f"Hooking layer {idx}: {name}")  # Debugging output
                 handle = layer.register_forward_hook(hook_fn(idx))
                 hook_handles.append(handle)
-
         
         # Run the model.
         with torch.no_grad(), autocast(device_type='cuda'):

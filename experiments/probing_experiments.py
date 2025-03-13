@@ -33,7 +33,7 @@ def run_layer_identification_experiment(model, tokenizer, dataset_name, split, r
     results_file = os.path.join(results_dir, f"H1-{model.name_or_path.replace('/', '_')}-{dataset_name.capitalize()}-results.csv")
     
     # You may also want to save best-run predictions per layer into a separate file or directory.
-    best_preds_dir = os.path.join(results_dir, "best_predictions")
+    best_preds_dir = os.path.join(results_dir, f"{model.name_or_path.replace('/', '_')}_H1_best_predictions")
     os.makedirs(best_preds_dir, exist_ok=True)
 
     with open(results_file, mode="w", newline="") as file:
