@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Callable, List, Tuple, Any
 from transformers import PreTrainedTokenizer
-from data_loaders import load_wic_dataset
+#from data_loaders import load_wic_dataset
 
 @dataclass
 class DatasetPreprocessor:

@@ -191,3 +191,93 @@ def get_activations(model, tokenizer, texts1, texts2, layer_indices=None, model_
             print(f"Example shape: {list_text1[0].shape}")
 
     return final_activations
+
+
+def get_target_activations(model, tokenizer, texts: list, targets: list, batch_size: int = 8, layer_indices: list = None):
+    """
+    Processes a list of texts (one sentence per sample) with their corresponding
+    target word. For each sample it tokenizes and finds the subword indices that match
+    the target; then, running a forward pass through the model with hooks on specified
+    layers, it extracts and mean-pools the token-level activations for these indices.
+    
+    Args:
+        model: a Hugging Face transformer model.
+        tokenizer: its corresponding tokenizer.
+        texts (List[str]): list of sentences.
+        targets (List[str]): list of target words (one per sentence).
+        batch_size (int): processing batch size.
+        layer_indices (List[int]): optional list of layer indices from which to extract activations.
+            If None, we attempt to extract activations from each layer in model.encoder.layer (if available)
+            or fallback to a hook on the overall model.
+            
+    Returns:
+        final_activations: dict mapping layer index -> torch.Tensor of shape [num_samples, hidden_dim].
+    """
+    device = next(model.parameters()).device
+    # If layer_indices is not provided, and the model is transformer-like, try to use its encoder layers.
+    if layer_indices is None:
+        if hasattr(model, "encoder") and hasattr(model.encoder, "layer"):
+            layer_modules = list(model.encoder.layer)
+            layer_indices = list(range(len(layer_modules)))
+        else:
+            layer_indices = [-1]  # fallback: a single hook on the overall model
+
+    # Prepare dictionary to collect activations (per layer)
+    all_target_activations = {idx: [] for idx in layer_indices}
+    num_samples = len(texts)
+
+    # Process data in batches.
+    for start in range(0, num_samples, batch_size):
+        batch_texts = texts[start:start + batch_size]
+        batch_targets = targets[start:start + batch_size]
+        # For each sample, determine the token indices for the target word.
+        batch_target_indices = []
+        for text, target in zip(batch_texts, batch_targets):
+            _, indices = process_sentence(text, target, tokenizer)
+            batch_target_indices.append(indices)
+        
+        # Tokenize the batch.
+        inputs = tokenizer(batch_texts, return_tensors="pt", padding=True, truncation=True)
+        inputs = {k: v.to(device) for k, v in inputs.items()}
+
+        batch_activations = {}  # will map layer index -> activations tensor: [batch_size, seq_len, hidden_dim]
+        hook_handles = []
+
+        def hook_fn(idx):
+            def hook(module, input, output):
+                # Assume output is tensor of shape [batch_size, seq_len, hidden_dim]
+                batch_activations[idx] = output.detach().cpu()
+            return hook
+
+        # Register hooks.
+        if layer_indices == [-1]:
+            handle = model.register_forward_hook(hook_fn(-1))
+            hook_handles.append(handle)
+        else:
+            for idx in layer_indices:
+                handle = model.encoder.layer[idx].register_forward_hook(hook_fn(idx))
+                hook_handles.append(handle)
+        
+        # Run forward pass.
+        with torch.no_grad(), autocast(device_type=device.type):
+            model(**inputs)
+        for handle in hook_handles:
+            handle.remove()
+
+        # For each layer, extract the token activations corresponding to the target.
+        for idx, act_tensor in batch_activations.items():
+            # act_tensor shape: [batch_size, seq_len, hidden_dim]
+            for i in range(act_tensor.size(0)):
+                indices = batch_target_indices[i]
+                if indices:
+                    pooled = act_tensor[i, indices, :].mean(dim=0)
+                else:
+                    # If no matching indices were found, use a zero vector.
+                    pooled = torch.zeros(act_tensor.size(2))
+                all_target_activations[idx].append(pooled.unsqueeze(0))
+    
+    # Concatenate the activations from all batches for each layer.
+    final_activations = {}
+    for idx, act_list in all_target_activations.items():
+        final_activations[idx] = torch.cat(act_list, dim=0)
+    return final_activations

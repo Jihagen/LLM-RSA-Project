@@ -1,2 +1,3 @@
 run.slurm
 logs/
+data/synthetic/.env
