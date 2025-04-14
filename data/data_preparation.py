@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Callable, List, Tuple, Any
 from transformers import PreTrainedTokenizer
+from data_loaders import load_wic_dataset
 
 @dataclass
 class DatasetPreprocessor:
@@ -25,7 +26,7 @@ class DatasetPreprocessor:
         Dynamically select the loader and preprocessor based on dataset_name.
         """
         if self.dataset_name == "wic":
-            from data.data_loaders import load_wic_dataset, preprocess_wic
+            from data.data_loaders import load_wic_dataset, preprocess_wic 
             return load_wic_dataset, preprocess_wic
         elif self.dataset_name == "wikitext":
             from data.data_loaders import load_wikitext_dataset, preprocess_wikitext
