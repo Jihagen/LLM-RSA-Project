@@ -39,11 +39,8 @@ def main():
 
     for model_name in llms_to_test:
         model_type = model_configs[model_name]["model_type"]
-        model, tokenizer = load_model_and_tokenizer(model_name, model_type=model_type)
-        device = next(model.parameters()).device
-        logging.info(f"Model {model_name} is running on {device}")
         logging.debug(f"Loaded model and tokenizer for {model_name}")
-        run_gdv_experiment(df, model) #dataset_name=dataset_name, split=split
+        run_gdv_experiment(df, model_name) #dataset_name=dataset_name, split=split
 
 
 

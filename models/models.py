@@ -5,6 +5,7 @@ from torch import cuda
 from torch.amp import autocast
 import torch.nn.functional as F
 from huggingface_hub.utils import RepositoryNotFoundError, HfHubHTTPError
+from data import * 
 
 def load_model_and_tokenizer(model_name, model_type="default"):
     load_args = {}
@@ -245,9 +246,12 @@ def get_target_activations(model, tokenizer, texts: list, targets: list, batch_s
 
         def hook_fn(idx):
             def hook(module, input, output):
-                # Assume output is tensor of shape [batch_size, seq_len, hidden_dim]
+                # If output is a tuple, assume we need the first element.
+                if isinstance(output, tuple):
+                    output = output[0]
                 batch_activations[idx] = output.detach().cpu()
             return hook
+
 
         # Register hooks.
         if layer_indices == [-1]:
