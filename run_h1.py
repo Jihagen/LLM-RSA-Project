@@ -29,7 +29,15 @@ def main():
     df = pd.read_pickle(data_file)
     
     model_configs = {
-         "bert-base-uncased": {"model_type": "default"}}
+         "bert-base-uncased": {"model_type": "default"},
+         "distilbert-base-uncased": {"model_type": "default"},
+         "gpt2": {"model_type": "default"},
+         "EleutherAI/gpt-neo-1.3B": {"model_type": "default"},
+         "EleutherAI/gpt-j-6B": {"model_type": "default"},
+         "meta-llama/Llama-2-7b-hf": {"model_type": "auth"},
+         "mistralai/Mistral-7B-v0.3": {"model_type": "auth"},
+         "tiiuae/falcon-7b": {"model_type": "default"},
+         "bigscience/bloom-560m": {"model_type": "default"},}
 
     llms_to_test = list(model_configs.keys())
 
@@ -38,7 +46,7 @@ def main():
     split = "train"
 
     for model_name in llms_to_test:
-        model_type = model_configs[model_name]["model_type"]
+       # model_type = model_configs[model_name]["model_type"]
         logging.debug(f"Loaded model and tokenizer for {model_name}")
         run_gdv_experiment(df, model_name) 
 

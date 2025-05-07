@@ -14,7 +14,9 @@ from sklearn.decomposition import PCA
 import matplotlib.animation as animation
 import pickle
 
-# ---- GDV Helper Functions ----
+# ---- GDV Helper Functions ----import numpy as np
+from scipy.spatial.distance import pdist
+
 def compute_mean_intra_class_distance(X: np.ndarray, labels: np.ndarray) -> float:
     unique_labels = np.unique(labels)
     intra_dists = []
@@ -24,9 +26,7 @@ def compute_mean_intra_class_distance(X: np.ndarray, labels: np.ndarray) -> floa
             continue
         dists = pdist(X[idx], metric="euclidean")
         intra_dists.append(np.mean(dists))
-    if len(intra_dists) == 0:
-        return 0.0
-    return np.mean(intra_dists)
+    return float(np.mean(intra_dists)) if intra_dists else 0.0
 
 def compute_mean_inter_class_distance(X: np.ndarray, labels: np.ndarray) -> float:
     unique_labels = np.unique(labels)
@@ -37,25 +37,40 @@ def compute_mean_inter_class_distance(X: np.ndarray, labels: np.ndarray) -> floa
             idx2 = np.where(labels == unique_labels[j])[0]
             if len(idx1) == 0 or len(idx2) == 0:
                 continue
-            diff = X[idx1][:, None, :] - X[idx2]
-            dists = np.linalg.norm(diff, axis=2)
+            diff = X[idx1][:, None, :] - X[idx2]    # shape (n1,n2,D)
+            dists = np.linalg.norm(diff, axis=2)    # shape (n1,n2)
             inter_dists.append(np.mean(dists))
-    if len(inter_dists) == 0:
-        return 0.0
-    return np.mean(inter_dists)
+    return float(np.mean(inter_dists)) if inter_dists else 0.0
 
 def compute_gdv(X: np.ndarray, labels: np.ndarray) -> float:
+    """
+    X:    raw activations shape (N, D)
+    labels: shape (N,)
+    returns GDV in [-1,0]
+    """
+    # --- STEP 1: z-score each dim ---
+    mu    = X.mean(axis=0, keepdims=True)       # (1, D)
+    sigma = X.std (axis=0, keepdims=True) + 1e-12
+    Xz = (X - mu) / sigma
+
+    # --- STEP 2: scale by 1/2 as per the paper ---
+    Xz *= 0.5
+
+    # now do the usual intra/inter
     unique_labels = np.unique(labels)
     L = len(unique_labels)
     if L < 2:
         return 0.0
-    intra = compute_mean_intra_class_distance(X, labels)
-    inter = compute_mean_inter_class_distance(X, labels)
-    D = X.shape[1]
-    gdv = (1/np.sqrt(D)) * ((1/L) * intra - (2/(L * (L - 1))) * inter)
-    return gdv
 
-# ---- Plotting Function (unchanged) ----
+    intra = compute_mean_intra_class_distance(Xz, labels)
+    inter = compute_mean_inter_class_distance(Xz, labels)
+    D = Xz.shape[1]
+
+    # --- STEP 3: combine with 1/√D factor ---
+    gdv = (1/np.sqrt(D)) * ( (1/L)*intra - (2/(L*(L-1))) * inter )
+    return float(gdv)
+
+# ---- Plotting Function ----
 def plot_layer_activations(activations: np.ndarray, labels: np.ndarray, layer_idx: int, gdv_value: float, output_dir='results/gdv/plots'):
     pca = PCA(n_components=2)
     activations_2d = pca.fit_transform(activations)
@@ -81,7 +96,7 @@ def plot_layer_activations(activations: np.ndarray, labels: np.ndarray, layer_id
     plt.close()
     print(f"Plot saved to {plot_path}")
 
-# ---- Animation Function (unchanged) ----
+# ---- Animation Function ----
 def animate_layers_smooth(activations_dict: dict, semantic_labels: np.ndarray, hold_count: int = 3, interp_count: int = 5, interval: int = 500):
     sorted_layers = sorted(activations_dict.keys())
     pca_data = {}
@@ -196,7 +211,7 @@ def run_gdv_experiment(df, model_name):
         plot_layer_activations(X, semantic_labels, layer_idx, gdv_value)
     
     # Save GDV CSV as before.
-    output_dir = 'results/gdv/'
+    output_dir = f'results/{model_name}_gdv/'
     os.makedirs(output_dir, exist_ok=True)
     csv_path = os.path.join(output_dir, "gdv_values.csv")
     with open(csv_path, 'w', newline='') as csvfile:
@@ -242,6 +257,9 @@ def run_gdv_experiment(df, model_name):
     }
     
     # Save the output dictionary.
+    os.makedirs(output_dir, exist_ok=True)
+    test = os.path.join(output_dir, model_name)
+    os.makedirs(test, exist_ok=True)
     output_filename = f"{model_name}_{target_words[0]}_gdv.pkl"
     output_path = os.path.join(output_dir, output_filename)
     with open(output_path, "wb") as f:
