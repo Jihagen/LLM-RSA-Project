@@ -5,7 +5,9 @@ from dash import dcc, html, Input, Output
 import plotly.graph_objects as go
 import numpy as np
 
-# load all your model .pkl’s into a dict at startup
+# ─────────────────────────────────────────────────────────────
+# 1) define where your model .pkl’s live
+# ─────────────────────────────────────────────────────────────
 MODEL_PKLS = {
     "BERT":     "results/bert-base-uncased_gdv/bert-base-uncased_bank_gdv.pkl",
     "DistilB":  "results/distilbert-base-uncased_gdv/distilbert-base-uncased_bank_gdv.pkl",
@@ -13,6 +15,7 @@ MODEL_PKLS = {
     "GPT-Neo":  "results/EleutherAI/gpt-neo-1.3B_gdv/gpt-neo-1.3B_bank_gdv.pkl",
     "GPT-J":    "results/EleutherAI/gpt-j-6B_gdv/gpt-j-6B_bank_gdv.pkl",
 }
+
 # ─────────────────────────────────────────────────────────────
 # 2) load each, compute per-model static axes
 # ─────────────────────────────────────────────────────────────
@@ -23,6 +26,7 @@ for name, pth in MODEL_PKLS.items():
     with open(pth, "rb") as f:
         data = pickle.load(f)
         
+    # find the best layer by GDV
     data["best_layer"] = min(
         data["gdv_per_layer"].keys(),
         key=lambda L: data["gdv_per_layer"][L]
@@ -45,34 +49,9 @@ for name, pth in MODEL_PKLS.items():
     all_data[name] = data
 
 # ─────────────────────────────────────────────────────────────
-# 3) build the Dash layout with a 3×2 grid
+# 3) build a list of panels for the grid
 # ─────────────────────────────────────────────────────────────
-app = dash.Dash(__name__)
-app.layout = html.Div([
-    html.H1("GDV Dashboard ", style={"textAlign":"center"}),
-    html.Div(
-        dcc.Checklist(
-            id="axis-mode",
-            options=[{"label":" Use static per-model axes","value":"static"}],
-            value=[],
-            labelStyle={"display":"inline-block","margin":"0 1em"}
-        ),
-        style={"textAlign":"center","marginBottom":"20px"}
-    ),
-    html.Div(
-        id="grid",
-        style={
-            "display":"grid",
-            "gridTemplateColumns":"repeat(3,1fr)",
-            "gap":"1rem",
-            "padding":"1rem"
-        }
-    )
-])
-
-# ─────────────────────────────────────────────────────────────
-# 4) for each model, append its panel into the grid
-# ─────────────────────────────────────────────────────────────
+panels = []
 for name, data in all_data.items():
     n_layers = len(data["sorted_layers"])
     panel = html.Div([
@@ -97,11 +76,37 @@ for name, data in all_data.items():
         "padding":"1em",
         "background":"#fafafa"
     })
-    app.layout.children.append(panel)
-
+    panels.append(panel)
 
 # ─────────────────────────────────────────────────────────────
-# 5) one callback per panel, uses data["static_min"/"static_max"]
+# 4) assemble the overall layout with a 3×2 grid container
+# ─────────────────────────────────────────────────────────────
+app = dash.Dash(__name__)
+app.layout = html.Div([
+    html.H1("GDV Dashboard", style={"textAlign":"center"}),
+    html.Div(
+        dcc.Checklist(
+            id="axis-mode",
+            options=[{"label":" Use static per-model axes","value":"static"}],
+            value=[],
+            labelStyle={"display":"inline-block","margin":"0 1em"}
+        ),
+        style={"textAlign":"center","marginBottom":"20px"}
+    ),
+    html.Div(
+        panels,
+        id="grid",
+        style={
+            "display":"grid",
+            "gridTemplateColumns":"repeat(3,1fr)",
+            "gap":"1rem",
+            "padding":"1rem"
+        }
+    )
+])
+
+# ─────────────────────────────────────────────────────────────
+# 5) one callback per model panel
 # ─────────────────────────────────────────────────────────────
 for name, data in all_data.items():
     @app.callback(
@@ -126,13 +131,13 @@ for name, data in all_data.items():
         fig = go.Figure()
         colors = ["blue","red","green","orange","purple","brown"]
         for g in np.unique(grp):
-            m = grp == g
+            mask = (grp == g)
             fig.add_trace(go.Scatter(
-                x=x[m], y=y[m],
+                x=x[mask], y=y[mask],
                 mode="markers",
                 marker=dict(size=10, color=colors[g % len(colors)]),
                 name=f"Group {g}",
-                customdata=sents[m],
+                customdata=sents[mask],
                 hovertemplate="%{customdata}<extra></extra>"
             ))
 
@@ -143,10 +148,10 @@ for name, data in all_data.items():
             legend_title="Group"
         )
 
-        # static vs dynamic
+        # apply static axes if requested
         if "static" in axis_mode:
-            fig.update_xaxes(range=[ data["static_min"], data["static_max"] ])
-            fig.update_yaxes(range=[ data["static_min"], data["static_max"] ])
+            fig.update_xaxes(range=[data["static_min"], data["static_max"]])
+            fig.update_yaxes(range=[data["static_min"], data["static_max"]])
 
         # info line
         best1 = data["best_layer"]
@@ -157,7 +162,8 @@ for name, data in all_data.items():
         )
         return fig, info
 
-
+# ─────────────────────────────────────────────────────────────
+# 6) run the server
 # ─────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     app.run_server(debug=True)
