@@ -40,6 +40,8 @@ def main():
     }
 
     llms_to_test = list(model_configs.keys())
+    from data.synthetic import SyntheticDataset
+    from transformers import AutoTokenizer
 
     # Dataset and split details
     dataset_name = "wic"
@@ -49,8 +51,10 @@ def main():
         model, tokenizer = None, None  # Initialize to avoid UnboundLocalError
         logging.info(f"Testing model: {model_name}")
         try:
-            model_type = model_configs[model_name]["model_type"]
-            model, tokenizer = load_model_and_tokenizer(model_name, model_type=model_type)
+            from models.models import TokenProbeModel
+            model = TokenProbeModel(model_name)
+            tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
+            dataset = SyntheticDataset('data/synthetic.pkl', tokenizer)
             device = next(model.parameters()).device
             logging.info(f"Model {model_name} is running on {device}")
             logging.debug(f"Loaded model and tokenizer for {model_name}")

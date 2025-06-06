@@ -9,6 +9,61 @@ from data import *
 from typing import List, Tuple, Dict
 import inspect
 
+import torch
+from transformers import AutoModel
+
+
+class TokenProbeModel(torch.nn.Module):
+    """
+    Wrapper that loads a pretrained Transformer and returns only the hidden states
+    at the token positions corresponding to the homonym.
+    """
+    def __init__(self, model_name: str):
+        super().__init__()
+        # Load the base model with hidden states enabled
+        self.model = AutoModel.from_pretrained(model_name, output_hidden_states=True)
+
+    def forward(self,
+                input_ids: torch.LongTensor,
+                attention_mask: torch.LongTensor,
+                homonym_positions: list[list[int]]
+                ) -> dict[int, list[torch.Tensor]]:
+        """
+        Args:
+            input_ids: Tensor of shape (batch_size, seq_len)
+            attention_mask: Tensor of shape (batch_size, seq_len)
+            homonym_positions: list of length batch_size, each a list of token indices
+                               in [0, seq_len) corresponding to the homonym.
+        Returns:
+            A dict mapping layer index -> list of length batch_size of Tensors
+            of shape (num_tokens_for_example, hidden_dim), containing only the
+            token embeddings at the homonym positions.
+        """
+        # Forward through the transformer
+        outputs = self.model(input_ids=input_ids,
+                             attention_mask=attention_mask)
+        hidden_states = outputs.hidden_states  # tuple: (layer0, layer1, ..., layerN)
+
+        batch_size = input_ids.size(0)
+        token_level_outputs: dict[int, list[torch.Tensor]] = {}
+        
+        # For each layer, gather embeddings at the homonym token positions
+        for layer_idx, layer_hs in enumerate(hidden_states):  # layer_hs: (B, L, D)
+            per_example_embeddings: list[torch.Tensor] = []
+            for i in range(batch_size):
+                positions = homonym_positions[i]
+                if len(positions) > 0:
+                    # gather embeddings for those positions
+                    emb = layer_hs[i, positions, :]  # (num_tokens_i, D)
+                else:
+                    # if no positions found, return an empty tensor
+                    emb = layer_hs.new_empty((0, layer_hs.size(-1)))
+                per_example_embeddings.append(emb)
+
+            token_level_outputs[layer_idx] = per_example_embeddings
+
+        return token_level_outputs
+
 
 def load_model_and_tokenizer(model_name, model_type="default"):
     load_args = {}
