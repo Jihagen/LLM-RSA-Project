@@ -1,271 +1,239 @@
 import os
-import re
+import pickle
+from typing import Dict, Any
+import h5py
+import numpy as np
 import torch
-from torch.cuda.amp import autocast
+from sklearn.decomposition import PCA
+from scipy.spatial.distance import pdist
+import matplotlib.pyplot as plt
+import csv
 import pandas as pd
+
 from dotenv import load_dotenv
 from models import load_model_and_tokenizer, get_target_activations
 from data import flatten_dataframe
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.spatial.distance import pdist
-import csv
-from sklearn.decomposition import PCA
-import matplotlib.animation as animation
-import pickle
 
-# ---- GDV Helper Functions ----import numpy as np
-from scipy.spatial.distance import pdist
+# ---- GDV Helper Functions ----
 
-def compute_mean_intra_class_distance(X: np.ndarray, labels: np.ndarray) -> float:
+def compute_mean_intra_class_distance(
+    X: np.ndarray,
+    labels: np.ndarray,
+    weights: np.ndarray = None
+) -> float:
     unique_labels = np.unique(labels)
     intra_dists = []
     for label in unique_labels:
         idx = np.where(labels == label)[0]
         if len(idx) < 2:
             continue
-        dists = pdist(X[idx], metric="euclidean")
-        intra_dists.append(np.mean(dists))
+        pairs = [(i, j) for i in idx for j in idx if i < j]
+        dists, wts = [], []
+        for i, j in pairs:
+            d = np.linalg.norm(X[i] - X[j])
+            w = (weights[i] * weights[j]) if weights is not None else 1.0
+            dists.append(d * w)
+            wts.append(w)
+        if sum(wts) > 0:
+            intra_dists.append(sum(dists) / sum(wts))
     return float(np.mean(intra_dists)) if intra_dists else 0.0
 
-def compute_mean_inter_class_distance(X: np.ndarray, labels: np.ndarray) -> float:
+
+def compute_mean_inter_class_distance(
+    X: np.ndarray,
+    labels: np.ndarray,
+    weights: np.ndarray = None
+) -> float:
     unique_labels = np.unique(labels)
     inter_dists = []
     for i in range(len(unique_labels)):
-        for j in range(i+1, len(unique_labels)):
+        for j in range(i + 1, len(unique_labels)):
             idx1 = np.where(labels == unique_labels[i])[0]
             idx2 = np.where(labels == unique_labels[j])[0]
             if len(idx1) == 0 or len(idx2) == 0:
                 continue
-            diff = X[idx1][:, None, :] - X[idx2]    # shape (n1,n2,D)
-            dists = np.linalg.norm(diff, axis=2)    # shape (n1,n2)
-            inter_dists.append(np.mean(dists))
+            pairs = [(ii, jj) for ii in idx1 for jj in idx2]
+            dists, wts = [], []
+            for ii, jj in pairs:
+                d = np.linalg.norm(X[ii] - X[jj])
+                w = (weights[ii] * weights[jj]) if weights is not None else 1.0
+                dists.append(d * w)
+                wts.append(w)
+            if sum(wts) > 0:
+                inter_dists.append(sum(dists) / sum(wts))
     return float(np.mean(inter_dists)) if inter_dists else 0.0
 
-def compute_gdv(X: np.ndarray, labels: np.ndarray) -> float:
+
+def compute_gdv(
+    X: np.ndarray,
+    labels: np.ndarray,
+    weights: np.ndarray = None
+) -> float:
     """
-    X:    raw activations shape (N, D)
-    labels: shape (N,)
-    returns GDV in [-1,0]
+    Compute the GDV for raw activations X with labels, optionally weighted.
     """
-    # --- STEP 1: z-score each dim ---
-    mu    = X.mean(axis=0, keepdims=True)       # (1, D)
-    sigma = X.std (axis=0, keepdims=True) + 1e-12
+    # Step 1: z-score each dim
+    mu = X.mean(axis=0, keepdims=True)
+    sigma = X.std(axis=0, keepdims=True) + 1e-12
     Xz = (X - mu) / sigma
-
-    # --- STEP 2: scale by 1/2 as per the paper ---
+    # Step 2: scale by 0.5
     Xz *= 0.5
-
-    # now do the usual intra/inter
-    unique_labels = np.unique(labels)
-    L = len(unique_labels)
+    # Default weights to 1
+    if weights is None:
+        weights = np.ones(Xz.shape[0], dtype=float)
+    # Compute intra/inter distances
+    L = len(np.unique(labels))
     if L < 2:
         return 0.0
-
-    intra = compute_mean_intra_class_distance(Xz, labels)
-    inter = compute_mean_inter_class_distance(Xz, labels)
+    intra = compute_mean_intra_class_distance(Xz, labels, weights)
+    inter = compute_mean_inter_class_distance(Xz, labels, weights)
     D = Xz.shape[1]
-
-    # --- STEP 3: combine with 1/√D factor ---
-    gdv = (1/np.sqrt(D)) * ( (1/L)*intra - (2/(L*(L-1))) * inter )
+    # Step 3: combine
+    gdv = (1 / np.sqrt(D)) * ((1 / L) * intra - (2 / (L * (L - 1))) * inter)
     return float(gdv)
 
-# ---- Plotting Function ----
-def plot_layer_activations(activations: np.ndarray, labels: np.ndarray, layer_idx: int, gdv_value: float, output_dir='results/gdv/plots'):
+
+def plot_layer_activations(
+    X: np.ndarray,
+    labels: np.ndarray,
+    layer_idx: int,
+    gdv_value: float,
+    output_dir: str
+) -> None:
+    """
+    PCA-plot and save layer activations colored by label.
+    """
     pca = PCA(n_components=2)
-    activations_2d = pca.fit_transform(activations)
-    
+    X2d = pca.fit_transform(X)
     plt.figure(figsize=(6, 6))
-    
-    unique_groups = np.unique(labels)
-    for group in unique_groups:
-        group_mask = labels == group
-        plt.scatter(activations_2d[group_mask, 0],
-                    activations_2d[group_mask, 1],
-                    label=f'Group {group}')
-    
-    plt.xlabel("Principal Component 1")
-    plt.ylabel("Principal Component 2")
+    for g in np.unique(labels):
+        mask = labels == g
+        plt.scatter(X2d[mask, 0], X2d[mask, 1], label=f"Group {g}")
     plt.title(f"Layer {layer_idx}\nGDV = {gdv_value:.4f}")
-    plt.legend()
-    plt.grid(True)
-    
+    plt.xlabel("PC 1"); plt.ylabel("PC 2")
+    plt.legend(); plt.grid(True)
     os.makedirs(output_dir, exist_ok=True)
-    plot_path = os.path.join(output_dir, f"layer_{layer_idx}_activations.png")
-    plt.savefig(plot_path)
+    plt.savefig(os.path.join(output_dir, f"layer_{layer_idx}.png"))
     plt.close()
-    print(f"Plot saved to {plot_path}")
+    print(f"Plot saved to {output_dir}/layer_{layer_idx}.png")
 
-# ---- Animation Function ----
-def animate_layers_smooth(activations_dict: dict, semantic_labels: np.ndarray, hold_count: int = 3, interp_count: int = 5, interval: int = 500):
-    sorted_layers = sorted(activations_dict.keys())
-    pca_data = {}
-    gdv_data = {}
-    for layer in sorted_layers:
-        X = activations_dict[layer].numpy()
-        pca = PCA(n_components=2)
-        X_2d = pca.fit_transform(X)
-        pca_data[layer] = X_2d
-        gdv_data[layer] = compute_gdv(X, semantic_labels)
-    
-    schedule = []
-    L = len(sorted_layers)
-    for i in range(L - 1):
-        for _ in range(hold_count):
-            schedule.append(("recorded", i, 0))
-        for j in range(1, interp_count):
-            frac = j / (interp_count - 1)
-            schedule.append(("interp", i, frac))
-    for _ in range(hold_count):
-        schedule.append(("recorded", L - 1, 0))
-    
-    total_frames = len(schedule)
-    
-    unique_groups = np.unique(semantic_labels)
-    colors = plt.cm.get_cmap("tab10", len(unique_groups))
-    
-    fig, ax = plt.subplots(figsize=(6, 6))
-    scatters = {}
-    for idx, group in enumerate(unique_groups):
-        scat = ax.scatter([], [], color=colors(idx), label=f"Group {group}")
-        scatters[group] = scat
-    title = ax.set_title("")
-    ax.set_xlabel("PC 1")
-    ax.set_ylabel("PC 2")
-    ax.legend()
-    
-    all_data = np.concatenate(list(pca_data.values()), axis=0)
-    x_min, x_max = all_data[:,0].min(), all_data[:,0].max()
-    y_min, y_max = all_data[:,1].min(), all_data[:,1].max()
-    ax.set_xlim(x_min - 0.1*(x_max - x_min), x_max + 0.1*(x_max - x_min))
-    ax.set_ylim(y_min - 0.1*(y_max - y_min), y_max + 0.1*(y_max - y_min))
-    
-    def init():
-        for group in unique_groups:
-            scatters[group].set_offsets(np.empty((0, 2)))
-        title.set_text("")
-        return list(scatters.values()) + [title]
-    
-    def update(frame):
-        mode, base_idx, frac = schedule[frame]
-        if mode == "recorded":
-            cur_layer = sorted_layers[base_idx]
-            data_2d = pca_data[cur_layer]
-            cur_gdv = gdv_data[cur_layer]
-            title_text = f"Layer {cur_layer}: GDV = {cur_gdv:.4f}"
-        elif mode == "interp":
-            layer_a = sorted_layers[base_idx]
-            layer_b = sorted_layers[base_idx+1]
-            data_2d = (1-frac)*pca_data[layer_a] + frac*pca_data[layer_b]
-            cur_gdv = (1-frac)*gdv_data[layer_a] + frac*gdv_data[layer_b]
-            title_text = f"Transition: {layer_a}→{layer_b} (t={frac:.2f})"
-        else:
-            data_2d = None
-            title_text = ""
-        for group in unique_groups:
-            mask = semantic_labels == group
-            points = data_2d[mask]
-            scatters[group].set_offsets(points)
-        title.set_text(title_text)
-        return list(scatters.values()) + [title]
-    
-    ani = animation.FuncAnimation(fig, update, frames=total_frames, init_func=init,
-                                  interval=interval, blit=False, repeat=True)
-    plt.show()
-    return ani
 
-# ---- Main Function to Run GDV Experiment and Save Data for Dash ----
+def save_target_activations(
+    base_dir: str,
+    word: str,
+    model_name: str,
+    activations: Dict[int, torch.Tensor],
+    labels: np.ndarray,
+    sentences: np.ndarray,
+    words: np.ndarray
+) -> None:
+    """
+    Save per-layer activations only for the target word tokens into
+    results/activations/{word}/{model_name}/layer_{i}.h5
+    """
+    target_dir = os.path.join(base_dir, 'activations', word, model_name.replace('/', '_'))
+    os.makedirs(target_dir, exist_ok=True)
+    for layer_idx, tensor in activations.items():
+        arr = tensor.cpu().numpy()  # shape (N_tokens, D)
+        h5_file = os.path.join(target_dir, f"layer_{layer_idx}.h5")
+        with h5py.File(h5_file, 'w') as f:
+            f.create_dataset('X', data=arr)
+            f.create_dataset('labels', data=labels)
+            dt = h5py.string_dtype(encoding='utf-8')
+            f.create_dataset('sentences', data=sentences.astype('S'), dtype=dt)
+            f.create_dataset('words', data=words.astype('S'), dtype=dt)
+            mu = arr.mean(axis=0)
+            sigma = arr.std(axis=0) + 1e-12
+            f.create_dataset('mu', data=mu)
+            f.create_dataset('sigma', data=sigma)
+        print(f"Saved activations to {h5_file}")
 
-def run_gdv_experiment(df, model_name):
-    # Flatten the synthetic data.
+
+def run_gdv_experiment(df: pd.DataFrame, model_name: str) -> Dict[int, float]:
+    """
+    Main experiment loop: flatten data, get target activations,
+    save homonym-token activations, compute GDV & PCA plots,
+    and save CSV + pickle summaries.
+    """
+    # Flatten dataset\    
     df_flat = flatten_dataframe(df)
-    print("Flattened dataset:")
-    print(df_flat.head())
-    
+    sentences = np.array(df_flat['sentence'].tolist(), dtype=object)
+    target_words = np.array(df_flat['word'].tolist(), dtype=object)
+    labels = np.array(df_flat['semantic_group_id'].tolist(), dtype=int)
+
+    # Load model and tokenizer
     model, tokenizer = load_model_and_tokenizer(model_name)
-    
-    sentences = df_flat["sentence"].tolist()
-    target_words = df_flat["word"].tolist()
-    semantic_labels = np.array(df_flat["semantic_group_id"].tolist())
-    
-    # Get token-level activations.
-    activations = get_target_activations(model, tokenizer, sentences, target_words, batch_size=4)
-    
-    for layer_idx, act_tensor in activations.items():
-        print(f"Layer {layer_idx} activation shape: {act_tensor.shape}")
-    
-    # Compute GDV per layer and produce plots.
-    gdv_all = {}
-    pca_data = {}  # we store PCA projections per layer for saving
+
+    # Extract only the target-word activations
+    activations = get_target_activations(
+        model, tokenizer,
+        sentences.tolist(),
+        target_words.tolist(),
+        batch_size=4
+    )  # dict: layer_idx -> [N_tokens, D]
+
+    # Save these token-level activations per layer
+    save_target_activations(
+        base_dir='results',
+        word=target_words[0],
+        model_name=model_name,
+        activations=activations,
+        labels=labels,
+        sentences=sentences,
+        words=target_words
+    )
+
+    # Prepare outputs
+    output_dir = f"results/{model_name}_gdv/"
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Compute GDV and PCA plots
+    gdv_all: Dict[int, float] = {}
+    pca_data: Dict[int, np.ndarray] = {}
     sorted_layers = sorted(activations.keys())
     for layer_idx in sorted_layers:
-        act_tensor = activations[layer_idx]  # shape: [N, hidden_dim]
-        X = act_tensor.numpy()
-        gdv_value = compute_gdv(X, semantic_labels)
-        gdv_all[layer_idx] = gdv_value
-        print(f"Layer {layer_idx}: GDV = {gdv_value:.4f}")
-        # Save the PCA projection used for plotting.
+        X = activations[layer_idx].cpu().numpy()
+        gdv_val = compute_gdv(X, labels)
+        gdv_all[layer_idx] = gdv_val
         pca = PCA(n_components=2)
-        X_2d = pca.fit_transform(X)
-        pca_data[layer_idx] = X_2d
-        plot_layer_activations(X, semantic_labels, layer_idx, gdv_value)
-    
-    # Save GDV CSV as before.
-    output_dir = f'results/{model_name}_gdv/'
-    os.makedirs(output_dir, exist_ok=True)
-    csv_path = os.path.join(output_dir, "gdv_values.csv")
-    with open(csv_path, 'w', newline='') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerow(["Layer", "GDV"])
-        for layer_idx, gdv in gdv_all.items():
-            writer.writerow([layer_idx, gdv])
-    print(f"GDV values saved to {csv_path}")
-    
-    # (Optional) Run the smooth animation.
-    ani = animate_layers_smooth(activations, semantic_labels, hold_count=3, interp_count=5, interval=500)
-    
-    # Build metadata for Dash.
-    max_gdv_layer = max(gdv_all, key=lambda k: gdv_all[k])
+        X2d = pca.fit_transform(X)
+        pca_data[layer_idx] = X2d
+        plot_layer_activations(X, labels, layer_idx, gdv_val, output_dir + 'plots/')
+
+    # Save GDV CSV
+    csv_path = os.path.join(output_dir, 'gdv_values.csv')
+    with open(csv_path, 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(['Layer', 'GDV'])
+        for layer_idx, val in gdv_all.items():
+            writer.writerow([layer_idx, val])
+    print(f"GDV CSV saved to {csv_path}")
+
+    # Save Dash-friendly pickle
     meta = {
-        "model_name": model_name,
-        "word": target_words[0],
-        "total_layers": len(sorted_layers),
-        "max_gdv_layer": max_gdv_layer
+        'model_name': model_name,
+        'word': target_words[0],
+        'total_layers': len(sorted_layers),
+        'gdv_per_layer': gdv_all
     }
-    
-    # Build the output dictionary to save for the Dash app.
-    # For each layer we store:
-    #    - x: PCA x coordinates (from our precomputed pca_data),
-    #    - y: PCA y coordinates,
-    #    - group: the semantic labels (for each sample),
-    #    - sentence: the sample sentences.
-    layer_info = {}
+    layer_info: Dict[int, Any] = {}
     for layer in sorted_layers:
-        X_2d = pca_data[layer]
+        coords = pca_data[layer]
         layer_info[layer] = {
-            "x": X_2d[:, 0],
-            "y": X_2d[:, 1],
-            "group": semantic_labels,  # 1D array, same for all layers
-            "sentence": sentences      # order should match activations; one sentence per sample
+            'x': coords[:, 0],
+            'y': coords[:, 1],
+            'group': labels,
+            'sentence': sentences
         }
-    
     output_data = {
-        "sorted_layers": sorted_layers,
-        "layer_data": layer_info,
-        "gdv_per_layer": gdv_all,
-        "meta": meta
+        'sorted_layers': sorted_layers,
+        'layer_data': layer_info,
+        'gdv_per_layer': gdv_all,
+        'meta': meta
     }
-    
-    # Save the output dictionary.
-    os.makedirs(output_dir, exist_ok=True)
-    test = os.path.join(output_dir, model_name)
-    os.makedirs(test, exist_ok=True)
-    output_filename = f"{model_name}_{target_words[0]}_gdv.pkl"
-    output_path = os.path.join(output_dir, output_filename)
-    with open(output_path, "wb") as f:
+    pkl_path = os.path.join(output_dir, f"{model_name}_{target_words[0]}_gdv.pkl")
+    with open(pkl_path, 'wb') as f:
         pickle.dump(output_data, f)
-    print(f"Saved GDV and layer data to {output_path}")
-    
+    print(f"Dash data saved to {pkl_path}")
+
     return gdv_all
-
-
