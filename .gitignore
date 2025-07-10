@@ -3,3 +3,5 @@ logs/
 /env.yml
 /data/synthetic/.env
 **/.env
+
+results/
