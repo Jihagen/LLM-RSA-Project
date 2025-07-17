@@ -3,3 +3,6 @@ logs/
 /env.yml
 /data/synthetic/.env
 **/.env
+
+results/
+*/__pycache__/
