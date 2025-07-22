@@ -23,7 +23,7 @@ def main():
     file_manager = FileManager()
     
     
-    data_file = "data/synthetic_data_h1.pkl"
+    data_file = "data/synthetic_data_controlled.pkl"
     if not os.path.exists(data_file):
         raise FileNotFoundError(f"File {data_file} not found.")
     df = pd.read_pickle(data_file)
@@ -41,14 +41,19 @@ def main():
 
     llms_to_test = list(model_configs.keys())
 
-    # Dataset and split details
-    dataset_name = "wic"
-    split = "train"
-
     for model_name in llms_to_test:
        # model_type = model_configs[model_name]["model_type"]
         logging.debug(f"Loaded model and tokenizer for {model_name}")
-        run_gdv_experiment(df, model_name) 
+        for word in df['word'].unique():
+            # Subset to just this homonym
+            df_word = df[df['word'] == word].reset_index(drop=True)
+            print(f"Running GDV experiment for word = '{word}' …")
+            gdv = run_gdv_experiment(
+                df_word,
+                model_name=model_name,
+                base_dir="results"
+            )
+            print(f" → Done for '{word}'. GDV by layer: {gdv}")
 
 
 

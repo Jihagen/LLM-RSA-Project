@@ -133,49 +133,65 @@ def save_target_activations(
     """
     target_dir = os.path.join(base_dir, 'activations', word, model_name.replace('/', '_'))
     os.makedirs(target_dir, exist_ok=True)
+
+    # Use a UTF-8 string dtype
+    dt = h5py.string_dtype(encoding='utf-8')
+
     for layer_idx, tensor in activations.items():
-        arr = tensor.cpu().numpy()  # shape (N_tokens, D)
+        arr = tensor.cpu().numpy()
         h5_file = os.path.join(target_dir, f"layer_{layer_idx}.h5")
         with h5py.File(h5_file, 'w') as f:
             f.create_dataset('X', data=arr)
             f.create_dataset('labels', data=labels)
-            dt = h5py.string_dtype(encoding='utf-8')
-            f.create_dataset('sentences', data=sentences.astype('S'), dtype=dt)
-            f.create_dataset('words', data=words.astype('S'), dtype=dt)
+
+            # **Instead of** sentences.astype('S'), just pass the Python strings under UTF-8 dtype:
+            # f.create_dataset('sentences', data=sentences.astype('S'), dtype=dt)
+
+            f.create_dataset('sentences', data=sentences, dtype=dt)
+            f.create_dataset('words',     data=words,     dtype=dt)
+
+            # stats
             mu = arr.mean(axis=0)
             sigma = arr.std(axis=0) + 1e-12
-            f.create_dataset('mu', data=mu)
+            f.create_dataset('mu',    data=mu)
             f.create_dataset('sigma', data=sigma)
+
         print(f"Saved activations to {h5_file}")
 
 
-def run_gdv_experiment(df: pd.DataFrame, model_name: str) -> Dict[int, float]:
+def run_gdv_experiment(
+    df: pd.DataFrame,
+    model_name: str,
+    base_dir: str = "results"
+) -> Dict[int, float]:
     """
-    Main experiment loop: flatten data, get target activations,
-    save homonym-token activations, compute GDV & PCA plots,
-    and save CSV + pickle summaries.
+    Runs the GDV/PCA/activation pipeline on ONE homonym word in df,
+    and writes all outputs under base_dir/{word}/{model_name}/...
     """
-    # Flatten dataset\    
+    # Flatten dataset
     df_flat = flatten_dataframe(df)
-    sentences = np.array(df_flat['sentence'].tolist(), dtype=object)
+    sentences    = np.array(df_flat['sentence'].tolist(), dtype=object)
     target_words = np.array(df_flat['word'].tolist(), dtype=object)
-    labels = np.array(df_flat['semantic_group_id'].tolist(), dtype=int)
+    labels       = np.array(df_flat['semantic_group_id'].tolist(), dtype=int)
 
-    # Load model and tokenizer
+    assert len(set(target_words)) == 1, "This function expects a single word per df!"
+
+    word = target_words[0]
+    model_sanitized = model_name.replace("/", "_")
+
+    # 1) Load model & get activations
     model, tokenizer = load_model_and_tokenizer(model_name)
-
-    # Extract only the target-word activations
     activations = get_target_activations(
         model, tokenizer,
         sentences.tolist(),
         target_words.tolist(),
         batch_size=4
-    )  # dict: layer_idx -> [N_tokens, D]
+    )
 
-    # Save these token-level activations per layer
+    # 2) Save token activations under results/activations/{word}/{model}/
     save_target_activations(
-        base_dir='results',
-        word=target_words[0],
+        base_dir=os.path.join(base_dir, "activations"),
+        word=word,
         model_name=model_name,
         activations=activations,
         labels=labels,
@@ -183,57 +199,60 @@ def run_gdv_experiment(df: pd.DataFrame, model_name: str) -> Dict[int, float]:
         words=target_words
     )
 
-    # Prepare outputs
-    output_dir = f"results/{model_name}_gdv/"
-    os.makedirs(output_dir, exist_ok=True)
+    # 3) Prepare per-word output folder for GDV/PCA
+    out_gdv = os.path.join(base_dir, word, model_sanitized + "_gdv")
+    os.makedirs(out_gdv, exist_ok=True)
 
-    # Compute GDV and PCA plots
+    # 4) Compute & plot
     gdv_all: Dict[int, float] = {}
     pca_data: Dict[int, np.ndarray] = {}
-    sorted_layers = sorted(activations.keys())
-    for layer_idx in sorted_layers:
+    for layer_idx in sorted(activations.keys()):
         X = activations[layer_idx].cpu().numpy()
         gdv_val = compute_gdv(X, labels)
         gdv_all[layer_idx] = gdv_val
+
+        # plot
+        plot_layer_activations(
+            X, labels, layer_idx, gdv_val,
+            output_dir=os.path.join(out_gdv, "plots")
+        )
+
+        # store PCA coords
         pca = PCA(n_components=2)
-        X2d = pca.fit_transform(X)
-        pca_data[layer_idx] = X2d
-        plot_layer_activations(X, labels, layer_idx, gdv_val, output_dir + 'plots/')
+        pca_data[layer_idx] = pca.fit_transform(X)
 
-    # Save GDV CSV
-    csv_path = os.path.join(output_dir, 'gdv_values.csv')
-    with open(csv_path, 'w', newline='') as f:
+    # 5) Save GDV CSV
+    csv_path = os.path.join(out_gdv, "gdv_values.csv")
+    with open(csv_path, "w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow(['Layer', 'GDV'])
-        for layer_idx, val in gdv_all.items():
-            writer.writerow([layer_idx, val])
-    print(f"GDV CSV saved to {csv_path}")
+        writer.writerow(["Layer", "GDV"])
+        for layer, val in gdv_all.items():
+            writer.writerow([layer, val])
 
-    # Save Dash-friendly pickle
+    # 6) Save Dash-friendly pickle
     meta = {
-        'model_name': model_name,
-        'word': target_words[0],
-        'total_layers': len(sorted_layers),
-        'gdv_per_layer': gdv_all
+        "model_name": model_name,
+        "word": word,
+        "total_layers": len(gdv_all),
+        "gdv_per_layer": gdv_all
     }
-    layer_info: Dict[int, Any] = {}
-    for layer in sorted_layers:
-        coords = pca_data[layer]
-        layer_info[layer] = {
-            'x': coords[:, 0],
-            'y': coords[:, 1],
-            'group': labels,
-            'sentence': sentences
+    layer_info = {
+        layer: {
+            "x": coords[:,0],
+            "y": coords[:,1],
+            "group": labels,
+            "sentence": sentences
         }
-    output_data = {
-        'sorted_layers': sorted_layers,
-        'layer_data': layer_info,
-        'gdv_per_layer': gdv_all,
-        'meta': meta
+        for layer, coords in pca_data.items()
     }
-    pkl_path = os.path.join(output_dir, f"{model_name}_{target_words[0]}_gdv.pkl")
-    with open(pkl_path, 'wb') as f:
-        pickle.dump(output_data, f)
-    print(f"Dash data saved to {pkl_path}")
+    dash_data = {
+        "sorted_layers": sorted(gdv_all.keys()),
+        "layer_data": layer_info,
+        "gdv_per_layer": gdv_all,
+        "meta": meta
+    }
+    pkl_path = os.path.join(out_gdv, f"{model_sanitized}_{word}_dash.pkl")
+    with open(pkl_path, "wb") as f:
+        pickle.dump(dash_data, f)
 
     return gdv_all

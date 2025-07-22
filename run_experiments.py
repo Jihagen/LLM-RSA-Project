@@ -40,7 +40,7 @@ def main():
     }
 
     llms_to_test = list(model_configs.keys())
-    from data.synthetic import SyntheticDataset
+    from data import SyntheticDataset
     from transformers import AutoTokenizer
 
     # Dataset and split details
@@ -54,7 +54,7 @@ def main():
             from models.models import TokenProbeModel
             model = TokenProbeModel(model_name)
             tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
-            dataset = SyntheticDataset('data/synthetic.pkl', tokenizer)
+            dataset = SyntheticDataset('data/synthetic_data_h1.pkl', tokenizer)
             device = next(model.parameters()).device
             logging.info(f"Model {model_name} is running on {device}")
             logging.debug(f"Loaded model and tokenizer for {model_name}")
