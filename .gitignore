@@ -6,3 +6,4 @@ logs/
 
 results/
 */__pycache__/
+*.gif
