@@ -149,7 +149,7 @@ def save_target_activations(
         print(f"Saved activations to {h5_file}")
 
 
-def run_gdv_experiment(df: pd.DataFrame, model_name: str) -> Dict[int, float]:
+def run_gdv_experiment(df: pd.DataFrame, model_name: str, model_type: str = "default") -> Dict[int, float]:
     """
     Main experiment loop: flatten data, get target activations,
     save homonym-token activations, compute GDV & PCA plots,
@@ -162,7 +162,7 @@ def run_gdv_experiment(df: pd.DataFrame, model_name: str) -> Dict[int, float]:
     labels = np.array(df_flat['semantic_group_id'].tolist(), dtype=int)
 
     # Load model and tokenizer
-    model, tokenizer = load_model_and_tokenizer(model_name)
+    model, tokenizer = load_model_and_tokenizer(model_name, model_type=model_type)
 
     # Extract only the target-word activations
     activations = get_target_activations(

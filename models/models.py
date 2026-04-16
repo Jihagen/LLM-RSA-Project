@@ -1,16 +1,17 @@
-import os
-import torch
-from transformers import AutoTokenizer, AutoModel
-from torch import cuda
-from torch.amp import autocast
-import torch.nn.functional as F
-from huggingface_hub.utils import RepositoryNotFoundError, HfHubHTTPError
-from data import * 
-from typing import List, Tuple, Dict
-import inspect
+import contextlib
+import logging
+from typing import Dict, List, Tuple
 
 import torch
-from transformers import AutoModel
+from huggingface_hub.utils import HfHubHTTPError, RepositoryNotFoundError
+from torch.amp import autocast
+from transformers import AutoModel, AutoTokenizer, PreTrainedModel, PreTrainedTokenizerFast
+
+from utils.hpc import build_hf_load_args, cleanup_torch, configure_hpc_runtime, model_device, should_use_cuda_autocast
+
+
+logger = logging.getLogger(__name__)
+configure_hpc_runtime()
 
 
 class TokenProbeModel(torch.nn.Module):
@@ -18,242 +19,215 @@ class TokenProbeModel(torch.nn.Module):
     Wrapper that loads a pretrained Transformer and returns only the hidden states
     at the token positions corresponding to the homonym.
     """
-    def __init__(self, model_name: str):
-        super().__init__()
-        # Load the base model with hidden states enabled
-        self.model = AutoModel.from_pretrained(model_name, output_hidden_states=True)
 
-    def forward(self,
-                input_ids: torch.LongTensor,
-                attention_mask: torch.LongTensor,
-                homonym_positions: list[list[int]]
-                ) -> dict[int, list[torch.Tensor]]:
-        """
-        Args:
-            input_ids: Tensor of shape (batch_size, seq_len)
-            attention_mask: Tensor of shape (batch_size, seq_len)
-            homonym_positions: list of length batch_size, each a list of token indices
-                               in [0, seq_len) corresponding to the homonym.
-        Returns:
-            A dict mapping layer index -> list of length batch_size of Tensors
-            of shape (num_tokens_for_example, hidden_dim), containing only the
-            token embeddings at the homonym positions.
-        """
-        # Forward through the transformer
-        outputs = self.model(input_ids=input_ids,
-                             attention_mask=attention_mask)
-        hidden_states = outputs.hidden_states  # tuple: (layer0, layer1, ..., layerN)
+    def __init__(self, model_name: str, model_type: str = "default"):
+        super().__init__()
+        source, load_args = _resolve_source_and_args(model_name, model_type)
+        load_args["output_hidden_states"] = True
+        self.model = _load_auto_model(source, load_args, model_name)
+        self.model.eval()
+        self.name_or_path = getattr(self.model, "name_or_path", model_name)
+
+    @property
+    def config(self):
+        return self.model.config
+
+    def forward(
+        self,
+        input_ids: torch.LongTensor,
+        attention_mask: torch.LongTensor,
+        homonym_positions: List[List[int]],
+    ) -> Dict[int, List[torch.Tensor]]:
+        outputs = self.model(input_ids=input_ids, attention_mask=attention_mask)
+        hidden_states = outputs.hidden_states
 
         batch_size = input_ids.size(0)
-        token_level_outputs: dict[int, list[torch.Tensor]] = {}
-        
-        # For each layer, gather embeddings at the homonym token positions
-        for layer_idx, layer_hs in enumerate(hidden_states):  # layer_hs: (B, L, D)
-            per_example_embeddings: list[torch.Tensor] = []
-            for i in range(batch_size):
-                positions = homonym_positions[i]
-                if len(positions) > 0:
-                    # gather embeddings for those positions
-                    emb = layer_hs[i, positions, :]  # (num_tokens_i, D)
+        token_level_outputs: Dict[int, List[torch.Tensor]] = {}
+        for layer_idx, layer_hs in enumerate(hidden_states):
+            per_example_embeddings: List[torch.Tensor] = []
+            for sample_idx in range(batch_size):
+                positions = homonym_positions[sample_idx]
+                if positions:
+                    emb = layer_hs[sample_idx, positions, :]
                 else:
-                    # if no positions found, return an empty tensor
                     emb = layer_hs.new_empty((0, layer_hs.size(-1)))
                 per_example_embeddings.append(emb)
-
             token_level_outputs[layer_idx] = per_example_embeddings
 
         return token_level_outputs
 
 
-def load_model_and_tokenizer(model_name, model_type="default"):
-    load_args = {}
+def _resolve_source_and_args(model_name: str, model_type: str) -> Tuple[str, Dict[str, object]]:
+    runtime = build_hf_load_args(model_name, model_type=model_type)
+    source = runtime["source"]
+    load_args = dict(runtime["load_args"])
+    return source, load_args
 
-    if model_type == "auth":
-        token = os.environ.get("HUGGINGFACE_HUB_TOKEN")
-        if token is None:
-            raise ValueError("Authentication token required but HUGGINGFACE_HUB_TOKEN not set.")
-        load_args["use_auth_token"] = token
 
-    # Choose device
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    # Load model in lower precision if possible
-    torch_dtype = torch.bfloat16 if torch.cuda.is_available() else torch.float32
-
+def _load_auto_model(source: str, load_args: Dict[str, object], requested_name: str):
     try:
-        # Try loading the model normally
-        model = AutoModel.from_pretrained(model_name, torch_dtype=torch_dtype, **load_args).to(device)
-        model.eval()
-    except (RepositoryNotFoundError, HfHubHTTPError) as e:
-        raise ValueError(f"Model {model_name} not found or inaccessible: {e}")
-    except Exception as e:
-        if "custom code" in str(e).lower():  # Check if error message suggests remote code execution is needed
-            print(f"⚠️ Detected custom code requirement for {model_name}. Retrying with trust_remote_code=True...")
-            load_args["trust_remote_code"] = True
-            model = AutoModel.from_pretrained(model_name, torch_dtype=torch_dtype, **load_args).to(device)
-            model.eval()
-        else:
-            raise e  # Raise the error if it's unrelated to trust_remote_code
-    # Try loading the tokenizer normally
-    try:
-        tokenizer = AutoTokenizer.from_pretrained(model_name, **load_args)
-    except Exception as e:
-        if "custom code" in str(e).lower():
-            print(f"⚠️ Detected custom code requirement for {model_name} tokenizer. Retrying with trust_remote_code=True...")
-            load_args["trust_remote_code"] = True
-            tokenizer = AutoTokenizer.from_pretrained(model_name, **load_args)
-        else:
-            raise e  # Raise the error if it's unrelated to trust_remote_code
+        return AutoModel.from_pretrained(source, **load_args)
+    except (RepositoryNotFoundError, HfHubHTTPError) as exc:
+        raise ValueError(f"Model {requested_name} not found or inaccessible: {exc}") from exc
+    except Exception as exc:
+        if "custom code" in str(exc).lower() or "trust_remote_code" in str(exc).lower():
+            retry_args = dict(load_args)
+            retry_args["trust_remote_code"] = True
+            logger.warning(
+                "Custom code required for %s; retrying with trust_remote_code=True",
+                requested_name,
+            )
+            return AutoModel.from_pretrained(source, **retry_args)
+        raise
 
-    # Ensure tokenizer has a pad token
+
+def _load_auto_tokenizer(source: str, load_args: Dict[str, object], requested_name: str):
+    tokenizer_args = {
+        key: value
+        for key, value in load_args.items()
+        if key in {"local_files_only", "token", "use_auth_token", "trust_remote_code"}
+    }
+    try:
+        tokenizer = AutoTokenizer.from_pretrained(source, **tokenizer_args)
+    except Exception as exc:
+        if "custom code" in str(exc).lower() or "trust_remote_code" in str(exc).lower():
+            tokenizer_args["trust_remote_code"] = True
+            logger.warning(
+                "Custom tokenizer code required for %s; retrying with trust_remote_code=True",
+                requested_name,
+            )
+            tokenizer = AutoTokenizer.from_pretrained(source, **tokenizer_args)
+        else:
+            raise
+
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
+    return tokenizer
 
+
+def load_tokenizer(model_name: str, model_type: str = "default"):
+    source, load_args = _resolve_source_and_args(model_name, model_type)
+    return _load_auto_tokenizer(source, load_args, model_name)
+
+
+def load_model_and_tokenizer(model_name: str, model_type: str = "default"):
+    source, load_args = _resolve_source_and_args(model_name, model_type)
+    model = _load_auto_model(source, load_args, model_name)
+    model.eval()
+    tokenizer = _load_auto_tokenizer(source, load_args, model_name)
     return model, tokenizer
-    
 
-def get_activations(model, tokenizer, texts1, texts2, layer_indices=None, model_type="default", batch_size=16):
+
+def _get_inference_context(device: torch.device):
+    base = torch.inference_mode()
+    if should_use_cuda_autocast() and device.type == "cuda":
+        return contextlib.ExitStack().__enter__()
+    return base
+
+
+@contextlib.contextmanager
+def _inference_context(device: torch.device):
+    with torch.inference_mode():
+        if should_use_cuda_autocast() and device.type == "cuda":
+            with autocast(device_type="cuda", dtype=torch.bfloat16):
+                yield
+        else:
+            yield
+
+
+def _move_batch_to_device(batch: Dict[str, torch.Tensor], device: torch.device) -> Dict[str, torch.Tensor]:
+    moved = {}
+    for key, value in batch.items():
+        if isinstance(value, torch.Tensor):
+            moved[key] = value.to(device)
+        else:
+            moved[key] = value
+    return moved
+
+
+def get_activations(
+    model,
+    tokenizer,
+    texts1,
+    texts2,
+    layer_indices=None,
+    model_type="default",
+    batch_size=16,
+):
     """
     Returns a dictionary of activations for specified layers by processing text pairs in batches.
-    For each sample, the activations are split into two parts (one per text in the pair) using token_type_ids,
-    and mean pooling is applied over the tokens belonging to each segment.
-    
-    Args:
-        model: Pre-trained transformer model.
-        tokenizer: Hugging Face tokenizer.
-        texts1: List of strings for the first sentence.
-        texts2: List of strings for the second sentence.
-        layer_indices: Optional list of layer indices to hook.
-        model_type: (unused here) Model type specifier.
-        batch_size: Batch size for processing.
-    
-    Returns:
-        final_activations: A dictionary mapping each layer index to a tuple (act_text1, act_text2), where each
-                           is a tensor of shape [N, hidden_dim] (N = total number of samples).
+    For each sample, the activations are split into two parts using token_type_ids and
+    mean-pooled over the tokens in each segment.
     """
-    device = next(model.parameters()).device
-    # For each layer index, we will accumulate two lists: one for activations from text1, one for text2.
-    # We initialize the dictionary for each requested layer.
+    del model_type  # Kept for call-site compatibility.
+    device = model_device(model)
+
     if layer_indices is None:
-        layer_indices = list(range(model.config.num_hidden_layers))
+        layer_indices = list(range(model.config.num_hidden_layers + 1))
     all_activations = {layer_idx: ([], []) for layer_idx in layer_indices}
 
     num_samples = len(texts1)
     for start in range(0, num_samples, batch_size):
-        batch_texts1 = texts1[start:start+batch_size]
-        batch_texts2 = texts2[start:start+batch_size]
-        # Tokenize the text pair.
-        inputs = tokenizer(batch_texts1, batch_texts2, return_tensors="pt", padding=True, truncation=True)
-        
-        # Check if token_type_ids are provided; if not, generate them manually.
+        batch_texts1 = texts1[start:start + batch_size]
+        batch_texts2 = texts2[start:start + batch_size]
+        inputs = tokenizer(
+            batch_texts1,
+            batch_texts2,
+            return_tensors="pt",
+            padding=True,
+            truncation=True,
+        )
+
         if "token_type_ids" in inputs:
             token_type_ids = inputs["token_type_ids"].detach().cpu()
         else:
-            # Manually create token_type_ids for text pairs.
             input_ids = inputs["input_ids"].detach().cpu()
             sep_id = tokenizer.sep_token_id
             token_type_ids_list = []
             for sample in input_ids:
-                sample = sample.tolist()
+                sample_tokens = sample.tolist()
                 try:
-                    # Find the first occurrence of the separator token.
-                    sep_index = sample.index(sep_id)
+                    sep_index = sample_tokens.index(sep_id)
                 except ValueError:
-                    sep_index = len(sample)
-                # Tokens before (and including) the separator get 0; the rest get 1.
-                tt_ids = [0] * len(sample)
-                for i in range(sep_index + 1, len(sample)):
-                    tt_ids[i] = 1
+                    sep_index = len(sample_tokens)
+                tt_ids = [0] * len(sample_tokens)
+                for idx in range(sep_index + 1, len(sample_tokens)):
+                    tt_ids[idx] = 1
                 token_type_ids_list.append(torch.tensor(tt_ids, dtype=torch.long))
             token_type_ids = torch.stack(token_type_ids_list, dim=0)
-        
-        # Move inputs to the device.
-        for key, value in inputs.items():
-            if key in ["input_ids", "token_type_ids"]:
-                inputs[key] = value.to(device)
-            else:
-                inputs[key] = value.to(device, dtype=torch.float16)
-        
-        # Prepare a temporary dictionary for raw activations in this batch.
-        batch_activations = {}  # Maps layer index -> tensor of shape [batch_size, seq_len, hidden_dim]
-        hook_handles = []
-        
-        def hook_fn(idx):
-            def hook(module, input, output):
-                if hasattr(output, "last_hidden_state"):
-                    output_tensor = output.last_hidden_state
-                elif isinstance(output, tuple):
-                    output_tensor = output[0]
-                else:
-                    output_tensor = output
-                print(f"Layer {idx}: Activation shape {output_tensor.shape}")  # Debugging output
-                batch_activations[idx] = output_tensor.detach().cpu()
-            return hook
 
-        # Register hooks for the layers we want.
-        for idx, (name, layer) in enumerate(model.named_modules()):
-            # You may wish to refine this selection logic based on your model architecture.
-            if layer_indices is None or idx in layer_indices:
-                print(f"Hooking layer {idx}: {name}")  # Debugging output
-                handle = layer.register_forward_hook(hook_fn(idx))
-                hook_handles.append(handle)
-        
-        # Run the model.
-        with torch.no_grad(), autocast(device_type='cuda'):
-            model(**inputs)
-        # Remove hooks.
-        for handle in hook_handles:
-            handle.remove()
-        torch.cuda.empty_cache()
-        
-        # Process the raw activations for each hooked layer.
-        # For each layer, we split the activations into two parts using token_type_ids.
-        for idx, raw_act in batch_activations.items():
-            # raw_act shape: [batch_size, seq_len, hidden_dim]
+        model_inputs = _move_batch_to_device(dict(inputs), device)
+
+        with _inference_context(device):
+            outputs = model(**model_inputs, output_hidden_states=True)
+        hidden_states = outputs.hidden_states
+
+        for idx in layer_indices:
+            raw_act = hidden_states[idx].detach().to(torch.float32).cpu()
             bs = raw_act.size(0)
             activations_text1 = []
             activations_text2 = []
-            for i in range(bs):
-                # Create masks for tokens belonging to the first and second segments.
-                mask1 = token_type_ids[i] == 0
-                mask2 = token_type_ids[i] == 1
-                # Mean pool over tokens in each segment. If no token is found, create a zero vector.
-                if mask1.sum() > 0:
-                    pooled1 = raw_act[i][mask1].mean(dim=0)
-                else:
-                    pooled1 = raw_act[i].new_zeros(raw_act.size(2))
-                if mask2.sum() > 0:
-                    pooled2 = raw_act[i][mask2].mean(dim=0)
-                else:
-                    pooled2 = raw_act[i].new_zeros(raw_act.size(2))
+            for sample_idx in range(bs):
+                mask1 = token_type_ids[sample_idx] == 0
+                mask2 = token_type_ids[sample_idx] == 1
+                pooled1 = raw_act[sample_idx][mask1].mean(dim=0) if mask1.any() else raw_act.new_zeros(raw_act.size(2))
+                pooled2 = raw_act[sample_idx][mask2].mean(dim=0) if mask2.any() else raw_act.new_zeros(raw_act.size(2))
                 activations_text1.append(pooled1.unsqueeze(0))
                 activations_text2.append(pooled2.unsqueeze(0))
-            # Stack along the batch dimension.
-            activations_text1 = torch.cat(activations_text1, dim=0)  # [batch_size, hidden_dim]
-            activations_text2 = torch.cat(activations_text2, dim=0)  # [batch_size, hidden_dim]
-            # Append these batch results to the overall lists.
-            all_activations[idx][0].append(activations_text1)
-            all_activations[idx][1].append(activations_text2)
-        
-        import gc
-        gc.collect()
 
-    # Concatenate batches for each layer.
+            all_activations[idx][0].append(torch.cat(activations_text1, dim=0))
+            all_activations[idx][1].append(torch.cat(activations_text2, dim=0))
+
+        cleanup_torch()
+
     final_activations = {}
     for idx, (list_text1, list_text2) in all_activations.items():
         act_text1 = torch.cat(list_text1, dim=0)
         act_text2 = torch.cat(list_text2, dim=0)
         final_activations[idx] = (act_text1, act_text2)
-   
-        print(f"Layer {idx}: Collected {len(list_text1)} batches for text1, {len(list_text2)} batches for text2")
-        if len(list_text1) > 0:
-            print(f"Example shape: {list_text1[0].shape}")
 
     return final_activations
 
-from typing import List, Dict
-import torch
-from transformers import PreTrainedModel, PreTrainedTokenizerFast
 
 def get_target_activations(
     model: PreTrainedModel,
@@ -261,70 +235,60 @@ def get_target_activations(
     texts: List[str],
     targets: List[str],
     batch_size: int = 8,
-    layer_indices: List[int] = None
+    layer_indices: List[int] = None,
 ) -> Dict[int, torch.Tensor]:
     """
-    Tokenizes each batch ONCE with return_offsets_mapping=True,
-    then for each sample uses the same offsets to find the target
-    tokens, pools those positions in every hidden_state layer,
-    and finally concatenates.
+    Tokenizes each batch once with offsets, finds target-token spans, pools those
+    token positions in every hidden-state layer, and concatenates the results.
     """
-    device = next(model.parameters()).device
+    device = model_device(model)
 
-    # embeddings + all hidden layers
     num_hidden = model.config.num_hidden_layers
     if layer_indices is None:
         layer_indices = list(range(num_hidden + 1))
 
-    all_acts = {l: [] for l in layer_indices}
+    all_acts = {layer: [] for layer in layer_indices}
 
     for start in range(0, len(texts), batch_size):
-        batch_texts   = texts[start:start+batch_size]
-        batch_targets = targets[start:start+batch_size]
+        batch_texts = texts[start:start + batch_size]
+        batch_targets = targets[start:start + batch_size]
 
-        # === single tokenize call ===
         encoding = tokenizer(
             batch_texts,
             return_tensors="pt",
             padding=True,
             truncation=True,
             return_offsets_mapping=True,
-            add_special_tokens=True,   # keep the special tokens so offsets align
-        ).to(device)
+            add_special_tokens=True,
+        )
+        offset_mappings = encoding.pop("offset_mapping")
+        model_inputs = _move_batch_to_device(dict(encoding), device)
 
-        offset_mappings = encoding.pop("offset_mapping")  # [B, T, 2]
+        with _inference_context(device):
+            outputs = model(**model_inputs, output_hidden_states=True)
+        hidden_states = outputs.hidden_states
 
-        # forward
-        with torch.no_grad():
-            outputs = model(**encoding, output_hidden_states=True)
-        hidden_states = outputs.hidden_states  # tuple: (emb, layer1, layer2, ...)
-
-       
         batch_masks: List[torch.Tensor] = []
-        for om, target, txt in zip(offset_mappings, batch_targets, batch_texts):
-            om = om.tolist()
-            lower = txt.lower()
-            idx = lower.find(target.lower())
-            if idx < 0:
-                batch_masks.append(torch.zeros(len(om), dtype=torch.bool))
+        for offsets, target, text in zip(offset_mappings, batch_targets, batch_texts):
+            offset_list = offsets.tolist()
+            lower_text = text.lower()
+            target_start = lower_text.find(target.lower())
+            if target_start < 0:
+                batch_masks.append(torch.zeros(len(offset_list), dtype=torch.bool))
                 continue
-            start_char, end_char = idx, idx + len(target)
-            # intersection test:
-            mask = [ not (e <= start_char or s >= end_char) for (s,e) in om ]
+            target_end = target_start + len(target)
+            mask = [not (end <= target_start or begin >= target_end) for begin, end in offset_list]
             batch_masks.append(torch.tensor(mask, dtype=torch.bool))
 
-        # now pool per‐layer
         for layer in layer_indices:
-            h = hidden_states[layer].cpu()   # [B, T, H]
-            for i, mask in enumerate(batch_masks):
+            hidden = hidden_states[layer].detach().to(torch.float32).cpu()
+            for sample_idx, mask in enumerate(batch_masks):
                 if mask.any():
-                    # mean over the True positions
-                    vec = h[i][mask].mean(dim=0, keepdim=True)
+                    vec = hidden[sample_idx][mask].mean(dim=0, keepdim=True)
                 else:
-                    # fallback zero
-                    vec = torch.zeros((1, h.size(-1)))
+                    vec = torch.zeros((1, hidden.size(-1)), dtype=torch.float32)
                 all_acts[layer].append(vec)
 
-    # concat each layer’s list → [N, H]
-    return {l: torch.cat(all_acts[l], dim=0) for l in layer_indices}
+        cleanup_torch()
 
+    return {layer: torch.cat(all_acts[layer], dim=0) for layer in layer_indices}

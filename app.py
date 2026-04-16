@@ -11,10 +11,14 @@ import h5py
 # ─────────────────────────────────────────────────────────────
 WORDS = ["bank", "bat", "light", "spring", "too"]
 MODELS = {
-    "BERT":    "bert-base-uncased",
-    "DistilB": "distilbert-base-uncased",
-    "GPT2":    "gpt2",
-    "GPT-Neo": "EleutherAI_gpt-neo-1.3B",
+    "ModernBERT": "answerdotai/ModernBERT-large",
+    "DeBERTa-v3": "microsoft/deberta-v3-large",
+    "RoBERTa-L": "FacebookAI/roberta-large",
+    "XLM-R-L": "FacebookAI/xlm-roberta-large",
+    "Qwen2.5-3B": "Qwen/Qwen2.5-3B",
+    "Qwen2.5-7B": "Qwen/Qwen2.5-7B",
+    "Mistral-Nemo": "mistralai/Mistral-Nemo-Base-2407",
+    "OLMo-2-7B": "allenai/OLMo-2-1124-7B",
 }
 
 # ─────────────────────────────────────────────────────────────
