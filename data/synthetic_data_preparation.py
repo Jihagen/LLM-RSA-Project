@@ -1,4 +1,4 @@
-import pandas as pd 
+import pandas as pd
 from transformers import PreTrainedTokenizerFast
 import re
 
@@ -65,13 +65,35 @@ def process_sentence(sentence: str, word: str, tokenizer):
 
 def flatten_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Given a dataframe with columns "examples" (a list), "word", and "semantic_group_id",
-    flatten the "examples" list so that each generated sentence becomes its own row.
+    Flatten the synthetic homonym dataframe into one row per sentence.
+
+    In addition to the original sentence/word/semantic_group_id fields, the flattened
+    representation carries provenance information that can later be used for grouped
+    evaluation or leakage checks.
     """
     rows = []
-    for _, row in df.iterrows():
+    for row_index, (_, row) in enumerate(df.iterrows()):
         word = row["word"]
-        group_id = row["semantic_group_id"]
-        for sent in row["examples"]:
-            rows.append({"sentence": sent, "word": word, "semantic_group_id": group_id})
+        group_id = int(row["semantic_group_id"])
+        examples = list(row["examples"])
+        family_id = row["family_id"] if "family_id" in row else f"{word}_sense_{group_id}"
+
+        for example_index, sent in enumerate(examples):
+            rows.append(
+                {
+                    "sentence": sent,
+                    "word": word,
+                    "semantic_group_id": group_id,
+                    "family_id": family_id,
+                    "sense_id": row["sense_id"] if "sense_id" in row else None,
+                    "sense_name": row["sense_name"] if "sense_name" in row else None,
+                    "sense_gloss": row["sense_gloss"] if "sense_gloss" in row else None,
+                    "seed_sentence": row["seed_sentence"] if "seed_sentence" in row else None,
+                    "generation_model_id": row["generation_model_id"] if "generation_model_id" in row else None,
+                    "sample_index_within_family": example_index,
+                    "is_seed_sentence": example_index == 0,
+                    "sample_id": f"{family_id}_{example_index}",
+                    "row_position": row_index,
+                }
+            )
     return pd.DataFrame(rows)

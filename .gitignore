@@ -5,4 +5,7 @@ logs/
 **/.env
 
 results/
+analysis_outputs/
+legacy/
+/data/generated/
 */__pycache__/

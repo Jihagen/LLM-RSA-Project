@@ -1,0 +1,212 @@
+[
+  {
+    "word": "bank",
+    "senses": [
+      {
+        "sense_id": "river_bank",
+        "sense_name": "river edge",
+        "sense_gloss": "sloping land beside a river or stream",
+        "seed_sentence": "The children sat on the bank of the river and watched the water move past.",
+        "positive_anchors": ["river", "water", "shore", "stream", "flood"],
+        "negative_anchors": ["loan", "account", "teller", "mortgage"]
+      },
+      {
+        "sense_id": "financial_bank",
+        "sense_name": "financial institution",
+        "sense_gloss": "an institution that manages money, savings, or loans",
+        "seed_sentence": "She visited the bank after work to deposit the check from her employer.",
+        "positive_anchors": ["money", "loan", "account", "cash", "deposit"],
+        "negative_anchors": ["river", "shore", "stream", "mud"]
+      }
+    ]
+  },
+  {
+    "word": "bat",
+    "senses": [
+      {
+        "sense_id": "animal_bat",
+        "sense_name": "flying mammal",
+        "sense_gloss": "a nocturnal flying mammal",
+        "seed_sentence": "A bat slipped out of the cave just as the sun disappeared behind the hill.",
+        "positive_anchors": ["cave", "wing", "night", "nocturnal", "flying"],
+        "negative_anchors": ["baseball", "pitch", "swing", "inning"]
+      },
+      {
+        "sense_id": "sports_bat",
+        "sense_name": "sports equipment",
+        "sense_gloss": "a wooden or metal club used in sports such as baseball",
+        "seed_sentence": "He gripped the bat tightly before stepping into the batter's box.",
+        "positive_anchors": ["baseball", "pitch", "swing", "fielder", "batter"],
+        "negative_anchors": ["cave", "wing", "night", "roost"]
+      }
+    ]
+  },
+  {
+    "word": "bark",
+    "senses": [
+      {
+        "sense_id": "dog_bark",
+        "sense_name": "dog sound",
+        "sense_gloss": "the sharp vocal sound made by a dog",
+        "seed_sentence": "The dog began to bark the moment it heard footsteps near the gate.",
+        "positive_anchors": ["dog", "puppy", "gate", "loudly", "growl"],
+        "negative_anchors": ["tree", "trunk", "forest", "oak"]
+      },
+      {
+        "sense_id": "tree_bark",
+        "sense_name": "tree covering",
+        "sense_gloss": "the outer protective covering of a tree trunk",
+        "seed_sentence": "The bark of the old oak tree felt rough under her fingertips.",
+        "positive_anchors": ["tree", "trunk", "oak", "forest", "wood"],
+        "negative_anchors": ["dog", "puppy", "growl", "kennel"]
+      }
+    ]
+  },
+  {
+    "word": "spring",
+    "senses": [
+      {
+        "sense_id": "season_spring",
+        "sense_name": "season",
+        "sense_gloss": "the season between winter and summer",
+        "seed_sentence": "By spring, the fields were green again and the air smelled of wet soil.",
+        "positive_anchors": ["winter", "flowers", "rain", "season", "green"],
+        "negative_anchors": ["coil", "metal", "mattress", "compress"]
+      },
+      {
+        "sense_id": "coil_spring",
+        "sense_name": "mechanical coil",
+        "sense_gloss": "an elastic object, often a coil of metal, that returns to shape after compression",
+        "seed_sentence": "The mechanic replaced the damaged spring inside the suspension system.",
+        "positive_anchors": ["metal", "coil", "compress", "suspension", "mechanic"],
+        "negative_anchors": ["flowers", "season", "rain", "winter"]
+      }
+    ]
+  },
+  {
+    "word": "pupil",
+    "senses": [
+      {
+        "sense_id": "eye_pupil",
+        "sense_name": "part of the eye",
+        "sense_gloss": "the opening in the center of the iris",
+        "seed_sentence": "The doctor checked whether the pupil narrowed in response to bright light.",
+        "positive_anchors": ["eye", "iris", "light", "doctor", "retina"],
+        "negative_anchors": ["teacher", "homework", "classroom", "school"]
+      },
+      {
+        "sense_id": "school_pupil",
+        "sense_name": "student",
+        "sense_gloss": "a child attending school",
+        "seed_sentence": "Each pupil in the classroom submitted a neat copy of the essay.",
+        "positive_anchors": ["teacher", "classroom", "school", "lesson", "homework"],
+        "negative_anchors": ["iris", "retina", "vision", "doctor"]
+      }
+    ]
+  },
+  {
+    "word": "light",
+    "senses": [
+      {
+        "sense_id": "illumination_light",
+        "sense_name": "illumination",
+        "sense_gloss": "visible illumination that makes things easier to see",
+        "seed_sentence": "A faint light shone through the curtains just before sunrise.",
+        "positive_anchors": ["lamp", "shine", "bright", "sunrise", "dark"],
+        "negative_anchors": ["weight", "carry", "heavy", "burden"]
+      },
+      {
+        "sense_id": "low_weight_light",
+        "sense_name": "low weight",
+        "sense_gloss": "not heavy in weight",
+        "seed_sentence": "The bag was light enough for the child to carry without any help.",
+        "positive_anchors": ["weight", "carry", "heavy", "bag", "burden"],
+        "negative_anchors": ["lamp", "shine", "bright", "dark"]
+      }
+    ]
+  },
+  {
+    "word": "seal",
+    "senses": [
+      {
+        "sense_id": "animal_seal",
+        "sense_name": "marine animal",
+        "sense_gloss": "a marine mammal that lives in cold seas",
+        "seed_sentence": "A seal surfaced beside the boat and vanished again under the gray water.",
+        "positive_anchors": ["ocean", "boat", "water", "ice", "marine"],
+        "negative_anchors": ["letter", "envelope", "stamp", "closure"]
+      },
+      {
+        "sense_id": "closure_seal",
+        "sense_name": "closing mark",
+        "sense_gloss": "a mark or device used to close or certify something",
+        "seed_sentence": "The official pressed a wax seal onto the folded document.",
+        "positive_anchors": ["wax", "document", "letter", "official", "envelope"],
+        "negative_anchors": ["ocean", "boat", "water", "marine"]
+      }
+    ]
+  },
+  {
+    "word": "crane",
+    "senses": [
+      {
+        "sense_id": "bird_crane",
+        "sense_name": "bird",
+        "sense_gloss": "a tall long-necked bird",
+        "seed_sentence": "A crane stood motionless in the marsh before lifting into the air.",
+        "positive_anchors": ["bird", "marsh", "wing", "wetland", "air"],
+        "negative_anchors": ["construction", "steel", "operator", "building"]
+      },
+      {
+        "sense_id": "machine_crane",
+        "sense_name": "construction machine",
+        "sense_gloss": "a large machine used to lift heavy loads",
+        "seed_sentence": "The crane swung the steel beam slowly across the construction site.",
+        "positive_anchors": ["construction", "steel", "beam", "operator", "site"],
+        "negative_anchors": ["marsh", "bird", "wetland", "feathers"]
+      }
+    ]
+  },
+  {
+    "word": "match",
+    "senses": [
+      {
+        "sense_id": "contest_match",
+        "sense_name": "contest",
+        "sense_gloss": "a sporting contest or game",
+        "seed_sentence": "The final match drew a loud crowd that cheered every point.",
+        "positive_anchors": ["tournament", "score", "player", "crowd", "final"],
+        "negative_anchors": ["flame", "ignite", "candle", "spark"]
+      },
+      {
+        "sense_id": "fire_match",
+        "sense_name": "fire-starting stick",
+        "sense_gloss": "a small stick that ignites by friction",
+        "seed_sentence": "She struck a match to light the candle during the power outage.",
+        "positive_anchors": ["flame", "candle", "ignite", "spark", "strike"],
+        "negative_anchors": ["tournament", "score", "player", "stadium"]
+      }
+    ]
+  },
+  {
+    "word": "club",
+    "senses": [
+      {
+        "sense_id": "group_club",
+        "sense_name": "social group",
+        "sense_gloss": "an organized social or interest group",
+        "seed_sentence": "The debate club met every Thursday evening in the old library.",
+        "positive_anchors": ["members", "meeting", "society", "library", "debate"],
+        "negative_anchors": ["golf", "swing", "fairway", "driver"]
+      },
+      {
+        "sense_id": "golf_club",
+        "sense_name": "golf equipment",
+        "sense_gloss": "a stick used to hit a golf ball",
+        "seed_sentence": "He chose a shorter club before taking the next shot from the rough.",
+        "positive_anchors": ["golf", "swing", "ball", "fairway", "rough"],
+        "negative_anchors": ["members", "meeting", "library", "society"]
+      }
+    ]
+  }
+]

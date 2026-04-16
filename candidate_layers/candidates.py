@@ -29,14 +29,20 @@ def process_file(file_path, output_root):
     # -------------------------------
     # 1) Visualization: Plot mean F1 vs. Layer with error bars
     # -------------------------------
-    # Identify F1 columns (assuming columns like 'Run1 F1', 'Run2 F1', etc.)
-    f1_columns = [col for col in df.columns if 'F1' in col]
-    
-    # Reshape the data into long format
-    df_long = df.melt(id_vars=['Layer'], value_vars=f1_columns,
-                      var_name='Run', value_name='F1_Score')
-    # Extract run number (e.g., from "Run1 F1" get 1)
-    df_long['Run'] = df_long['Run'].str.extract(r'Run(\d+)').astype(int)
+    # Support both the old per-run layout and the new summary layout.
+    run_f1_columns = [col for col in df.columns if col.startswith("Run") and "F1" in col]
+    if run_f1_columns:
+        df_long = df.melt(id_vars=['Layer'], value_vars=run_f1_columns,
+                          var_name='Run', value_name='F1_Score')
+        df_long['Run'] = df_long['Run'].str.extract(r'Run(\d+)').fillna(0).astype(int)
+    elif "Mean F1" in df.columns and "Std F1" in df.columns:
+        df_long = df[["Layer", "Mean F1"]].rename(columns={"Mean F1": "F1_Score"}).copy()
+        df_long["Run"] = 0
+    else:
+        f1_columns = [col for col in df.columns if 'F1' in col]
+        df_long = df.melt(id_vars=['Layer'], value_vars=f1_columns,
+                          var_name='Run', value_name='F1_Score')
+        df_long['Run'] = df_long['Run'].str.extract(r'Run(\d+)').fillna(0).astype(int)
     
     # Compute summary statistics per layer
     summary = df_long.groupby('Layer')['F1_Score'].agg(['mean', 'std']).reset_index()
