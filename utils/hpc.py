@@ -71,6 +71,23 @@ def _sanitize_model_name(model_name: str) -> str:
     return model_name.replace("/", "--")
 
 
+def _resolve_snapshot_dir(cache_root: Path) -> Path | None:
+    refs_main = cache_root / "refs" / "main"
+    if refs_main.exists():
+        snapshot_id = refs_main.read_text().strip()
+        snapshot_dir = cache_root / "snapshots" / snapshot_id
+        if snapshot_dir.exists():
+            return snapshot_dir.resolve()
+
+    snapshots_dir = cache_root / "snapshots"
+    if snapshots_dir.exists():
+        snapshot_dirs = sorted((p for p in snapshots_dir.iterdir() if p.is_dir()), key=lambda p: p.name)
+        if snapshot_dirs:
+            return snapshot_dirs[-1].resolve()
+
+    return None
+
+
 def resolve_model_source(model_name: str) -> str:
     configure_hpc_runtime()
 
@@ -86,15 +103,18 @@ def resolve_model_source(model_name: str) -> str:
         Path(os.environ["HF_HOME"]),
         _workspace_root(),
     ]
-    patterns = [
-        f"models--{_sanitize_model_name(model_name)}/local-repo",
-        f"models--{_sanitize_model_name(model_name)}",
-    ]
+    cache_dir_name = f"models--{_sanitize_model_name(model_name)}"
     for root in search_roots:
-        for pattern in patterns:
-            candidate = root / pattern
-            if candidate.exists():
-                return str(candidate.resolve())
+        local_repo = root / cache_dir_name / "local-repo"
+        if local_repo.exists():
+            return str(local_repo.resolve())
+
+        cache_root = root / cache_dir_name
+        if cache_root.exists():
+            snapshot_dir = _resolve_snapshot_dir(cache_root)
+            if snapshot_dir is not None:
+                return str(snapshot_dir)
+            return str(cache_root.resolve())
 
     return model_name
 

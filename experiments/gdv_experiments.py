@@ -172,6 +172,8 @@ def run_gdv_experiment(df: pd.DataFrame, model_name: str, model_type: str = "def
         batch_size=4
     )  # dict: layer_idx -> [N_tokens, D]
 
+    safe_model_name = model_name.replace('/', '_')
+
     # Save these token-level activations per layer
     save_target_activations(
         base_dir='results',
@@ -184,7 +186,7 @@ def run_gdv_experiment(df: pd.DataFrame, model_name: str, model_type: str = "def
     )
 
     # Prepare outputs
-    output_dir = f"results/{model_name}_gdv/"
+    output_dir = f"results/{safe_model_name}_gdv/"
     os.makedirs(output_dir, exist_ok=True)
 
     # Compute GDV and PCA plots
@@ -231,7 +233,7 @@ def run_gdv_experiment(df: pd.DataFrame, model_name: str, model_type: str = "def
         'gdv_per_layer': gdv_all,
         'meta': meta
     }
-    pkl_path = os.path.join(output_dir, f"{model_name}_{target_words[0]}_gdv.pkl")
+    pkl_path = os.path.join(output_dir, f"{safe_model_name}_{target_words[0]}_gdv.pkl")
     with open(pkl_path, 'wb') as f:
         pickle.dump(output_data, f)
     print(f"Dash data saved to {pkl_path}")
