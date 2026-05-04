@@ -14,6 +14,24 @@ logger = logging.getLogger(__name__)
 configure_hpc_runtime()
 
 
+_DECODER_ONLY_MODEL_TYPES = {
+    'gpt2', 'gpt_neo', 'gpt_neox', 'gptj', 'bloom', 'opt',
+    'llama', 'mistral', 'qwen2', 'olmo', 'falcon', 'gemma',
+    'phi', 'stablelm', 'mpt', 'rwkv', 'codegen', 'xglm',
+}
+
+
+def is_decoder_only(model) -> bool:
+    """Return True if model is a causal/decoder-only architecture."""
+    cfg = model.config
+    if getattr(cfg, 'is_decoder', False):
+        return True
+    archs = getattr(cfg, 'architectures', None) or []
+    if any('causal' in a.lower() or 'generative' in a.lower() for a in archs):
+        return True
+    return getattr(cfg, 'model_type', '').lower() in _DECODER_ONLY_MODEL_TYPES
+
+
 class TokenProbeModel(torch.nn.Module):
     """
     Wrapper that loads a pretrained Transformer and returns only the hidden states
@@ -236,13 +254,22 @@ def get_target_activations(
     targets: List[str],
     batch_size: int = 8,
     layer_indices: List[int] = None,
+    pooling: str = "target",
 ) -> Dict[int, torch.Tensor]:
     """
-    Tokenizes each batch once with offsets, finds target-token spans, pools those
-    token positions in every hidden-state layer, and concatenates the results.
-    """
-    device = model_device(model)
+    Extract per-sentence hidden-state vectors across all layers.
 
+    pooling='target'     — mean-pool the subword tokens that cover the target word.
+                           Correct for bidirectional encoders that see full context.
+    pooling='last_token' — take the last non-padding token's hidden state.
+                           Use this for causal/decoder-only models: the target word
+                           may appear before the disambiguating context, so the last
+                           token position captures the full available left context.
+    """
+    if pooling not in ("target", "last_token"):
+        raise ValueError(f"pooling must be 'target' or 'last_token', got {pooling!r}")
+
+    device = model_device(model)
     num_hidden = model.config.num_hidden_layers
     if layer_indices is None:
         layer_indices = list(range(num_hidden + 1))
@@ -250,7 +277,7 @@ def get_target_activations(
     all_acts = {layer: [] for layer in layer_indices}
 
     for start in range(0, len(texts), batch_size):
-        batch_texts = texts[start:start + batch_size]
+        batch_texts   = texts[start:start + batch_size]
         batch_targets = targets[start:start + batch_size]
 
         encoding = tokenizer(
@@ -262,31 +289,40 @@ def get_target_activations(
             add_special_tokens=True,
         )
         offset_mappings = encoding.pop("offset_mapping")
-        model_inputs = _move_batch_to_device(dict(encoding), device)
+        attention_mask  = encoding["attention_mask"]
+        model_inputs    = _move_batch_to_device(dict(encoding), device)
 
         with _inference_context(device):
             outputs = model(**model_inputs, output_hidden_states=True)
         hidden_states = outputs.hidden_states
 
-        batch_masks: List[torch.Tensor] = []
-        for offsets, target, text in zip(offset_mappings, batch_targets, batch_texts):
-            offset_list = offsets.tolist()
-            lower_text = text.lower()
-            target_start = lower_text.find(target.lower())
-            if target_start < 0:
-                batch_masks.append(torch.zeros(len(offset_list), dtype=torch.bool))
-                continue
-            target_end = target_start + len(target)
-            mask = [not (end <= target_start or begin >= target_end) for begin, end in offset_list]
-            batch_masks.append(torch.tensor(mask, dtype=torch.bool))
+        if pooling == "last_token":
+            last_positions = (attention_mask.sum(dim=1) - 1).tolist()
+        else:
+            batch_masks: List[torch.Tensor] = []
+            for offsets, target, text in zip(offset_mappings, batch_targets, batch_texts):
+                offset_list  = offsets.tolist()
+                lower_text   = text.lower()
+                target_start = lower_text.find(target.lower())
+                if target_start < 0:
+                    batch_masks.append(torch.zeros(len(offset_list), dtype=torch.bool))
+                    continue
+                target_end = target_start + len(target)
+                mask = [not (end <= target_start or begin >= target_end) for begin, end in offset_list]
+                batch_masks.append(torch.tensor(mask, dtype=torch.bool))
 
         for layer in layer_indices:
             hidden = hidden_states[layer].detach().to(torch.float32).cpu()
-            for sample_idx, mask in enumerate(batch_masks):
-                if mask.any():
-                    vec = hidden[sample_idx][mask].mean(dim=0, keepdim=True)
+            for sample_idx in range(hidden.size(0)):
+                if pooling == "last_token":
+                    pos = int(last_positions[sample_idx])
+                    vec = hidden[sample_idx, pos : pos + 1, :]
                 else:
-                    vec = torch.zeros((1, hidden.size(-1)), dtype=torch.float32)
+                    mask = batch_masks[sample_idx]
+                    if mask.any():
+                        vec = hidden[sample_idx][mask].mean(dim=0, keepdim=True)
+                    else:
+                        vec = torch.zeros((1, hidden.size(-1)), dtype=torch.float32)
                 all_acts[layer].append(vec)
 
         cleanup_torch()
