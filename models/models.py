@@ -328,3 +328,90 @@ def get_target_activations(
         cleanup_torch()
 
     return {layer: torch.cat(all_acts[layer], dim=0) for layer in layer_indices}
+
+
+def get_dual_position_activations(
+    model: PreTrainedModel,
+    tokenizer: PreTrainedTokenizerFast,
+    texts: List[str],
+    targets: List[str],
+    batch_size: int = 8,
+    layer_indices: List[int] = None,
+) -> Tuple[Dict[int, torch.Tensor], Dict[int, torch.Tensor]]:
+    """
+    Single forward pass that returns activations at two positions per sentence:
+
+    target_acts  — mean-pooled hidden states at the target-word token(s).
+                   For decoders this reflects only left context (causal constraint).
+    final_acts   — hidden state at the last non-padding token.
+                   For decoders this aggregates the full left context up to EOS.
+
+    Returns (target_acts, final_acts) where each maps layer_idx → Tensor[N, D].
+
+    Use this for H4: compare M_l at the homonym position vs the sentence-final
+    position to test the decoder dissociation hypothesis.
+    """
+    device = model_device(model)
+    num_hidden = model.config.num_hidden_layers
+    if layer_indices is None:
+        layer_indices = list(range(num_hidden + 1))
+
+    target_acts: Dict[int, List[torch.Tensor]] = {l: [] for l in layer_indices}
+    final_acts:  Dict[int, List[torch.Tensor]] = {l: [] for l in layer_indices}
+
+    for start in range(0, len(texts), batch_size):
+        batch_texts   = texts[start:start + batch_size]
+        batch_targets = targets[start:start + batch_size]
+
+        encoding = tokenizer(
+            batch_texts,
+            return_tensors="pt",
+            padding=True,
+            truncation=True,
+            return_offsets_mapping=True,
+            add_special_tokens=True,
+        )
+        offset_mappings = encoding.pop("offset_mapping")
+        attention_mask  = encoding["attention_mask"]
+        model_inputs    = _move_batch_to_device(dict(encoding), device)
+
+        with _inference_context(device):
+            outputs = model(**model_inputs, output_hidden_states=True)
+        hidden_states = outputs.hidden_states
+
+        # Build target-word masks
+        batch_masks: List[torch.Tensor] = []
+        for offsets, target, text in zip(offset_mappings, batch_targets, batch_texts):
+            offset_list  = offsets.tolist()
+            lower_text   = text.lower()
+            target_start = lower_text.find(target.lower())
+            if target_start < 0:
+                batch_masks.append(torch.zeros(len(offset_list), dtype=torch.bool))
+                continue
+            target_end = target_start + len(target)
+            mask = [not (e <= target_start or b >= target_end) for b, e in offset_list]
+            batch_masks.append(torch.tensor(mask, dtype=torch.bool))
+
+        # Last real token position per sample
+        last_positions = (attention_mask.sum(dim=1) - 1).tolist()
+
+        for layer in layer_indices:
+            hidden = hidden_states[layer].detach().to(torch.float32).cpu()
+            for i, (tmask, last_pos) in enumerate(zip(batch_masks, last_positions)):
+                # Target position
+                if tmask.any():
+                    tv = hidden[i][tmask].mean(dim=0, keepdim=True)
+                else:
+                    tv = torch.zeros((1, hidden.size(-1)), dtype=torch.float32)
+                target_acts[layer].append(tv)
+
+                # Final position
+                fv = hidden[i, int(last_pos) : int(last_pos) + 1, :]
+                final_acts[layer].append(fv)
+
+        cleanup_torch()
+
+    return (
+        {l: torch.cat(target_acts[l], dim=0) for l in layer_indices},
+        {l: torch.cat(final_acts[l],  dim=0) for l in layer_indices},
+    )
