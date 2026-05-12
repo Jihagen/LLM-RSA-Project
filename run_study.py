@@ -95,6 +95,14 @@ def _resolve_models(names):
     return resolved or ALL_MODELS
 
 
+def _run_h0(args):
+    from hypothesis.h0_carrier_norming import run_h0
+    models = _resolve_models(args.models) if args.models else H3_MODELS
+    logger.info("=== H0: Carrier Norming | %d models ===", len(models))
+    run_h0(model_names=models, words=args.words)
+    gc.collect()
+
+
 def _run_h1(args):
     from hypothesis.h1_layer_adequacy import run_h1
     models = _resolve_models(args.models) if args.models else ALL_MODELS
@@ -134,6 +142,7 @@ def _run_h5(args):
 
 
 RUNNERS = {
+    "H0": _run_h0,
     "H1": _run_h1,
     "H2": _run_h2,
     "H3": _run_h3,
@@ -146,7 +155,7 @@ def main():
     parser = argparse.ArgumentParser(description="Run H1–H5 study experiments.")
     parser.add_argument(
         "--hypotheses", nargs="+",
-        choices=["H1", "H2", "H3", "H4", "H5"],
+        choices=["H0", "H1", "H2", "H3", "H4", "H5"],
         default=["H1", "H2"],
         help="Which hypotheses to run (default: H1 H2).",
     )

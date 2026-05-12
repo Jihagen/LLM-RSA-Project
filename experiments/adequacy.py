@@ -172,6 +172,58 @@ def adequacy_best_layer(profile: Dict[int, Dict]) -> int:
 
 # ── I/O helpers ───────────────────────────────────────────────────────────────
 
+def compute_carrier_margins(
+    model,
+    tokenizer,
+    carrier_items: List[Dict],
+    centroids: Dict[int, Dict[int, np.ndarray]],
+    layer_idx: int,
+    batch_size: int = 8,
+) -> List[Dict]:
+    """
+    Run carrier sentences alone through the model and compute M_l at the
+    homonym-token position. Returns one record per (carrier, sense) pair.
+
+    carrier_items : list of {'word': str, 'carrier': str, 'sense': int}
+
+    The carrier M_l is the model's prior for that template sentence.
+    Use it to compute context_gain = M_l(full_sentence) - M_l(carrier_alone).
+    """
+    import torch
+    from models import get_target_activations, is_decoder_only
+
+    # Carriers are short sentences — always use target pooling regardless of arch
+    sentences = [item["carrier"] for item in carrier_items]
+    words     = [item["word"]    for item in carrier_items]
+
+    acts = get_target_activations(
+        model, tokenizer,
+        sentences, words,
+        batch_size=batch_size,
+        layer_indices=[layer_idx],
+        pooling="target",
+    )
+    H = acts[layer_idx].numpy()
+
+    records = []
+    for i, item in enumerate(carrier_items):
+        sense   = item["sense"]
+        c_sense = sense
+        w_sense = 1 - sense  # assumes binary 0/1 senses
+        if c_sense not in centroids[layer_idx] or w_sense not in centroids[layer_idx]:
+            continue
+        m = adequacy_margin(H[i], centroids[layer_idx][c_sense], centroids[layer_idx][w_sense])
+        records.append({
+            "word":         item["word"],
+            "carrier":      item["carrier"],
+            "sense":        sense,
+            "M_l_carrier":  round(m, 4),
+            "biased":       abs(m) > 0.3,  # flag strong priors
+            "layer":        layer_idx,
+        })
+    return records
+
+
 def save_profile_csv(profile: Dict[int, Dict], output_path: str) -> None:
     """Write per-layer adequacy statistics to CSV."""
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
