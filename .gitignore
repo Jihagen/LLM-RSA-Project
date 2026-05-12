@@ -10,3 +10,4 @@ results/
 
 hf_cache/
 *.pkl
+*.json
