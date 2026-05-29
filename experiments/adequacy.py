@@ -152,6 +152,54 @@ def layer_adequacy_profile(
     return profile
 
 
+# ── Word-alone baseline (used in H0) ─────────────────────────────────────────
+
+def compute_word_alone_margins(
+    model,
+    tokenizer,
+    words: List[str],
+    centroids: Dict[int, Dict[int, np.ndarray]],
+    layer_idx: int,
+    correct_sense: int = 0,
+    batch_size: int = 8,
+) -> Dict[str, float]:
+    """
+    Feed each word as a standalone sentence ("bank", "bat", …) through the model
+    and compute M_l at the word token position.
+
+    This establishes the model's prior before any sentence context is added.
+    In theory it should be near zero because a bare token has no disambiguating
+    context — any deviation reveals an intrinsic lexical bias in the embedding.
+
+    Returns {word: M_l_word_alone}.
+    """
+    from models import get_target_activations
+
+    wrong_sense = 1 - correct_sense
+    if layer_idx not in centroids:
+        return {}
+    c_correct = centroids[layer_idx][correct_sense]
+    c_wrong   = centroids[layer_idx][wrong_sense]
+
+    # Build minimal single-word sentences; one per unique word
+    unique_words = list(dict.fromkeys(words))
+    sentences    = unique_words  # the word is its own sentence
+
+    acts = get_target_activations(
+        model, tokenizer,
+        sentences, unique_words,
+        batch_size=batch_size,
+        layer_indices=[layer_idx],
+        pooling="target",
+    )
+    H = acts[layer_idx].numpy()
+
+    return {
+        word: float(adequacy_margin(H[i], c_correct, c_wrong))
+        for i, word in enumerate(unique_words)
+    }
+
+
 # ── GDV-best layer identification (used in H2) ────────────────────────────────
 
 def gdv_best_layer(gdv_csv_path: str) -> int:

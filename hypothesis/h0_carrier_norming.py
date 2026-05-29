@@ -3,33 +3,33 @@ H0 — Carrier Norming (prerequisite for H3/H4)
 =============================================
 Purpose
 -------
-For each (model, word), compute M_l on carrier sentences alone — the
-template sentences without any disambiguating context clause.
+Computes M_l at three levels for each (model, word):
 
-    carrier_M_l = M_l("The bank was unstable.")
+  1. word_alone_M_l  — bare word ("bank") as its own sentence.
+                       Should be near zero; any deviation reveals an intrinsic
+                       lexical embedding bias before any sentence context.
 
-This establishes the model's *prior* for each carrier. H3 then reports:
+  2. carrier_M_l     — word inside the ambiguous carrier sentence
+                       ("The bank was unstable."), no disambiguating clause.
+                       Shows what the sentence frame alone contributes.
 
-    context_gain = M_l(full_sentence) - M_l(carrier_alone)
-
-which isolates the effect of the context clause, controlling for the
-carrier's baseline bias.
+  3. context_gain    — M_l(full sentence) - M_l(carrier)   [computed in H3]
+                       Shows what the context clause specifically adds.
 
 Output
 ------
 results/study/H0/{safe_model}/h0_{word}.csv
-  columns: carrier, sense, M_l_carrier, biased (|M_l| > 0.3)
+  columns: carrier, sense, M_l_word_alone, M_l_carrier,
+           carrier_shift (carrier - word_alone), biased (|M_l_carrier| > 0.3)
 
 results/study/H0/h0_summary.csv
-  mean |M_l_carrier| per (model, word) — identifies systematically biased words
+  per (model, word): mean |M_l_word_alone|, mean |M_l_carrier|, mean carrier_shift
 
 Required data
 -------------
 - data/paired_sentences.json (must contain 'carrier' field on each item)
 - results/activations/{word}/{safe_model}/ (centroids)
-- Models: all 4 H3 models (encoders + decoders)
-
-Run before H3 to verify carrier balance.
+- Models: all 4 H3 models
 """
 
 import csv
@@ -42,6 +42,7 @@ import numpy as np
 
 from experiments.adequacy import (
     compute_carrier_margins,
+    compute_word_alone_margins,
     load_centroids,
 )
 from hypothesis.h3_context_position import H3_MODELS, PAIRED_DATA_PATH, _select_layer
@@ -113,31 +114,52 @@ def run_h0(
                 logger.warning("[H0] %s", e)
                 continue
 
+            # ── Level 1: word alone ───────────────────────────────────────
+            word_alone = compute_word_alone_margins(
+                model, tokenizer, [word], centroids, layer_idx,
+            )
+            m_word_alone = word_alone.get(word, float("nan"))
+
+            # ── Level 2: carrier sentences ────────────────────────────────
             records = compute_carrier_margins(
                 model, tokenizer, carrier_items, centroids, layer_idx,
             )
             if not records:
                 continue
 
+            # Enrich each carrier record with the word-alone baseline
+            for r in records:
+                r["M_l_word_alone"]  = round(m_word_alone, 4)
+                r["carrier_shift"]   = round(r["M_l_carrier"] - m_word_alone, 4)
+
             csv_path = model_out / f"h0_{word}.csv"
+            fieldnames = ["word", "carrier", "sense",
+                          "M_l_word_alone", "M_l_carrier", "carrier_shift",
+                          "biased", "layer"]
             with open(csv_path, "w", newline="") as f:
-                writer = csv.DictWriter(f, fieldnames=records[0].keys())
+                writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
                 writer.writeheader()
                 writer.writerows(records)
 
-            margins = [abs(r["M_l_carrier"]) for r in records]
+            carrier_margins = [abs(r["M_l_carrier"]) for r in records]
+            carrier_shifts  = [abs(r["carrier_shift"]) for r in records]
             n_biased = sum(1 for r in records if r["biased"])
             summary_rows.append({
-                "model":            safe_model,
-                "word":             word,
-                "n_carriers":       len(records),
-                "mean_abs_M_l":     round(np.mean(margins), 4),
-                "max_abs_M_l":      round(np.max(margins), 4),
-                "n_biased":         n_biased,
-                "layer_used":       layer_idx,
+                "model":                 safe_model,
+                "word":                  word,
+                "n_carriers":            len(records),
+                "mean_abs_M_l_word":     round(abs(m_word_alone), 4),
+                "mean_abs_M_l_carrier":  round(np.mean(carrier_margins), 4),
+                "mean_abs_carrier_shift":round(np.mean(carrier_shifts), 4),
+                "n_biased":              n_biased,
+                "layer_used":            layer_idx,
             })
-            logger.info("[H0] %s / %s | n=%d, biased=%d, mean|M_l|=%.3f",
-                        model_name, word, len(records), n_biased, np.mean(margins))
+            logger.info(
+                "[H0] %s / %s | word_alone=%.3f carrier=%.3f shift=%.3f biased=%d",
+                model_name, word,
+                abs(m_word_alone), np.mean(carrier_margins),
+                np.mean(carrier_shifts), n_biased,
+            )
 
     if summary_rows:
         summary_path = OUTPUT_BASE / "h0_summary.csv"

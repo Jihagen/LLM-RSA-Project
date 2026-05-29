@@ -39,7 +39,7 @@ import numpy as np
 import torch
 
 from experiments.adequacy import batch_adequacy_margins, load_centroids
-from models import get_target_activations, is_decoder_only, load_model_and_tokenizer
+from models import get_target_activations, is_decoder_only, load_model_and_tokenizer  # is_decoder_only used for arch_type label only
 from utils.hpc import configure_hpc_runtime
 
 configure_hpc_runtime()
@@ -123,9 +123,12 @@ def run_h3(
         model_out.mkdir(parents=True, exist_ok=True)
 
         model, tokenizer = load_model_and_tokenizer(model_name)
-        pooling   = "last_token" if is_decoder_only(model) else "target"
+        # Always target-token: we measure the homonym's own representation.
+        # For decoders this is causal (left-context only) — which is exactly the
+        # effect H3 tests. R-condition sentences will show poor adequacy for
+        # decoders because the homonym sits at position ~2 with no useful left context.
         arch_type = "decoder" if is_decoder_only(model) else "encoder"
-        logger.info("[H3] %s (%s, pooling=%s)", model_name, arch_type, pooling)
+        logger.info("[H3] %s (%s, pooling=target)", model_name, arch_type)
 
         for word in words:
             try:
@@ -155,7 +158,7 @@ def run_h3(
                 sentences, targets,
                 batch_size=4,
                 layer_indices=[layer_idx],
-                pooling=pooling,
+                pooling="target",
             )
             H = acts[layer_idx].numpy()
             margins = batch_adequacy_margins(H, c_correct, c_wrong)

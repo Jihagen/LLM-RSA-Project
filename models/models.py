@@ -1,6 +1,7 @@
 import contextlib
 import logging
-from typing import Dict, List, Tuple
+import re
+from typing import Dict, List, Optional, Tuple
 
 import torch
 from huggingface_hub.utils import HfHubHTTPError, RepositoryNotFoundError
@@ -12,6 +13,21 @@ from utils.hpc import build_hf_load_args, cleanup_torch, configure_hpc_runtime, 
 
 logger = logging.getLogger(__name__)
 configure_hpc_runtime()
+
+
+def _find_target_span(text: str, target: str) -> Optional[Tuple[int, int]]:
+    """
+    Return the (start, end) character span of the first occurrence of `target`
+    in `text` that sits at a word boundary — i.e. not inside a longer word.
+
+    Example: target='bat', text='The batsman hit the bat.'
+    → returns (20, 23) for the standalone 'bat', not (4, 7) inside 'batsman'.
+
+    Returns None if no boundary-respecting match is found.
+    """
+    pattern = r"(?<![a-zA-Z])" + re.escape(target.lower()) + r"(?![a-zA-Z])"
+    m = re.search(pattern, text.lower())
+    return (m.start(), m.end()) if m else None
 
 
 _DECODER_ONLY_MODEL_TYPES = {
@@ -301,13 +317,12 @@ def get_target_activations(
         else:
             batch_masks: List[torch.Tensor] = []
             for offsets, target, text in zip(offset_mappings, batch_targets, batch_texts):
-                offset_list  = offsets.tolist()
-                lower_text   = text.lower()
-                target_start = lower_text.find(target.lower())
-                if target_start < 0:
+                offset_list = offsets.tolist()
+                span = _find_target_span(text, target)
+                if span is None:
                     batch_masks.append(torch.zeros(len(offset_list), dtype=torch.bool))
                     continue
-                target_end = target_start + len(target)
+                target_start, target_end = span
                 mask = [not (end <= target_start or begin >= target_end) for begin, end in offset_list]
                 batch_masks.append(torch.tensor(mask, dtype=torch.bool))
 
@@ -379,16 +394,15 @@ def get_dual_position_activations(
             outputs = model(**model_inputs, output_hidden_states=True)
         hidden_states = outputs.hidden_states
 
-        # Build target-word masks
+        # Build target-word masks (word-boundary safe)
         batch_masks: List[torch.Tensor] = []
         for offsets, target, text in zip(offset_mappings, batch_targets, batch_texts):
-            offset_list  = offsets.tolist()
-            lower_text   = text.lower()
-            target_start = lower_text.find(target.lower())
-            if target_start < 0:
+            offset_list = offsets.tolist()
+            span = _find_target_span(text, target)
+            if span is None:
                 batch_masks.append(torch.zeros(len(offset_list), dtype=torch.bool))
                 continue
-            target_end = target_start + len(target)
+            target_start, target_end = span
             mask = [not (e <= target_start or b >= target_end) for b, e in offset_list]
             batch_masks.append(torch.tensor(mask, dtype=torch.bool))
 

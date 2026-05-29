@@ -12,7 +12,7 @@ import torch
 from scipy.spatial.distance import cdist
 from sklearn.decomposition import PCA
 
-from models import get_target_activations, is_decoder_only, load_model_and_tokenizer
+from models import get_target_activations, load_model_and_tokenizer
 from data import flatten_dataframe
 
 
@@ -152,8 +152,10 @@ def save_target_activations(
             f.create_dataset('X', data=arr)
             f.create_dataset('labels', data=labels)
             dt = h5py.string_dtype(encoding='utf-8')
-            f.create_dataset('sentences', data=sentences.astype('S'), dtype=dt)
-            f.create_dataset('words', data=words.astype('S'), dtype=dt)
+            f.create_dataset('sentences',
+                             data=np.array([s.encode('utf-8') for s in sentences]), dtype=dt)
+            f.create_dataset('words',
+                             data=np.array([w.encode('utf-8') for w in words]), dtype=dt)
             f.create_dataset('mu', data=arr.mean(axis=0))
             f.create_dataset('sigma', data=arr.std(axis=0) + 1e-12)
 
@@ -186,16 +188,16 @@ def run_gdv_experiment(
 
     model, tokenizer = load_model_and_tokenizer(model_name, model_type=model_type)
 
-    pooling = "last_token" if is_decoder_only(model) else "target"
-    logging.info("Using '%s' pooling for %s", pooling, model_name)
-
-    # dict: layer_idx -> Tensor[N_sentences, D]
+    # Always use target-token pooling for profiling so that centroids are built
+    # from the homonym token's representation, consistent with all downstream tests.
+    # Causal models will only see left context at the homonym position — that is
+    # intentional and correctly reflects the decoder's architectural limitation.
     activations = get_target_activations(
         model, tokenizer,
         sentences.tolist(),
         target_words.tolist(),
         batch_size=4,
-        pooling=pooling,
+        pooling="target",
     )
 
     safe_model_name = model_name.replace('/', '_')
@@ -294,7 +296,7 @@ def run_gdv_experiment(
     meta = {
         'model_name':    model_name,
         'words':         unique_words,
-        'pooling':       pooling,
+        'pooling':       "target",
         'total_layers':  len(sorted_layers),
         'gdv_per_layer': gdv_all,
         'gdv_per_word':  gdv_per_word,
