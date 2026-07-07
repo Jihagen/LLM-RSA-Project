@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 configure_hpc_runtime()
 
 
-def _find_target_span(text: str, target: str) -> Optional[Tuple[int, int]]:
+def find_target_span(text: str, target: str) -> Optional[Tuple[int, int]]:
     """
     Return the (start, end) character span of the first occurrence of `target`
     in `text` that sits at a word boundary — i.e. not inside a longer word.
@@ -318,7 +318,7 @@ def get_target_activations(
             batch_masks: List[torch.Tensor] = []
             for offsets, target, text in zip(offset_mappings, batch_targets, batch_texts):
                 offset_list = offsets.tolist()
-                span = _find_target_span(text, target)
+                span = find_target_span(text, target)
                 if span is None:
                     batch_masks.append(torch.zeros(len(offset_list), dtype=torch.bool))
                     continue
@@ -398,7 +398,7 @@ def get_dual_position_activations(
         batch_masks: List[torch.Tensor] = []
         for offsets, target, text in zip(offset_mappings, batch_targets, batch_texts):
             offset_list = offsets.tolist()
-            span = _find_target_span(text, target)
+            span = find_target_span(text, target)
             if span is None:
                 batch_masks.append(torch.zeros(len(offset_list), dtype=torch.bool))
                 continue

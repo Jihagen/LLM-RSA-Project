@@ -60,6 +60,8 @@ def _profile_gdv_best_layer(
         with open(csv_path) as f:
             for row in csv.DictReader(f):
                 l = int(row["Layer"])
+                if l == 0:
+                    continue  # non-contextual embedding layer, not a valid candidate
                 layer_gdv_sums.setdefault(l, []).append(float(row["GDV"]))
     if not layer_gdv_sums:
         raise FileNotFoundError(f"No GDV CSVs found for model={safe_model!r}")

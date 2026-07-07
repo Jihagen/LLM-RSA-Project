@@ -203,19 +203,35 @@ def compute_word_alone_margins(
 # ── GDV-best layer identification (used in H2) ────────────────────────────────
 
 def gdv_best_layer(gdv_csv_path: str) -> int:
-    """Return the layer index with the most negative GDV from a gdv_values.csv."""
+    """
+    Return the layer index with the most negative GDV from a gdv_values.csv.
+
+    Layer 0 (pre-transformer embeddings) is excluded — see adequacy_best_layer
+    for why a non-contextual layer cannot be a valid "best" answer here either.
+    """
     layers, values = [], []
     with open(gdv_csv_path) as f:
         reader = csv.DictReader(f)
         for row in reader:
-            layers.append(int(row["Layer"]))
+            layer = int(row["Layer"])
+            if layer == 0:
+                continue
+            layers.append(layer)
             values.append(float(row["GDV"]))
     return layers[int(np.argmin(values))]
 
 
 def adequacy_best_layer(profile: Dict[int, Dict]) -> int:
-    """Return the layer with the highest mean adequacy margin."""
-    return max(profile, key=lambda l: profile[l]["mean"])
+    """
+    Return the layer with the highest mean adequacy margin.
+
+    Layer 0 (the pre-transformer embedding layer) is excluded from the search:
+    it carries no contextual mixing, so any separation there reflects token-identity
+    or positional artifacts rather than sense disambiguation, and is not a valid
+    "best contextual layer" answer even if its in-sample margin happens to be highest.
+    """
+    candidates = [l for l in profile if l != 0] or list(profile)
+    return max(candidates, key=lambda l: profile[l]["mean"])
 
 
 # ── I/O helpers ───────────────────────────────────────────────────────────────

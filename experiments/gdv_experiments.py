@@ -12,7 +12,7 @@ import torch
 from scipy.spatial.distance import cdist
 from sklearn.decomposition import PCA
 
-from models import get_target_activations, load_model_and_tokenizer
+from models import find_target_span, get_target_activations, load_model_and_tokenizer
 from data import flatten_dataframe
 
 
@@ -182,6 +182,23 @@ def run_gdv_experiment(
         that may precede the disambiguating context).
     """
     df_flat = flatten_dataframe(df)
+
+    # Drop sentences where the target word does not occur as its own word
+    # (e.g. only "bats"/"Bats", "lighter", "Sunlight" for target "light"). Profiling
+    # centroids must be built from clean occurrences of the literal target word;
+    # silently falling back to a zero vector for these would pollute the centroid.
+    has_span = df_flat.apply(
+        lambda row: find_target_span(row["sentence"], row["word"]) is not None, axis=1
+    )
+    n_dropped = int((~has_span).sum())
+    if n_dropped:
+        dropped_words = sorted(df_flat.loc[~has_span, "word"].unique())
+        logging.warning(
+            "Dropping %d/%d profiling sentences with no word-boundary match for words: %s",
+            n_dropped, len(df_flat), dropped_words,
+        )
+    df_flat = df_flat[has_span].reset_index(drop=True)
+
     sentences    = np.array(df_flat['sentence'].tolist(), dtype=object)
     target_words = np.array(df_flat['word'].tolist(), dtype=object)
     labels       = np.array(df_flat['semantic_group_id'].tolist(), dtype=int)
