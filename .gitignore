@@ -5,9 +5,19 @@ logs/
 **/.env
 
 results/
-*/__pycache__/
+__pycache__/
 *.gif
+.DS_Store
+offload_dir/
 
 hf_cache/
 *.pkl
 *.json
+
+legacy/*
+
+# Stimulus/profiling data is small, hand-curated, and required to reproduce
+# H0/H1/H2/H3/H4/H5 — track it despite the blanket *.pkl/*.json rules above.
+!data/synthetic_data_h2.pkl
+!data/paired_sentences.json
+!data/garden_path_sentences.json

@@ -1,0 +1,126 @@
+{
+  "bank": [
+    {
+      "id": "bank_gp_01",
+      "sentence": "She had spent the morning filling in her loan application and speaking with the manager, and finally made her way to the bank, where the mud came up to her ankles and the herons stood in the shallows.",
+      "primed_sense": 1,
+      "correct_sense": 0
+    },
+    {
+      "id": "bank_gp_02",
+      "sentence": "The new branch manager had done a great deal to restore the bank's reputation, reinforcing its crumbling edges with sandbags and planting willows along the waterline.",
+      "primed_sense": 1,
+      "correct_sense": 0
+    },
+    {
+      "id": "bank_gp_03",
+      "sentence": "He had trusted the bank with everything — his savings, his mortgage, his retirement fund — which is why it was such a shock when the Environment Agency said it would have to be demolished to widen the river.",
+      "primed_sense": 1,
+      "correct_sense": 0
+    }
+  ],
+  "bat": [
+    {
+      "id": "bat_gp_01",
+      "sentence": "The cricket coach handed her the bat, which immediately spread its wings and dropped from her grasp into the rafters of the old pavilion.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    },
+    {
+      "id": "bat_gp_02",
+      "sentence": "He cleaned and oiled the bat every season without fail, and every summer it would fly out through the gap in the scoreboard at dusk and not return until morning.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    },
+    {
+      "id": "bat_gp_03",
+      "sentence": "She had been waiting for the bat all afternoon when it finally appeared at the crease — pale, silent, and moving on leathery wings she had never noticed before.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    }
+  ],
+  "bark": [
+    {
+      "id": "bark_gp_01",
+      "sentence": "The vet had been examining the bark for thirty minutes when she admitted that she would need a specialist in arboriculture.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    },
+    {
+      "id": "bark_gp_02",
+      "sentence": "She listened to the bark long into the night — rhythmic, hollow, rising and falling — and by morning had identified it as a mature oak with a fungal infection in the lower trunk.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    }
+  ],
+  "crane": [
+    {
+      "id": "crane_gp_01",
+      "sentence": "The construction site manager watched the crane for several minutes, noting the elegant way it extended its legs, bent its neck toward the water, and stood perfectly still.",
+      "primed_sense": 1,
+      "correct_sense": 0
+    },
+    {
+      "id": "crane_gp_02",
+      "sentence": "After twenty years on the site, she knew every movement the crane would make — the cautious way it approached the water, the slow spread of its wings before it rose.",
+      "primed_sense": 1,
+      "correct_sense": 0
+    }
+  ],
+  "spring": [
+    {
+      "id": "spring_gp_01",
+      "sentence": "She had waited all winter for spring to arrive — and when it did, it came compressed in a small brown envelope from the parts supplier, smelling of machine oil.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    },
+    {
+      "id": "spring_gp_02",
+      "sentence": "The spring had arrived earlier than usual that year, still coiled and chrome-bright, packed in tissue paper at the bottom of the repair kit.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    }
+  ],
+  "match": [
+    {
+      "id": "match_gp_01",
+      "sentence": "After three weeks of preparation the teams were finally ready — the tinder dry, the wind at bay, the crowd holding their breath as the referee struck the match.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    },
+    {
+      "id": "match_gp_02",
+      "sentence": "She had trained for the match all season, and was careful to keep it dry in her inside pocket, afraid that the rain would prevent it from catching.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    }
+  ],
+  "light": [
+    {
+      "id": "light_gp_01",
+      "sentence": "The removal men had struggled with it for an hour before someone suggested they simply pick up the light, which one of them did with two fingers.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    },
+    {
+      "id": "light_gp_02",
+      "sentence": "She had expected it to be heavy, having seen the size of the crate, but the light turned out to weigh almost nothing at all.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    }
+  ],
+  "pitch": [
+    {
+      "id": "pitch_gp_01",
+      "sentence": "The conductor gasped when the pitch opened up in front of him — forty metres of perfectly mown grass, glistening under the floodlights.",
+      "primed_sense": 1,
+      "correct_sense": 0
+    },
+    {
+      "id": "pitch_gp_02",
+      "sentence": "She had studied the pitch for years, adjusting her position constantly to maintain perfect intonation, until the referee's whistle brought play to a halt.",
+      "primed_sense": 1,
+      "correct_sense": 0
+    }
+  ]
+}

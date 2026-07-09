@@ -52,7 +52,7 @@ def _available_words(results_dir: str, model_name: str, candidate_words: List[st
         if h5_dir.exists() and any(h5_dir.glob("layer_*.h5")):
             available.append(w)
         else:
-            logger.warning("No complete H5 cache for model=%s word=%s — skipping.", model_name, w)
+            logger.warning("No complete H5 cache for model=%s word=%s - skipping.", model_name, w)
     return available
 
 
@@ -82,7 +82,7 @@ def run_h1(
 
         avail_words = _available_words(results_dir, model_name, words)
         if not avail_words:
-            logger.error("No available words for %s — skipping H1.", model_name)
+            logger.error("No available words for %s - skipping H1.", model_name)
             continue
 
         summary_rows = []

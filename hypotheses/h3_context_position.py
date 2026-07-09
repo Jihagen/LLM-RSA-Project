@@ -38,7 +38,7 @@ from typing import Dict, List, Optional, Tuple
 import numpy as np
 import torch
 
-from experiments.adequacy import batch_adequacy_margins, load_centroids
+from experiments.adequacy import symmetric_adequacy_margins, load_centroids
 from models import get_target_activations, is_decoder_only, load_model_and_tokenizer  # is_decoder_only used for arch_type label only
 from utils.hpc import configure_hpc_runtime
 
@@ -56,23 +56,27 @@ H3_MODELS         = [
 ]
 
 
-def _load_paired_sentences(path: str, word: str) -> Tuple[List[str], List[str], List[str]]:
+def _load_paired_sentences(path: str, word: str) -> Tuple[List[str], List[str], List[str], List[int]]:
     """
     Load paired sentences for a given word from the JSON dataset.
 
-    Returns (sentences, conditions, sentence_ids)
-    where condition is 'L' or 'R'.
+    Returns (sentences, conditions, sentence_ids, senses)
+    where condition is 'L' or 'R' and sense is each item's own true sense
+    (0 or 1) — paired_sentences.json is balanced across both senses per
+    word/condition, so callers must score each sentence against its own
+    true sense rather than a single fixed sense-0/1 pair.
     """
     with open(path) as f:
         data = json.load(f)
     if word not in data:
         raise KeyError(f"Word '{word}' not found in {path}. Add it via the paired sentences notebook.")
-    sentences, conditions, ids = [], [], []
+    sentences, conditions, ids, senses = [], [], [], []
     for item in data[word]:
         sentences.append(item["sentence"])
         conditions.append(item["condition"])
         ids.append(item.get("id", f"{word}_{len(ids)}"))
-    return sentences, conditions, ids
+        senses.append(item["sense"])
+    return sentences, conditions, ids, senses
 
 
 def _select_layer(model_name: str, results_dir: str, word: str) -> int:
@@ -132,7 +136,7 @@ def run_h3(
 
         for word in words:
             try:
-                sentences, conditions, sent_ids = _load_paired_sentences(paired_data_path, word)
+                sentences, conditions, sent_ids, senses = _load_paired_sentences(paired_data_path, word)
             except KeyError as e:
                 logger.warning("[H3] %s", e)
                 continue
@@ -148,8 +152,8 @@ def run_h3(
                 logger.warning("[H3] Layer %d not in centroid cache for %s / %s", layer_idx, model_name, word)
                 continue
 
-            c_correct = centroids[layer_idx][0]
-            c_wrong   = centroids[layer_idx][1]
+            c0 = centroids[layer_idx][0]
+            c1 = centroids[layer_idx][1]
 
             # Forward pass — extract homonym-position representations
             targets = [word] * len(sentences)
@@ -161,7 +165,9 @@ def run_h3(
                 pooling="target",
             )
             H = acts[layer_idx].numpy()
-            margins = batch_adequacy_margins(H, c_correct, c_wrong)
+            # paired_sentences.json is balanced across both senses per word/condition,
+            # so each sentence must be scored against its own true sense.
+            margins = symmetric_adequacy_margins(H, np.array(senses), c0, c1)
 
             # Write per-sentence results
             csv_path = model_out / f"h3_{word}.csv"

@@ -42,8 +42,8 @@ from typing import Dict, List, Optional
 
 import numpy as np
 
-from experiments.adequacy import batch_adequacy_margins, load_centroids
-from hypothesis.h3_context_position import H3_MODELS, PAIRED_DATA_PATH, _select_layer
+from experiments.adequacy import symmetric_adequacy_margins, load_centroids
+from hypotheses.h3_context_position import H3_MODELS, PAIRED_DATA_PATH, _select_layer
 from models import get_dual_position_activations, is_decoder_only, load_model_and_tokenizer
 from utils.hpc import configure_hpc_runtime
 
@@ -89,7 +89,7 @@ def run_h4(
 
         for word in words:
             if word not in paired_data:
-                logger.warning("[H4] Word '%s' not in paired data — skipping.", word)
+                logger.warning("[H4] Word '%s' not in paired data - skipping.", word)
                 continue
 
             # Keep only R-condition sentences
@@ -100,6 +100,7 @@ def run_h4(
 
             sentences = [item["sentence"] for item in r_items]
             sent_ids  = [item.get("id", f"{word}_R_{i}") for i, item in enumerate(r_items)]
+            senses    = [item["sense"] for item in r_items]
             targets   = [word] * len(sentences)
 
             try:
@@ -112,8 +113,8 @@ def run_h4(
             if layer_idx not in centroids:
                 continue
 
-            c_correct = centroids[layer_idx][0]
-            c_wrong   = centroids[layer_idx][1]
+            c0 = centroids[layer_idx][0]
+            c1 = centroids[layer_idx][1]
 
             target_acts, final_acts = get_dual_position_activations(
                 model, tokenizer, sentences, targets,
@@ -122,8 +123,11 @@ def run_h4(
             H_target = target_acts[layer_idx].numpy()
             H_final  = final_acts[layer_idx].numpy()
 
-            m_target = batch_adequacy_margins(H_target, c_correct, c_wrong)
-            m_final  = batch_adequacy_margins(H_final,  c_correct, c_wrong)
+            # R-condition sentences are balanced across both senses, so each
+            # sentence must be scored against its own true sense.
+            senses_arr = np.array(senses)
+            m_target = symmetric_adequacy_margins(H_target, senses_arr, c0, c1)
+            m_final  = symmetric_adequacy_margins(H_final,  senses_arr, c0, c1)
 
             csv_rows = []
             n_dissociation = 0

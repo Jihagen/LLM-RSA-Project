@@ -44,7 +44,7 @@ import sys
 
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s — %(message)s",
+    format="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
 )
 logger = logging.getLogger("run_study")
 
@@ -91,12 +91,12 @@ def _resolve_models(names):
         elif n in ALL_MODELS:
             resolved.append(n)
         else:
-            logger.warning("Unknown model alias '%s' — skipping.", n)
+            logger.warning("Unknown model alias '%s' - skipping.", n)
     return resolved or ALL_MODELS
 
 
 def _run_h0(args):
-    from hypothesis.h0_carrier_norming import run_h0
+    from hypotheses.h0_carrier_norming import run_h0
     models = _resolve_models(args.models) if args.models else H3_MODELS
     logger.info("=== H0: Carrier Norming | %d models ===", len(models))
     run_h0(model_names=models, words=args.words)
@@ -104,21 +104,21 @@ def _run_h0(args):
 
 
 def _run_h1(args):
-    from hypothesis.h1_layer_adequacy import run_h1
+    from hypotheses.h1_layer_adequacy import run_h1
     models = _resolve_models(args.models) if args.models else ALL_MODELS
     logger.info("=== H1: Layer Adequacy | %d models | words=%s ===", len(models), args.words)
     run_h1(model_names=models, words=args.words)
 
 
 def _run_h2(args):
-    from hypothesis.h2_gdv_generalization import run_h2
+    from hypotheses.h2_gdv_generalization import run_h2
     models = _resolve_models(args.models) if args.models else ALL_MODELS
     logger.info("=== H2: GDV Generalisation | %d models ===", len(models))
     run_h2(model_names=models, words=args.words)
 
 
 def _run_h3(args):
-    from hypothesis.h3_context_position import run_h3
+    from hypotheses.h3_context_position import run_h3
     models = _resolve_models(args.models) if args.models else H3_MODELS
     logger.info("=== H3: Context Position | %d models ===", len(models))
     run_h3(model_names=models, words=args.words)
@@ -126,7 +126,7 @@ def _run_h3(args):
 
 
 def _run_h4(args):
-    from hypothesis.h4_dissociation import run_h4
+    from hypotheses.h4_dissociation import run_h4
     models = _resolve_models(args.models) if args.models else H3_MODELS
     logger.info("=== H4: Token Dissociation | %d models ===", len(models))
     run_h4(model_names=models, words=args.words)
@@ -134,7 +134,7 @@ def _run_h4(args):
 
 
 def _run_h5(args):
-    from hypothesis.h5_garden_path import run_h5
+    from hypotheses.h5_garden_path import run_h5
     models = _resolve_models(args.models) if args.models else H3_MODELS
     logger.info("=== H5: Garden-Path (exploratory) | %d models ===", len(models))
     run_h5(model_names=models, words=args.words)

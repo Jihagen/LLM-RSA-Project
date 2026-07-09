@@ -48,49 +48,6 @@ def is_decoder_only(model) -> bool:
     return getattr(cfg, 'model_type', '').lower() in _DECODER_ONLY_MODEL_TYPES
 
 
-class TokenProbeModel(torch.nn.Module):
-    """
-    Wrapper that loads a pretrained Transformer and returns only the hidden states
-    at the token positions corresponding to the homonym.
-    """
-
-    def __init__(self, model_name: str, model_type: str = "default"):
-        super().__init__()
-        source, load_args = _resolve_source_and_args(model_name, model_type)
-        load_args["output_hidden_states"] = True
-        self.model = _load_auto_model(source, load_args, model_name)
-        self.model.eval()
-        self.name_or_path = getattr(self.model, "name_or_path", model_name)
-
-    @property
-    def config(self):
-        return self.model.config
-
-    def forward(
-        self,
-        input_ids: torch.LongTensor,
-        attention_mask: torch.LongTensor,
-        homonym_positions: List[List[int]],
-    ) -> Dict[int, List[torch.Tensor]]:
-        outputs = self.model(input_ids=input_ids, attention_mask=attention_mask)
-        hidden_states = outputs.hidden_states
-
-        batch_size = input_ids.size(0)
-        token_level_outputs: Dict[int, List[torch.Tensor]] = {}
-        for layer_idx, layer_hs in enumerate(hidden_states):
-            per_example_embeddings: List[torch.Tensor] = []
-            for sample_idx in range(batch_size):
-                positions = homonym_positions[sample_idx]
-                if positions:
-                    emb = layer_hs[sample_idx, positions, :]
-                else:
-                    emb = layer_hs.new_empty((0, layer_hs.size(-1)))
-                per_example_embeddings.append(emb)
-            token_level_outputs[layer_idx] = per_example_embeddings
-
-        return token_level_outputs
-
-
 def _resolve_source_and_args(model_name: str, model_type: str) -> Tuple[str, Dict[str, object]]:
     runtime = build_hf_load_args(model_name, model_type=model_type)
     source = runtime["source"]
@@ -177,90 +134,6 @@ def _move_batch_to_device(batch: Dict[str, torch.Tensor], device: torch.device) 
         else:
             moved[key] = value
     return moved
-
-
-def get_activations(
-    model,
-    tokenizer,
-    texts1,
-    texts2,
-    layer_indices=None,
-    model_type="default",
-    batch_size=16,
-):
-    """
-    Returns a dictionary of activations for specified layers by processing text pairs in batches.
-    For each sample, the activations are split into two parts using token_type_ids and
-    mean-pooled over the tokens in each segment.
-    """
-    del model_type  # Kept for call-site compatibility.
-    device = model_device(model)
-
-    if layer_indices is None:
-        layer_indices = list(range(model.config.num_hidden_layers + 1))
-    all_activations = {layer_idx: ([], []) for layer_idx in layer_indices}
-
-    num_samples = len(texts1)
-    for start in range(0, num_samples, batch_size):
-        batch_texts1 = texts1[start:start + batch_size]
-        batch_texts2 = texts2[start:start + batch_size]
-        inputs = tokenizer(
-            batch_texts1,
-            batch_texts2,
-            return_tensors="pt",
-            padding=True,
-            truncation=True,
-        )
-
-        if "token_type_ids" in inputs:
-            token_type_ids = inputs["token_type_ids"].detach().cpu()
-        else:
-            input_ids = inputs["input_ids"].detach().cpu()
-            sep_id = tokenizer.sep_token_id
-            token_type_ids_list = []
-            for sample in input_ids:
-                sample_tokens = sample.tolist()
-                try:
-                    sep_index = sample_tokens.index(sep_id)
-                except ValueError:
-                    sep_index = len(sample_tokens)
-                tt_ids = [0] * len(sample_tokens)
-                for idx in range(sep_index + 1, len(sample_tokens)):
-                    tt_ids[idx] = 1
-                token_type_ids_list.append(torch.tensor(tt_ids, dtype=torch.long))
-            token_type_ids = torch.stack(token_type_ids_list, dim=0)
-
-        model_inputs = _move_batch_to_device(dict(inputs), device)
-
-        with _inference_context(device):
-            outputs = model(**model_inputs, output_hidden_states=True)
-        hidden_states = outputs.hidden_states
-
-        for idx in layer_indices:
-            raw_act = hidden_states[idx].detach().to(torch.float32).cpu()
-            bs = raw_act.size(0)
-            activations_text1 = []
-            activations_text2 = []
-            for sample_idx in range(bs):
-                mask1 = token_type_ids[sample_idx] == 0
-                mask2 = token_type_ids[sample_idx] == 1
-                pooled1 = raw_act[sample_idx][mask1].mean(dim=0) if mask1.any() else raw_act.new_zeros(raw_act.size(2))
-                pooled2 = raw_act[sample_idx][mask2].mean(dim=0) if mask2.any() else raw_act.new_zeros(raw_act.size(2))
-                activations_text1.append(pooled1.unsqueeze(0))
-                activations_text2.append(pooled2.unsqueeze(0))
-
-            all_activations[idx][0].append(torch.cat(activations_text1, dim=0))
-            all_activations[idx][1].append(torch.cat(activations_text2, dim=0))
-
-        cleanup_torch()
-
-    final_activations = {}
-    for idx, (list_text1, list_text2) in all_activations.items():
-        act_text1 = torch.cat(list_text1, dim=0)
-        act_text2 = torch.cat(list_text2, dim=0)
-        final_activations[idx] = (act_text1, act_text2)
-
-    return final_activations
 
 
 def get_target_activations(
@@ -358,13 +231,19 @@ def get_dual_position_activations(
 
     target_acts  — mean-pooled hidden states at the target-word token(s).
                    For decoders this reflects only left context (causal constraint).
-    final_acts   — hidden state at the last non-padding token.
+    final_acts   — hidden state at the last non-special, non-padding token.
                    For decoders this aggregates the full left context up to EOS.
 
     Returns (target_acts, final_acts) where each maps layer_idx → Tensor[N, D].
 
     Use this for H4: compare M_l at the homonym position vs the sentence-final
     position to test the decoder dissociation hypothesis.
+
+    Note: "final position" must skip trailing special tokens (e.g. [SEP] for
+    BERT-family encoders). Those are structural markers whose hidden state does
+    not vary meaningfully with sentence content, so naively taking the last
+    non-padding position silently measures [SEP]'s representation instead of
+    the sentence's actual final content token.
     """
     device = model_device(model)
     num_hidden = model.config.num_hidden_layers
@@ -384,9 +263,11 @@ def get_dual_position_activations(
             padding=True,
             truncation=True,
             return_offsets_mapping=True,
+            return_special_tokens_mask=True,
             add_special_tokens=True,
         )
         offset_mappings = encoding.pop("offset_mapping")
+        special_tokens_mask = encoding.pop("special_tokens_mask")
         attention_mask  = encoding["attention_mask"]
         model_inputs    = _move_batch_to_device(dict(encoding), device)
 
@@ -406,8 +287,17 @@ def get_dual_position_activations(
             mask = [not (e <= target_start or b >= target_end) for b, e in offset_list]
             batch_masks.append(torch.tensor(mask, dtype=torch.bool))
 
-        # Last real token position per sample
-        last_positions = (attention_mask.sum(dim=1) - 1).tolist()
+        # Last non-special, non-padding token position per sample (skips trailing
+        # [SEP]/[CLS]-style markers so "final position" is a real content token).
+        content_mask = (attention_mask.bool()) & (special_tokens_mask == 0)
+        row_lengths = attention_mask.sum(dim=1)
+        last_positions = []
+        for i, row in enumerate(content_mask):
+            nonzero = row.nonzero(as_tuple=True)[0]
+            if len(nonzero) > 0:
+                last_positions.append(int(nonzero[-1]))
+            else:
+                last_positions.append(int(row_lengths[i]) - 1)
 
         for layer in layer_indices:
             hidden = hidden_states[layer].detach().to(torch.float32).cpu()

@@ -1,0 +1,1138 @@
+{
+  "bank": [
+    {
+      "id": "bank_L_01",
+      "sentence": "After weeks of heavy rain, the bank was unstable.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "The bank was unstable."
+    },
+    {
+      "id": "bank_R_01",
+      "sentence": "The bank was unstable after weeks of heavy rain.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "The bank was unstable."
+    },
+    {
+      "id": "bank_L_03",
+      "sentence": "During the flood inspection, they examined the bank.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "They examined the bank."
+    },
+    {
+      "id": "bank_R_03",
+      "sentence": "They examined the bank during the flood inspection.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "They examined the bank."
+    },
+    {
+      "id": "bank_L_05",
+      "sentence": "Once the river level dropped, the bank had changed.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "The bank had changed."
+    },
+    {
+      "id": "bank_R_05",
+      "sentence": "The bank had changed once the river level dropped.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "The bank had changed."
+    },
+    {
+      "id": "bank_L_07",
+      "sentence": "Because erosion had accelerated, the bank needed protection.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "The bank needed protection."
+    },
+    {
+      "id": "bank_R_07",
+      "sentence": "The bank needed protection because erosion had accelerated.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "The bank needed protection."
+    },
+    {
+      "id": "bank_L_09",
+      "sentence": "After the path along the water was closed, the bank became difficult to access.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "The bank became difficult to access."
+    },
+    {
+      "id": "bank_R_09",
+      "sentence": "The bank became difficult to access after the path along the water was closed.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "The bank became difficult to access."
+    },
+    {
+      "id": "bank_L_02",
+      "sentence": "After weeks of market panic, the bank was unstable.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "The bank was unstable."
+    },
+    {
+      "id": "bank_R_02",
+      "sentence": "The bank was unstable after weeks of market panic.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "The bank was unstable."
+    },
+    {
+      "id": "bank_L_04",
+      "sentence": "During the regulatory review, they examined the bank.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "They examined the bank."
+    },
+    {
+      "id": "bank_R_04",
+      "sentence": "They examined the bank during the regulatory review.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "They examined the bank."
+    },
+    {
+      "id": "bank_L_06",
+      "sentence": "Once the merger was announced, the bank had changed.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "The bank had changed."
+    },
+    {
+      "id": "bank_R_06",
+      "sentence": "The bank had changed once the merger was announced.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "The bank had changed."
+    },
+    {
+      "id": "bank_L_08",
+      "sentence": "Because customer data had leaked, the bank needed protection.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "The bank needed protection."
+    },
+    {
+      "id": "bank_R_08",
+      "sentence": "The bank needed protection because customer data had leaked.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "The bank needed protection."
+    },
+    {
+      "id": "bank_L_10",
+      "sentence": "After the online login system failed, the bank became difficult to access.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "The bank became difficult to access."
+    },
+    {
+      "id": "bank_R_10",
+      "sentence": "The bank became difficult to access after the online login system failed.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "The bank became difficult to access."
+    }
+  ],
+  "bat": [
+    {
+      "id": "bat_L_01",
+      "sentence": "During the final inning, they watched the bat.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "They watched the bat."
+    },
+    {
+      "id": "bat_R_01",
+      "sentence": "They watched the bat during the final inning.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "They watched the bat."
+    },
+    {
+      "id": "bat_L_03",
+      "sentence": "Before the player stepped up to home plate, she checked the bat.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "She checked the bat."
+    },
+    {
+      "id": "bat_R_03",
+      "sentence": "She checked the bat before the player stepped up to home plate.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "She checked the bat."
+    },
+    {
+      "id": "bat_L_05",
+      "sentence": "After the equipment bag fell open, he moved the bat carefully.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "He moved the bat carefully."
+    },
+    {
+      "id": "bat_R_05",
+      "sentence": "He moved the bat carefully after the equipment bag fell open.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "He moved the bat carefully."
+    },
+    {
+      "id": "bat_L_07",
+      "sentence": "Because the coach wanted to identify the team gear, the bat was marked.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "The bat was marked."
+    },
+    {
+      "id": "bat_R_07",
+      "sentence": "The bat was marked because the coach wanted to identify the team gear.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "The bat was marked."
+    },
+    {
+      "id": "bat_L_09",
+      "sentence": "After the umpire questioned the equipment, the bat was kept aside.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "The bat was kept aside."
+    },
+    {
+      "id": "bat_R_09",
+      "sentence": "The bat was kept aside after the umpire questioned the equipment.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "The bat was kept aside."
+    },
+    {
+      "id": "bat_L_02",
+      "sentence": "During the cave survey, they watched the bat.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "They watched the bat."
+    },
+    {
+      "id": "bat_R_02",
+      "sentence": "They watched the bat during the cave survey.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "They watched the bat."
+    },
+    {
+      "id": "bat_L_04",
+      "sentence": "Before the wildlife team released it outside, she checked the bat.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "She checked the bat."
+    },
+    {
+      "id": "bat_R_04",
+      "sentence": "She checked the bat before the wildlife team released it outside.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "She checked the bat."
+    },
+    {
+      "id": "bat_L_06",
+      "sentence": "After the animal rescue box tipped over, he moved the bat carefully.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "He moved the bat carefully."
+    },
+    {
+      "id": "bat_R_06",
+      "sentence": "He moved the bat carefully after the animal rescue box tipped over.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "He moved the bat carefully."
+    },
+    {
+      "id": "bat_L_08",
+      "sentence": "Because the researchers wanted to track the colony, the bat was marked.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "The bat was marked."
+    },
+    {
+      "id": "bat_R_08",
+      "sentence": "The bat was marked because the researchers wanted to track the colony.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "The bat was marked."
+    },
+    {
+      "id": "bat_L_10",
+      "sentence": "After the veterinarian noticed signs of stress, the bat was kept aside.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "The bat was kept aside."
+    },
+    {
+      "id": "bat_R_10",
+      "sentence": "The bat was kept aside after the veterinarian noticed signs of stress.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "The bat was kept aside."
+    }
+  ],
+  "bark": [
+    {
+      "id": "bark_L_01",
+      "sentence": "After the terrier heard footsteps outside, the bark drew attention.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "The bark drew attention."
+    },
+    {
+      "id": "bark_R_01",
+      "sentence": "The bark drew attention after the terrier heard footsteps outside.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "The bark drew attention."
+    },
+    {
+      "id": "bark_L_03",
+      "sentence": "During the animal-behaviour study, they studied the bark.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "They studied the bark."
+    },
+    {
+      "id": "bark_R_03",
+      "sentence": "They studied the bark during the animal-behaviour study.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "They studied the bark."
+    },
+    {
+      "id": "bark_L_05",
+      "sentence": "Once the collar microphone was switched on, the bark was unusual.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "The bark was unusual."
+    },
+    {
+      "id": "bark_R_05",
+      "sentence": "The bark was unusual once the collar microphone was switched on.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "The bark was unusual."
+    },
+    {
+      "id": "bark_L_07",
+      "sentence": "After several nights in the animal shelter, the bark changed noticeably.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "The bark changed noticeably."
+    },
+    {
+      "id": "bark_R_07",
+      "sentence": "The bark changed noticeably after several nights in the animal shelter.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "The bark changed noticeably."
+    },
+    {
+      "id": "bark_L_09",
+      "sentence": "Because neighbours complained about noise, the bark became the focus.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "The bark became the focus."
+    },
+    {
+      "id": "bark_R_09",
+      "sentence": "The bark became the focus because neighbours complained about noise.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "The bark became the focus."
+    },
+    {
+      "id": "bark_L_02",
+      "sentence": "After the forester marked the old pine, the bark drew attention.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "The bark drew attention."
+    },
+    {
+      "id": "bark_R_02",
+      "sentence": "The bark drew attention after the forester marked the old pine.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "The bark drew attention."
+    },
+    {
+      "id": "bark_L_04",
+      "sentence": "During the woodland survey, they studied the bark.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "They studied the bark."
+    },
+    {
+      "id": "bark_R_04",
+      "sentence": "They studied the bark during the woodland survey.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "They studied the bark."
+    },
+    {
+      "id": "bark_L_06",
+      "sentence": "Once the trunk sample was placed under the lens, the bark was unusual.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "The bark was unusual."
+    },
+    {
+      "id": "bark_R_06",
+      "sentence": "The bark was unusual once the trunk sample was placed under the lens.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "The bark was unusual."
+    },
+    {
+      "id": "bark_L_08",
+      "sentence": "After beetles spread through the orchard, the bark changed noticeably.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "The bark changed noticeably."
+    },
+    {
+      "id": "bark_R_08",
+      "sentence": "The bark changed noticeably after beetles spread through the orchard.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "The bark changed noticeably."
+    },
+    {
+      "id": "bark_L_10",
+      "sentence": "Because the conservation team mapped damage to the trees, the bark became the focus.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "The bark became the focus."
+    },
+    {
+      "id": "bark_R_10",
+      "sentence": "The bark became the focus because the conservation team mapped damage to the trees.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "The bark became the focus."
+    }
+  ],
+  "crane": [
+    {
+      "id": "crane_L_01",
+      "sentence": "After the wetland thawed in spring, they watched the crane.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "They watched the crane."
+    },
+    {
+      "id": "crane_R_01",
+      "sentence": "They watched the crane after the wetland thawed in spring.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "They watched the crane."
+    },
+    {
+      "id": "crane_L_03",
+      "sentence": "When the flock gathered near the marsh, the crane moved slowly.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "The crane moved slowly."
+    },
+    {
+      "id": "crane_R_03",
+      "sentence": "The crane moved slowly when the flock gathered near the marsh.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "The crane moved slowly."
+    },
+    {
+      "id": "crane_L_05",
+      "sentence": "During the bird survey at the reserve, the crane was visible from far away.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "The crane was visible from far away."
+    },
+    {
+      "id": "crane_R_05",
+      "sentence": "The crane was visible from far away during the bird survey at the reserve.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "The crane was visible from far away."
+    },
+    {
+      "id": "crane_L_07",
+      "sentence": "Because the nesting area was protected, the crane was difficult to approach.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "The crane was difficult to approach."
+    },
+    {
+      "id": "crane_R_07",
+      "sentence": "The crane was difficult to approach because the nesting area was protected.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "The crane was difficult to approach."
+    },
+    {
+      "id": "crane_L_09",
+      "sentence": "As the migration route was mapped by ornithologists, the crane became the focus.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "The crane became the focus."
+    },
+    {
+      "id": "crane_R_09",
+      "sentence": "The crane became the focus as the migration route was mapped by ornithologists.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "The crane became the focus."
+    },
+    {
+      "id": "crane_L_02",
+      "sentence": "After the steel beams arrived at the building site, they watched the crane.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "They watched the crane."
+    },
+    {
+      "id": "crane_R_02",
+      "sentence": "They watched the crane after the steel beams arrived at the building site.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "They watched the crane."
+    },
+    {
+      "id": "crane_L_04",
+      "sentence": "When the load was secured above the street, the crane moved slowly.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "The crane moved slowly."
+    },
+    {
+      "id": "crane_R_04",
+      "sentence": "The crane moved slowly when the load was secured above the street.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "The crane moved slowly."
+    },
+    {
+      "id": "crane_L_06",
+      "sentence": "During the safety inspection at the building site, the crane was visible from far away.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "The crane was visible from far away."
+    },
+    {
+      "id": "crane_R_06",
+      "sentence": "The crane was visible from far away during the safety inspection at the building site.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "The crane was visible from far away."
+    },
+    {
+      "id": "crane_L_08",
+      "sentence": "Because the construction zone was restricted, the crane was difficult to approach.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "The crane was difficult to approach."
+    },
+    {
+      "id": "crane_R_08",
+      "sentence": "The crane was difficult to approach because the construction zone was restricted.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "The crane was difficult to approach."
+    },
+    {
+      "id": "crane_L_10",
+      "sentence": "As the lifting plan was reviewed by engineers, the crane became the focus.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "The crane became the focus."
+    },
+    {
+      "id": "crane_R_10",
+      "sentence": "The crane became the focus as the lifting plan was reviewed by engineers.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "The crane became the focus."
+    }
+  ],
+  "spring": [
+    {
+      "id": "spring_L_01",
+      "sentence": "After a winter with almost no snow, the spring was unusually dry.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "The spring was unusually dry."
+    },
+    {
+      "id": "spring_R_01",
+      "sentence": "The spring was unusually dry after a winter with almost no snow.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "The spring was unusually dry."
+    },
+    {
+      "id": "spring_L_03",
+      "sentence": "During the climate study, they monitored the spring.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "They monitored the spring."
+    },
+    {
+      "id": "spring_R_03",
+      "sentence": "They monitored the spring during the climate study.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "They monitored the spring."
+    },
+    {
+      "id": "spring_L_05",
+      "sentence": "Once warm air moved in from the south, the spring changed quickly.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "The spring changed quickly."
+    },
+    {
+      "id": "spring_R_05",
+      "sentence": "The spring changed quickly once warm air moved in from the south.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "The spring changed quickly."
+    },
+    {
+      "id": "spring_L_07",
+      "sentence": "Because the crops were already under stress, the spring became a concern.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "The spring became a concern."
+    },
+    {
+      "id": "spring_R_07",
+      "sentence": "The spring became a concern because the crops were already under stress.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "The spring became a concern."
+    },
+    {
+      "id": "spring_L_09",
+      "sentence": "After several contradictory forecasts, the spring was hard to assess.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "The spring was hard to assess."
+    },
+    {
+      "id": "spring_R_09",
+      "sentence": "The spring was hard to assess after several contradictory forecasts.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "The spring was hard to assess."
+    },
+    {
+      "id": "spring_L_02",
+      "sentence": "After the underground flow was diverted, the spring was unusually dry.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "The spring was unusually dry."
+    },
+    {
+      "id": "spring_R_02",
+      "sentence": "The spring was unusually dry after the underground flow was diverted.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "The spring was unusually dry."
+    },
+    {
+      "id": "spring_L_04",
+      "sentence": "During the groundwater study, they monitored the spring.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "They monitored the spring."
+    },
+    {
+      "id": "spring_R_04",
+      "sentence": "They monitored the spring during the groundwater study.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "They monitored the spring."
+    },
+    {
+      "id": "spring_L_06",
+      "sentence": "Once the hillside shifted after the storm, the spring changed quickly.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "The spring changed quickly."
+    },
+    {
+      "id": "spring_R_06",
+      "sentence": "The spring changed quickly once the hillside shifted after the storm.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "The spring changed quickly."
+    },
+    {
+      "id": "spring_L_08",
+      "sentence": "Because the village depended on its water, the spring became a concern.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "The spring became a concern."
+    },
+    {
+      "id": "spring_R_08",
+      "sentence": "The spring became a concern because the village depended on its water.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "The spring became a concern."
+    },
+    {
+      "id": "spring_L_10",
+      "sentence": "After several contaminated samples, the spring was hard to assess.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "The spring was hard to assess."
+    },
+    {
+      "id": "spring_R_10",
+      "sentence": "The spring was hard to assess after several contaminated samples.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "The spring was hard to assess."
+    }
+  ],
+  "match": [
+    {
+      "id": "match_L_01",
+      "sentence": "Because the referee was still missing, the match was difficult to start.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "The match was difficult to start."
+    },
+    {
+      "id": "match_R_01",
+      "sentence": "The match was difficult to start because the referee was still missing.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "The match was difficult to start."
+    },
+    {
+      "id": "match_L_03",
+      "sentence": "After one team scored repeatedly, the match ended quickly.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "The match ended quickly."
+    },
+    {
+      "id": "match_R_03",
+      "sentence": "The match ended quickly after one team scored repeatedly.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "The match ended quickly."
+    },
+    {
+      "id": "match_L_05",
+      "sentence": "Before the tournament schedule was printed, they checked the match.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "They checked the match."
+    },
+    {
+      "id": "match_R_05",
+      "sentence": "They checked the match before the tournament schedule was printed.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "They checked the match."
+    },
+    {
+      "id": "match_L_07",
+      "sentence": "Because the teams disputed the result, the match caused trouble.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "The match caused trouble."
+    },
+    {
+      "id": "match_R_07",
+      "sentence": "The match caused trouble because the teams disputed the result.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "The match caused trouble."
+    },
+    {
+      "id": "match_L_09",
+      "sentence": "During the championship broadcast, the match was watched closely.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "The match was watched closely."
+    },
+    {
+      "id": "match_R_09",
+      "sentence": "The match was watched closely during the championship broadcast.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "The match was watched closely."
+    },
+    {
+      "id": "match_L_02",
+      "sentence": "Because the wood was damp, the match was difficult to start.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "The match was difficult to start."
+    },
+    {
+      "id": "match_R_02",
+      "sentence": "The match was difficult to start because the wood was damp.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "The match was difficult to start."
+    },
+    {
+      "id": "match_L_04",
+      "sentence": "After the wind reached the candle, the match ended quickly.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "The match ended quickly."
+    },
+    {
+      "id": "match_R_04",
+      "sentence": "The match ended quickly after the wind reached the candle.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "The match ended quickly."
+    },
+    {
+      "id": "match_L_06",
+      "sentence": "Before lighting the emergency stove, they checked the match.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "They checked the match."
+    },
+    {
+      "id": "match_R_06",
+      "sentence": "They checked the match before lighting the emergency stove.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "They checked the match."
+    },
+    {
+      "id": "match_L_08",
+      "sentence": "Because the tent filled with smoke, the match caused trouble.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "The match caused trouble."
+    },
+    {
+      "id": "match_R_08",
+      "sentence": "The match caused trouble because the tent filled with smoke.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "The match caused trouble."
+    },
+    {
+      "id": "match_L_10",
+      "sentence": "During the combustion experiment, the match was watched closely.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "The match was watched closely."
+    },
+    {
+      "id": "match_R_10",
+      "sentence": "The match was watched closely during the combustion experiment.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "The match was watched closely."
+    }
+  ],
+  "light": [
+    {
+      "id": "light_L_01",
+      "sentence": "After the curtains were opened, it was light.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "It was light."
+    },
+    {
+      "id": "light_R_01",
+      "sentence": "It was light after the curtains were opened.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "It was light."
+    },
+    {
+      "id": "light_L_03",
+      "sentence": "Once the lamp was repaired, it became light.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "It became light."
+    },
+    {
+      "id": "light_R_03",
+      "sentence": "It became light once the lamp was repaired.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "It became light."
+    },
+    {
+      "id": "light_L_05",
+      "sentence": "Even after sunset, it stayed light.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "It stayed light."
+    },
+    {
+      "id": "light_R_05",
+      "sentence": "It stayed light even after sunset.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "It stayed light."
+    },
+    {
+      "id": "light_L_07",
+      "sentence": "Because the white walls reflected the sun, it seemed light.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "It seemed light."
+    },
+    {
+      "id": "light_R_07",
+      "sentence": "It seemed light because the white walls reflected the sun.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "It seemed light."
+    },
+    {
+      "id": "light_L_09",
+      "sentence": "By adding mirrors near the window, they made it light.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "They made it light."
+    },
+    {
+      "id": "light_R_09",
+      "sentence": "They made it light by adding mirrors near the window.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "They made it light."
+    },
+    {
+      "id": "light_L_02",
+      "sentence": "After the batteries were removed, it was light.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "It was light."
+    },
+    {
+      "id": "light_R_02",
+      "sentence": "It was light after the batteries were removed.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "It was light."
+    },
+    {
+      "id": "light_L_04",
+      "sentence": "Once the heavy cover was replaced, it became light.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "It became light."
+    },
+    {
+      "id": "light_R_04",
+      "sentence": "It became light once the heavy cover was replaced.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "It became light."
+    },
+    {
+      "id": "light_L_06",
+      "sentence": "Even after the extra parts were added, it stayed light.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "It stayed light."
+    },
+    {
+      "id": "light_R_06",
+      "sentence": "It stayed light even after the extra parts were added.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "It stayed light."
+    },
+    {
+      "id": "light_L_08",
+      "sentence": "Because the frame was made of carbon, it seemed light.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "It seemed light."
+    },
+    {
+      "id": "light_R_08",
+      "sentence": "It seemed light because the frame was made of carbon.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "It seemed light."
+    },
+    {
+      "id": "light_L_10",
+      "sentence": "By replacing the metal frame with foam, they made it light.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "They made it light."
+    },
+    {
+      "id": "light_R_10",
+      "sentence": "They made it light by replacing the metal frame with foam.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "They made it light."
+    }
+  ],
+  "pitch": [
+    {
+      "id": "pitch_L_01",
+      "sentence": "Before kickoff, they prepared the pitch.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "They prepared the pitch."
+    },
+    {
+      "id": "pitch_R_01",
+      "sentence": "They prepared the pitch before kickoff.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "They prepared the pitch."
+    },
+    {
+      "id": "pitch_L_03",
+      "sentence": "During the stadium inspection, they reviewed the pitch.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "They reviewed the pitch."
+    },
+    {
+      "id": "pitch_R_03",
+      "sentence": "They reviewed the pitch during the stadium inspection.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "They reviewed the pitch."
+    },
+    {
+      "id": "pitch_L_05",
+      "sentence": "After rain damaged the turf, the pitch needed improvement.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "The pitch needed improvement."
+    },
+    {
+      "id": "pitch_R_05",
+      "sentence": "The pitch needed improvement after rain damaged the turf.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "The pitch needed improvement."
+    },
+    {
+      "id": "pitch_L_07",
+      "sentence": "Once the grounds crew finished marking the lines, the pitch was ready.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "The pitch was ready."
+    },
+    {
+      "id": "pitch_R_07",
+      "sentence": "The pitch was ready once the grounds crew finished marking the lines.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "The pitch was ready."
+    },
+    {
+      "id": "pitch_L_09",
+      "sentence": "Because the goal area was flooded, they changed the pitch.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "They changed the pitch."
+    },
+    {
+      "id": "pitch_R_09",
+      "sentence": "They changed the pitch because the goal area was flooded.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "They changed the pitch."
+    },
+    {
+      "id": "pitch_L_02",
+      "sentence": "Before meeting the investors, they prepared the pitch.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "They prepared the pitch."
+    },
+    {
+      "id": "pitch_R_02",
+      "sentence": "They prepared the pitch before meeting the investors.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "They prepared the pitch."
+    },
+    {
+      "id": "pitch_L_04",
+      "sentence": "During the slide rehearsal, they reviewed the pitch.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "They reviewed the pitch."
+    },
+    {
+      "id": "pitch_R_04",
+      "sentence": "They reviewed the pitch during the slide rehearsal.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "They reviewed the pitch."
+    },
+    {
+      "id": "pitch_L_06",
+      "sentence": "After the client rejected the proposal, the pitch needed improvement.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "The pitch needed improvement."
+    },
+    {
+      "id": "pitch_R_06",
+      "sentence": "The pitch needed improvement after the client rejected the proposal.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "The pitch needed improvement."
+    },
+    {
+      "id": "pitch_L_08",
+      "sentence": "Once the final slide had been revised, the pitch was ready.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "The pitch was ready."
+    },
+    {
+      "id": "pitch_R_08",
+      "sentence": "The pitch was ready once the final slide had been revised.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "The pitch was ready."
+    },
+    {
+      "id": "pitch_L_10",
+      "sentence": "Because the funding story was unclear, they changed the pitch.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "They changed the pitch."
+    },
+    {
+      "id": "pitch_R_10",
+      "sentence": "They changed the pitch because the funding story was unclear.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "They changed the pitch."
+    }
+  ]
+}

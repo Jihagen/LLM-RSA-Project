@@ -37,8 +37,42 @@ def batch_adequacy_margins(
     c_correct: np.ndarray,
     c_wrong: np.ndarray,
 ) -> np.ndarray:
-    """Vectorised adequacy margins for a matrix H [N, D]. Returns array [N]."""
+    """
+    Vectorised adequacy margins for a matrix H [N, D] against a SINGLE fixed
+    (c_correct, c_wrong) pair. Only valid when every row in H shares the same
+    intended sense. If a batch mixes rows of both senses, use
+    symmetric_adequacy_margins instead — applying one fixed centroid pair to a
+    mixed-sense batch gives the wrong sign for whichever rows are not the
+    assumed "correct" sense, and any mean/fraction computed over that mixture
+    is not a meaningful adequacy statistic (it converges toward ~0 / ~50% by
+    construction even when the representation separates the senses perfectly).
+    """
     return np.linalg.norm(H - c_wrong, axis=1) - np.linalg.norm(H - c_correct, axis=1)
+
+
+def symmetric_adequacy_margins(
+    X: np.ndarray,
+    labels: np.ndarray,
+    c0: np.ndarray,
+    c1: np.ndarray,
+) -> np.ndarray:
+    """
+    Per-row adequacy margin using each row's OWN true sense label to decide
+    which centroid is "correct" and which is "wrong" for that row.
+
+    Row with label 0: margin = d(row, c1) - d(row, c0)  (positive = correct)
+    Row with label 1: margin = d(row, c1) - d(row, c0), negated -> d(row,c0)-d(row,c1)
+
+    Use this whenever a batch contains both senses (H1 profiling sets, H3/H4
+    paired-sentence stimuli, which are balanced 50/50 across senses per word).
+    A representation that separates the two senses perfectly gives ALL rows a
+    positive margin under this definition, unlike batch_adequacy_margins applied
+    naively to a mixed batch.
+    """
+    labels = np.asarray(labels)
+    d0 = np.linalg.norm(X - c0, axis=1)
+    d1 = np.linalg.norm(X - c1, axis=1)
+    return np.where(labels == 0, d1 - d0, d0 - d1)
 
 
 # ── Centroid loading from H5 activation cache ─────────────────────────────────
@@ -109,6 +143,10 @@ def layer_adequacy_profile(
 
     Centroids are computed from the full profiling set; margins are evaluated
     on the same sentences (in-sample — appropriate for H1 layer profiling).
+    Each sentence's margin is computed against ITS OWN true sense as "correct"
+    (via symmetric_adequacy_margins) — profiling sets contain both senses for
+    a word, so a single fixed correct/wrong centroid pair would silently give
+    the wrong sign for half the sentences.
 
     Returns
     -------
@@ -131,22 +169,23 @@ def layer_adequacy_profile(
         if correct_sense not in unique or wrong_sense not in unique:
             continue
 
-        c_correct = X[labels == correct_sense].mean(axis=0)
-        c_wrong   = X[labels == wrong_sense].mean(axis=0)
+        c0 = X[labels == 0].mean(axis=0)
+        c1 = X[labels == 1].mean(axis=0)
 
-        margins = batch_adequacy_margins(X, c_correct, c_wrong)
+        margins = symmetric_adequacy_margins(X, labels, c0, c1)
 
-        # Per-sense margins
-        margins_correct = margins[labels == correct_sense]
-        margins_wrong   = margins[labels == wrong_sense]
+        # Per-sense margins (diagnostic only — both should now be positive
+        # when the representation separates the senses well, since each
+        # row's margin is already relative to its own true sense)
+        margins_sense0 = margins[labels == 0]
+        margins_sense1 = margins[labels == 1]
 
         profile[layer_idx] = {
             "margins":            margins,
             "mean":               float(margins.mean()),
             "fraction_adequate":  float((margins > epsilon).mean()),
-            # Sense-stratified means (sense-0 should be positive, sense-1 negative for correct labelling)
-            "mean_correct_sense": float(margins_correct.mean()),
-            "mean_wrong_sense":   float(margins_wrong.mean()),
+            "mean_margin_sense0": float(margins_sense0.mean()),
+            "mean_margin_sense1": float(margins_sense1.mean()),
         }
 
     return profile
@@ -294,14 +333,14 @@ def save_profile_csv(profile: Dict[int, Dict], output_path: str) -> None:
     with open(output_path, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["Layer", "MeanMargin", "FractionAdequate",
-                         "MeanCorrectSense", "MeanWrongSense"])
+                         "MeanMarginSense0", "MeanMarginSense1"])
         for layer_idx in sorted(profile):
             r = profile[layer_idx]
             writer.writerow([
                 layer_idx,
                 round(r["mean"], 6),
                 round(r["fraction_adequate"], 4),
-                round(r.get("mean_correct_sense", float("nan")), 6),
-                round(r.get("mean_wrong_sense",   float("nan")), 6),
+                round(r.get("mean_margin_sense0", float("nan")), 6),
+                round(r.get("mean_margin_sense1", float("nan")), 6),
             ])
     logger.info("Saved adequacy profile to %s", output_path)

@@ -33,7 +33,7 @@ from experiments.adequacy import (
     gdv_best_layer,
     layer_adequacy_profile,
     load_centroids,
-    batch_adequacy_margins,
+    symmetric_adequacy_margins,
 )
 
 logger = logging.getLogger(__name__)
@@ -76,7 +76,13 @@ def _evaluate_layer(
     layer_idx: int,
     epsilon: float = 0.0,
 ) -> Dict:
-    """Evaluate M_l at a specific layer for a held-out word."""
+    """Evaluate M_l at a specific layer for a held-out word.
+
+    The held-out word's activation set contains both senses, so margins must
+    be computed per-row against each row's own true sense (symmetric_adequacy_margins)
+    rather than a single fixed sense-0/1 pair — otherwise mean_M/frac_adequate
+    hover near 0/50% by construction regardless of true separability.
+    """
     centroids = load_centroids(results_dir, model_name, word)
     if layer_idx not in centroids:
         return {"mean_M": float("nan"), "frac_adequate": float("nan")}
@@ -88,9 +94,9 @@ def _evaluate_layer(
         X      = f["X"][:]
         labels = f["labels"][:]
 
-    c_correct = centroids[layer_idx][0]
-    c_wrong   = centroids[layer_idx][1]
-    margins   = batch_adequacy_margins(X, c_correct, c_wrong)
+    c0 = centroids[layer_idx][0]
+    c1 = centroids[layer_idx][1]
+    margins = symmetric_adequacy_margins(X, labels, c0, c1)
     return {
         "mean_M":        float(margins.mean()),
         "frac_adequate": float((margins > epsilon).mean()),

@@ -28,7 +28,7 @@ def _words_needing_processing(df: pd.DataFrame, model_name: str) -> list:
         if not has_files:
             missing.append(word)
         else:
-            logging.info("Skipping %s / %s — activation cache exists.", model_name, word)
+            logging.info("Skipping %s / %s - activation cache exists.", model_name, word)
     return missing
 
 
@@ -85,7 +85,7 @@ def main():
             words_todo = _words_needing_processing(df, model_name)
 
         if not words_todo:
-            logging.info("All words already cached for %s — skipping.", model_name)
+            logging.info("All words already cached for %s - skipping.", model_name)
             continue
 
         df_todo = df[df["word"].isin(words_todo)]

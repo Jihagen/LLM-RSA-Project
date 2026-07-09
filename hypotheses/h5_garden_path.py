@@ -50,7 +50,7 @@ from typing import Dict, List, Optional, Tuple
 import numpy as np
 
 from experiments.adequacy import batch_adequacy_margins, load_centroids
-from hypothesis.h3_context_position import H3_MODELS, _select_layer
+from hypotheses.h3_context_position import H3_MODELS, _select_layer
 from models import get_dual_position_activations, is_decoder_only, load_model_and_tokenizer
 from utils.hpc import configure_hpc_runtime
 
