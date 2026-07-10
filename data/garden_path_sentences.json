@@ -17,6 +17,30 @@
       "sentence": "He had trusted the bank with everything — his savings, his mortgage, his retirement fund — which is why it was such a shock when the Environment Agency said it would have to be demolished to widen the river.",
       "primed_sense": 1,
       "correct_sense": 0
+    },
+    {
+      "id": "bank_gp_04",
+      "sentence": "The loan officer had promised to review her file personally, and after weeks of waiting she finally received a letter asking her to visit the bank, where reeds grew thick along the crumbling edge and a heron watched her approach.",
+      "primed_sense": 1,
+      "correct_sense": 0
+    },
+    {
+      "id": "bank_gp_05",
+      "sentence": "He had queued for over an hour to speak to someone about his overdraft, and when he was finally told to come back and see the bank himself, he found only exposed roots and a narrow strip of gravel disappearing into the current.",
+      "primed_sense": 1,
+      "correct_sense": 0
+    },
+    {
+      "id": "bank_gp_06",
+      "sentence": "Every statement she received made the same request — come in, speak to an advisor, sort out the account in person — so she made the long walk to the bank, where the water had risen so high it lapped at her boots.",
+      "primed_sense": 1,
+      "correct_sense": 0
+    },
+    {
+      "id": "bank_gp_07",
+      "sentence": "The mortgage broker kept mentioning how the paperwork would need updating before closing, and it wasn't until the surveyor waded out to inspect the bank that anyone realised how badly the flooding had eroded it.",
+      "primed_sense": 1,
+      "correct_sense": 0
     }
   ],
   "bat": [
@@ -37,6 +61,30 @@
       "sentence": "She had been waiting for the bat all afternoon when it finally appeared at the crease — pale, silent, and moving on leathery wings she had never noticed before.",
       "primed_sense": 0,
       "correct_sense": 1
+    },
+    {
+      "id": "bat_gp_04",
+      "sentence": "The umpire signalled for a replacement after the last one cracked, and the groundsman jogged over with a spare bat, which shrieked once and vanished into the floodlit sky above the pavilion.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    },
+    {
+      "id": "bat_gp_05",
+      "sentence": "The junior team had been assigned equipment maintenance for the week, and when one boy reached into the kit bag for the team's bat, it stirred, unfurled a pair of leathery wings, and clung to his sleeve.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    },
+    {
+      "id": "bat_gp_06",
+      "sentence": "She had sanded and re-gripped the bat every week that season, storing it carefully in the shed, until one evening she opened the door to find it hanging upside down from a rafter, fast asleep.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    },
+    {
+      "id": "bat_gp_07",
+      "sentence": "After the innings ended, the twelve-year-old carried the bat back to the equipment shed as instructed, only to have it slip free of his grip, circle the rafters twice, and settle upside down near the light fixture.",
+      "primed_sense": 0,
+      "correct_sense": 1
     }
   ],
   "bark": [
@@ -49,6 +97,30 @@
     {
       "id": "bark_gp_02",
       "sentence": "She listened to the bark long into the night — rhythmic, hollow, rising and falling — and by morning had identified it as a mature oak with a fungal infection in the lower trunk.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    },
+    {
+      "id": "bark_gp_03",
+      "sentence": "The dog warden had been called about a disturbance for the third night running, but when she finally traced the bark to its source, she found only a split trunk oozing sap where lightning had struck.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    },
+    {
+      "id": "bark_gp_04",
+      "sentence": "He'd set up a motion-activated recorder to catch whichever dog kept waking the street at 3 a.m., and was baffled to find the recording was just wind moving through a stand of birch, their bark peeling in long silver strips.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    },
+    {
+      "id": "bark_gp_05",
+      "sentence": "The children were convinced a stray was living somewhere in the garden, insisting they could hear the bark every evening from the hedge line, until their father discovered it was only the old elm creaking and shedding in the heat.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    },
+    {
+      "id": "bark_gp_06",
+      "sentence": "She'd complained to the neighbours twice about the bark carrying through her bedroom window at night, and was embarrassed to learn from the arborist that it was only beetles working loose beneath the dying sycamore's papery, peeling skin.",
       "primed_sense": 0,
       "correct_sense": 1
     }
@@ -65,18 +137,66 @@
       "sentence": "After twenty years on the site, she knew every movement the crane would make — the cautious way it approached the water, the slow spread of its wings before it rose.",
       "primed_sense": 1,
       "correct_sense": 0
+    },
+    {
+      "id": "crane_gp_03",
+      "sentence": "The site foreman radioed the operator to swing the next load of girders into place, but the crane simply lifted its head, stepped back from the scaffolding, and waded deeper into the reeds.",
+      "primed_sense": 1,
+      "correct_sense": 0
+    },
+    {
+      "id": "crane_gp_04",
+      "sentence": "Health and safety had flagged the crane for inspection after the load-bearing tests, and the engineer sent to examine it found nothing but a tall grey bird standing motionless in the shallows near the pier footings.",
+      "primed_sense": 1,
+      "correct_sense": 0
+    },
+    {
+      "id": "crane_gp_05",
+      "sentence": "Delivery of the final steel beams had been delayed twice already, and the whole crew stood watching as the crane finally arrived, folded its long legs beneath it, and settled onto the mudflat to preen.",
+      "primed_sense": 1,
+      "correct_sense": 0
+    },
+    {
+      "id": "crane_gp_06",
+      "sentence": "The contractor complained for weeks about how slowly the crane was moving material across the site, until someone pointed out that it had wandered off the access road entirely and was fishing in the drainage ditch.",
+      "primed_sense": 1,
+      "correct_sense": 0
     }
   ],
   "spring": [
     {
       "id": "spring_gp_01",
-      "sentence": "She had waited all winter for spring to arrive — and when it did, it came compressed in a small brown envelope from the parts supplier, smelling of machine oil.",
+      "sentence": "She had waited all winter for spring to arrive — and when it did, it was barely a trickle at first, ice-cold and mineral-bright, seeping up through a crack in the hillside rock into a mossy stone basin no wider than her hand.",
       "primed_sense": 0,
       "correct_sense": 1
     },
     {
       "id": "spring_gp_02",
-      "sentence": "The spring had arrived earlier than usual that year, still coiled and chrome-bright, packed in tissue paper at the bottom of the repair kit.",
+      "sentence": "The spring had arrived earlier than usual that year, bubbling up through a fissure in the limestone, unusually strong for so early in the season, and pooling in a hollow the shepherds had lined with flat stones generations before.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    },
+    {
+      "id": "spring_gp_03",
+      "sentence": "Everyone in the valley had been counting down the weeks until the frost broke, certain that warmer days were finally near, until the ranger pointed to a narrow vein of water welling up between two boulders and called it the spring the whole valley depended on, ice-cold even in August.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    },
+    {
+      "id": "spring_gp_04",
+      "sentence": "The children had been promised that the thaw would bring warmer days, so they were confused when their grandfather led them instead to the spring — a shallow, ice-cold pool hidden behind a screen of ferns, fed from somewhere deep in the rock, that gave the farm its name.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    },
+    {
+      "id": "spring_gp_05",
+      "sentence": "The whole village had been looking forward to warmer weather for months, but when the old well ran dry the elders sent the children up the hillside to find the spring, which still trickled cold and clear from a crack in the rock.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    },
+    {
+      "id": "spring_gp_06",
+      "sentence": "Everyone assumed the thaw would bring longer, brighter days, yet what the surveyor actually found marked on the old estate map as the spring was a narrow vein of water welling up between two boulders, ice-cold even in August.",
       "primed_sense": 0,
       "correct_sense": 1
     }
@@ -93,6 +213,30 @@
       "sentence": "She had trained for the match all season, and was careful to keep it dry in her inside pocket, afraid that the rain would prevent it from catching.",
       "primed_sense": 0,
       "correct_sense": 1
+    },
+    {
+      "id": "match_gp_03",
+      "sentence": "The two captains had shaken hands and the crowd had gone quiet in anticipation, but the match refused to catch, no matter how many times he struck it against the damp strip on the box.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    },
+    {
+      "id": "match_gp_04",
+      "sentence": "Fans had queued outside the stadium since dawn hoping for a ticket, unaware that the match sitting in his jacket pocket was needed only to light the emergency flare, not to kick off any game.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    },
+    {
+      "id": "match_gp_05",
+      "sentence": "The whole town had circled the date on their calendars for the derby, but when the storm knocked out the power, all anyone wanted was a single working match to light the candles scattered across the clubhouse.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    },
+    {
+      "id": "match_gp_06",
+      "sentence": "The scoreboard had been reset and the players called to the centre circle, and yet what the referee actually needed from his pocket was a dry match, since the flare marking kickoff had refused to ignite twice already.",
+      "primed_sense": 0,
+      "correct_sense": 1
     }
   ],
   "light": [
@@ -107,18 +251,66 @@
       "sentence": "She had expected it to be heavy, having seen the size of the crate, but the light turned out to weigh almost nothing at all.",
       "primed_sense": 0,
       "correct_sense": 1
+    },
+    {
+      "id": "light_gp_03",
+      "sentence": "The lamp in the hallway had been flickering for days, and when the electrician finally reached up to inspect the light, it came away from its socket so easily that he nearly dropped it in surprise.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    },
+    {
+      "id": "light_gp_04",
+      "sentence": "Grandma always complained about how dim the room felt in the evenings, so when she finally asked someone to change the light, she was startled by how effortlessly the child lifted the whole fixture down.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    },
+    {
+      "id": "light_gp_05",
+      "sentence": "The warehouse crew had been warned to use both hands for anything overhead, and everyone braced for the hoist to strain under the weight, but the light came down off the rigging as though it weighed nothing at all.",
+      "primed_sense": 0,
+      "correct_sense": 1
+    },
+    {
+      "id": "light_gp_06",
+      "sentence": "The movers had rented extra equipment specifically for the largest pieces on the inventory list, but the light turned out to be the easiest item on the whole truck, lifted down with a single hand.",
+      "primed_sense": 0,
+      "correct_sense": 1
     }
   ],
   "pitch": [
     {
       "id": "pitch_gp_01",
-      "sentence": "The conductor gasped when the pitch opened up in front of him — forty metres of perfectly mown grass, glistening under the floodlights.",
+      "sentence": "The investors had cleared their afternoon specifically to hear the proposal, but what the young founder actually walked them out to see was the pitch — forty metres of freshly mown grass, glistening under the stadium floodlights.",
       "primed_sense": 1,
       "correct_sense": 0
     },
     {
       "id": "pitch_gp_02",
-      "sentence": "She had studied the pitch for years, adjusting her position constantly to maintain perfect intonation, until the referee's whistle brought play to a halt.",
+      "sentence": "She had rehearsed her opening line for the boardroom a dozen times, adjusting her slides until the last minute, but the pitch she was finally led out onto was marked with fresh white touchlines and smelled of cut grass.",
+      "primed_sense": 1,
+      "correct_sense": 0
+    },
+    {
+      "id": "pitch_gp_03",
+      "sentence": "The accelerator programme had given every startup exactly ten minutes to impress the panel, but when the team's turn came, the assistant led them out past the changing rooms to the pitch, freshly rolled and floodlit for the evening fixture.",
+      "primed_sense": 1,
+      "correct_sense": 0
+    },
+    {
+      "id": "pitch_gp_04",
+      "sentence": "The venture fund's associates had flown in specifically for the founders' presentations, yet the only pitch waiting for them at the sports complex turned out to be the one the groundskeepers had spent all morning marking out in white lime.",
+      "primed_sense": 1,
+      "correct_sense": 0
+    },
+    {
+      "id": "pitch_gp_05",
+      "sentence": "He had spent the whole flight rehearsing his numbers for the board, certain this would be the pitch that finally secured funding, only to be handed a set of shin pads and pointed toward the touchline instead.",
+      "primed_sense": 1,
+      "correct_sense": 0
+    },
+    {
+      "id": "pitch_gp_06",
+      "sentence": "The whole team had rehearsed the slide deck until midnight, expecting a boardroom of investors, but the pitch they were walked out onto was forty metres of freshly striped turf under the stadium lights.",
       "primed_sense": 1,
       "correct_sense": 0
     }

@@ -18,13 +18,25 @@ configure_hpc_runtime()
 
 
 def _words_needing_processing(df: pd.DataFrame, model_name: str) -> list:
-    """Return words that do not yet have a complete activation cache."""
+    """
+    Return words that do not yet have a complete activation cache.
+
+    Checks BOTH activations/ (homonym-position) and activations_final/
+    (final-content-token position, used by H4's final-position centroids) —
+    a word only counts as cached if both exist, otherwise re-running would
+    silently skip words that have stale homonym-only caches from before
+    activations_final/ existed.
+    """
     safe = model_name.replace("/", "_")
     all_words = sorted(df["word"].unique())
     missing = []
     for word in all_words:
-        h5_dir = Path("results/activations") / word / safe
-        has_files = h5_dir.exists() and any(h5_dir.glob("layer_[1-9]*.h5"))
+        h5_dir       = Path("results/activations") / word / safe
+        h5_final_dir = Path("results/activations_final") / word / safe
+        has_files = (
+            h5_dir.exists() and any(h5_dir.glob("layer_[1-9]*.h5"))
+            and h5_final_dir.exists() and any(h5_final_dir.glob("layer_[1-9]*.h5"))
+        )
         if not has_files:
             missing.append(word)
         else:

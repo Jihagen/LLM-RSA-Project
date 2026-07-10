@@ -29,7 +29,7 @@ results/study/H5/h5_aggregate.csv
 
 Required data
 -------------
-- data/garden_path_sentences.json
+- data/garden_path_sentences.json (6-7 sentences/word, up from 2-3)
 - results/activations/{word}/{safe_model}/ (centroids)
 
 Note
@@ -39,6 +39,14 @@ This experiment is EXPLORATORY. Garden-path sentences have two sense labels:
   - correct_sense: the sense intended by the full sentence
 
 The JSON format must include both labels per sentence (see notebook).
+
+Data-quality fix (this expansion round): the "spring" and "pitch" entries
+previously used a sense that did NOT match either of the two senses the
+profiling data / centroids were actually built on — "spring" revealed a
+mechanical coiled spring instead of the trained water-source sense, and
+"pitch" primed a musical-tone sense instead of the trained business/sales
+sense. Both were scoring against effectively unrelated centroids. Fixed to
+use the correct sense pair, verified against data/synthetic_data_h2.pkl.
 """
 
 import csv

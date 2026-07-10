@@ -10,37 +10,39 @@ Usage examples
 
 Per-hypothesis data requirements
 ---------------------------------
+H0  Carrier norming (prerequisite for H3)
+    Data   : data/paired_sentences.json  +  H5 profiling files (homonym-position)
+    Models : all 8 (see model_registry.ALL_MODELS)
+
 H1  Layer adequacy profile
-    Data   : results/activations/{word}/{model}/  (H5 files, all 8 models × 4+ words)
+    Data   : results/activations/{word}/{model}/  (H5 files, homonym-position)
     Models : all 8 (encoder + decoder)
-    Status : READY — bank/bark/bat/crane fully cached
 
 H2  GDV generalisation (leave-one-out)
     Data   : H5 files + gdv_values_{word}.csv for all words
     Models : all 8
-    Status : READY with 4 words; add remaining 4 (re-run run_h2.py) for full coverage
 
 H3  Right-context vulnerability
     Data   : data/paired_sentences.json  +  H5 profiling files
-    Models : DeBERTa, RoBERTa-large, Mistral-Nemo, Qwen-3B
-    Status : BLOCKED — create paired_sentences.json first
-             (see data/inspect_paired_sentences.ipynb)
+    Models : all 8
 
 H4  Token-position dissociation
     Data   : data/paired_sentences.json (R-condition only)  +  H5 files
-    Models : same 4 as H3
-    Status : BLOCKED — depends on H3 data
+             (homonym-position) + activations_final/ files (final-position,
+             for encoder final-token scoring — see hypotheses/h4_dissociation.py)
+    Models : all 8
 
 H5  Garden-path / representational revision (exploratory)
     Data   : data/garden_path_sentences.json  +  H5 files
-    Models : same 4 as H3/H4
-    Status : BLOCKED — create garden_path_sentences.json first
+    Models : all 8
 """
 
 import argparse
 import gc
 import logging
 import sys
+
+from model_registry import ALL_MODELS, MODEL_ALIASES
 
 logging.basicConfig(
     level=logging.INFO,
@@ -49,38 +51,11 @@ logging.basicConfig(
 logger = logging.getLogger("run_study")
 
 # ── Model sets ────────────────────────────────────────────────────────────────
+# H0/H3/H4/H5 now also run on the full 8-model set (previously a 4-model
+# representative subset) — see model_registry.py, the single source of truth.
+H3_MODELS = ALL_MODELS
 
-ALL_MODELS = [
-    "answerdotai/ModernBERT-large",
-    "microsoft/deberta-v3-large",
-    "FacebookAI/roberta-large",
-    "FacebookAI/xlm-roberta-large",
-    "Qwen/Qwen2.5-3B",
-    "Qwen/Qwen2.5-7B",
-    "mistralai/Mistral-Nemo-Base-2407",
-    "allenai/OLMo-2-1124-7B",
-]
-
-# Reduced set for H3-H5 (representative encoder + decoder per size tier)
-H3_MODELS = [
-    "microsoft/deberta-v3-large",
-    "FacebookAI/roberta-large",
-    "mistralai/Mistral-Nemo-Base-2407",
-    "Qwen/Qwen2.5-3B",
-]
-
-MODEL_ALIASES = {
-    "deberta":  "microsoft/deberta-v3-large",
-    "roberta":  "FacebookAI/roberta-large",
-    "xlm":      "FacebookAI/xlm-roberta-large",
-    "modernbert": "answerdotai/ModernBERT-large",
-    "qwen3b":   "Qwen/Qwen2.5-3B",
-    "qwen7b":   "Qwen/Qwen2.5-7B",
-    "mistral":  "mistralai/Mistral-Nemo-Base-2407",
-    "olmo":     "allenai/OLMo-2-1124-7B",
-}
-
-WORDS_DEFAULT = ["bank", "bark", "bat", "crane"]
+WORDS_DEFAULT = ["bank", "bark", "bat", "crane", "spring", "match", "light", "pitch"]
 
 
 def _resolve_models(names):
@@ -164,7 +139,7 @@ def main():
         help=(
             "Model names or aliases to run. "
             "Aliases: deberta, roberta, xlm, modernbert, qwen3b, qwen7b, mistral, olmo. "
-            "Default: all 8 for H1/H2, 4-model subset for H3/H4/H5."
+            "Default: all 8, for every hypothesis."
         ),
     )
     parser.add_argument(

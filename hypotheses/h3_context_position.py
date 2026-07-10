@@ -26,7 +26,9 @@ Required data
 -------------
 - results/activations/{word}/{safe_model}/ (profiling centroids)
 - data/paired_sentences.json (L/R paired sentences — see inspect_paired_sentences.ipynb)
-- Models: DeBERTa-v3-large, RoBERTa-large, Mistral-Nemo-Base-2407, Qwen2.5-3B
+- Models: all 8 (4 encoder + 4 decoder — see model_registry.ALL_MODELS). Full
+  coverage strengthens "encoder vs. decoder" claims to 4-vs-4 rather than the
+  earlier 2-vs-2 representative subset.
 """
 
 import csv
@@ -38,8 +40,9 @@ from typing import Dict, List, Optional, Tuple
 import numpy as np
 import torch
 
-from experiments.adequacy import symmetric_adequacy_margins, load_centroids
+from experiments.adequacy import symmetric_adequacy_margins, symmetric_normalized_adequacy_margins, load_centroids
 from models import get_target_activations, is_decoder_only, load_model_and_tokenizer  # is_decoder_only used for arch_type label only
+from model_registry import ALL_MODELS
 from utils.hpc import configure_hpc_runtime
 
 configure_hpc_runtime()
@@ -48,12 +51,11 @@ logger = logging.getLogger(__name__)
 RESULTS_DIR       = "results"
 PAIRED_DATA_PATH  = "data/paired_sentences.json"
 OUTPUT_BASE       = Path("results/study/H3")
-H3_MODELS         = [
-    "microsoft/deberta-v3-large",
-    "FacebookAI/roberta-large",
-    "mistralai/Mistral-Nemo-Base-2407",
-    "Qwen/Qwen2.5-3B",
-]
+# H0/H3/H4/H5 originally ran on a 4-model representative subset (2 enc + 2 dec)
+# since they need fresh forward passes over paired/garden-path stimuli, unlike
+# H1/H2 which reuse cached activations. Now full 8-model coverage — see
+# model_registry.py for the single source of truth on model names/aliases.
+H3_MODELS         = ALL_MODELS
 
 
 def _load_paired_sentences(path: str, word: str) -> Tuple[List[str], List[str], List[str], List[int]]:
@@ -167,16 +169,21 @@ def run_h3(
             H = acts[layer_idx].numpy()
             # paired_sentences.json is balanced across both senses per word/condition,
             # so each sentence must be scored against its own true sense.
-            margins = symmetric_adequacy_margins(H, np.array(senses), c0, c1)
+            senses_arr  = np.array(senses)
+            margins     = symmetric_adequacy_margins(H, senses_arr, c0, c1)
+            # Normalized by inter-centroid distance — comparable across
+            # architectures/layers, unlike raw M_l (see adequacy.py note).
+            margins_norm = symmetric_normalized_adequacy_margins(H, senses_arr, c0, c1)
 
             # Write per-sentence results
             csv_path = model_out / f"h3_{word}.csv"
             rows = []
-            for sid, cond, margin in zip(sent_ids, conditions, margins):
+            for sid, cond, margin, margin_norm in zip(sent_ids, conditions, margins, margins_norm):
                 rows.append({
                     "sentence_id": sid,
                     "condition":   cond,
                     "M_l":         round(float(margin), 4),
+                    "M_l_norm":    round(float(margin_norm), 4),
                     "adequate":    margin > epsilon,
                     "layer":       layer_idx,
                 })
@@ -187,7 +194,9 @@ def run_h3(
 
             # Aggregate per condition
             for cond in ("L", "R"):
-                cond_margins = margins[[c == cond for c in conditions]]
+                cond_mask = [c == cond for c in conditions]
+                cond_margins      = margins[cond_mask]
+                cond_margins_norm = margins_norm[cond_mask]
                 if len(cond_margins) == 0:
                     continue
                 aggregate_rows.append({
@@ -197,6 +206,7 @@ def run_h3(
                     "condition":       cond,
                     "n":               len(cond_margins),
                     "mean_M_l":        round(float(cond_margins.mean()), 4),
+                    "mean_M_l_norm":   round(float(cond_margins_norm.mean()), 4),
                     "frac_adequate":   round(float((cond_margins > epsilon).mean()), 3),
                     "layer_used":      layer_idx,
                 })

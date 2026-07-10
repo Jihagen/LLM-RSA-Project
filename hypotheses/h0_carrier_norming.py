@@ -114,6 +114,10 @@ def run_h0(
                 logger.warning("[H0] %s", e)
                 continue
 
+            # Scale for cross-architecture-comparable margins — see the
+            # normalization note in experiments/adequacy.py.
+            scale = float(np.linalg.norm(centroids[layer_idx][0] - centroids[layer_idx][1])) + 1e-12
+
             # ── Level 1: word alone ───────────────────────────────────────
             word_alone = compute_word_alone_margins(
                 model, tokenizer, [word], centroids, layer_idx,
@@ -129,12 +133,17 @@ def run_h0(
 
             # Enrich each carrier record with the word-alone baseline
             for r in records:
-                r["M_l_word_alone"]  = round(m_word_alone, 4)
-                r["carrier_shift"]   = round(r["M_l_carrier"] - m_word_alone, 4)
+                r["M_l_word_alone"]      = round(m_word_alone, 4)
+                r["M_l_word_alone_norm"] = round(m_word_alone / scale, 4)
+                r["M_l_carrier_norm"]    = round(r["M_l_carrier"] / scale, 4)
+                r["carrier_shift"]       = round(r["M_l_carrier"] - m_word_alone, 4)
+                r["carrier_shift_norm"]  = round(r["carrier_shift"] / scale, 4)
 
             csv_path = model_out / f"h0_{word}.csv"
             fieldnames = ["word", "carrier", "sense",
-                          "M_l_word_alone", "M_l_carrier", "carrier_shift",
+                          "M_l_word_alone", "M_l_word_alone_norm",
+                          "M_l_carrier", "M_l_carrier_norm",
+                          "carrier_shift", "carrier_shift_norm",
                           "biased", "layer"]
             with open(csv_path, "w", newline="") as f:
                 writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
@@ -151,6 +160,9 @@ def run_h0(
                 "mean_abs_M_l_word":     round(abs(m_word_alone), 4),
                 "mean_abs_M_l_carrier":  round(np.mean(carrier_margins), 4),
                 "mean_abs_carrier_shift":round(np.mean(carrier_shifts), 4),
+                "mean_abs_M_l_word_norm":     round(abs(m_word_alone) / scale, 4),
+                "mean_abs_M_l_carrier_norm":  round(np.mean(carrier_margins) / scale, 4),
+                "mean_abs_carrier_shift_norm":round(np.mean(carrier_shifts) / scale, 4),
                 "n_biased":              n_biased,
                 "layer_used":            layer_idx,
             })

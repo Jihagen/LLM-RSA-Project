@@ -158,6 +158,11 @@ def run_h2(
                 "mean_M_gdv_best":     round(profile.get(gdv_layer,  {}).get("mean", float("nan")), 4),
                 "mean_M_adeq_best":    round(profile[adeq_layer]["mean"], 4),
                 "mean_M_last":         round(profile[last_layer]["mean"], 4),
+                # Normalized by inter-centroid distance — comparable across
+                # architectures/layers, unlike raw M_l (see adequacy.py note).
+                "mean_M_gdv_best_norm":  round(profile.get(gdv_layer,  {}).get("mean_norm", float("nan")), 4),
+                "mean_M_adeq_best_norm": round(profile[adeq_layer]["mean_norm"], 4),
+                "mean_M_last_norm":      round(profile[last_layer]["mean_norm"], 4),
                 "frac_gdv_best":       round(profile.get(gdv_layer,  {}).get("fraction_adequate", float("nan")), 3),
                 "frac_adeq_best":      round(profile[adeq_layer]["fraction_adequate"], 3),
                 "frac_last":           round(profile[last_layer]["fraction_adequate"], 3),

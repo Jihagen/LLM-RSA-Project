@@ -115,6 +115,10 @@ def run_h1(
                 "best_layer_depth":  round(best_layer / max(last_layer, 1), 3),
                 "mean_M_best":       round(profile[best_layer]["mean"], 4),
                 "mean_M_last":       round(profile[last_layer]["mean"], 4),
+                # Normalized by inter-centroid distance — comparable across
+                # architectures/layers, unlike raw M_l (see adequacy.py note).
+                "mean_M_best_norm":  round(profile[best_layer]["mean_norm"], 4),
+                "mean_M_last_norm":  round(profile[last_layer]["mean_norm"], 4),
                 "frac_adeq_best":    round(profile[best_layer]["fraction_adequate"], 3),
                 "frac_adeq_last":    round(profile[last_layer]["fraction_adequate"], 3),
                 "gdv_best_layer":    gdv_best,

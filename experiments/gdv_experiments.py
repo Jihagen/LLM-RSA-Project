@@ -12,7 +12,7 @@ import torch
 from scipy.spatial.distance import cdist
 from sklearn.decomposition import PCA
 
-from models import find_target_span, get_target_activations, load_model_and_tokenizer
+from models import find_target_span, get_dual_position_activations, load_model_and_tokenizer
 from data import flatten_dataframe
 
 
@@ -141,9 +141,16 @@ def save_target_activations(
     labels: np.ndarray,
     sentences: np.ndarray,
     words: np.ndarray,
+    subdir: str = 'activations',
 ) -> None:
-    """Save per-layer target-word activations to HDF5 files."""
-    target_dir = os.path.join(base_dir, 'activations', word, model_name.replace('/', '_'))
+    """
+    Save per-layer activations to HDF5 files.
+
+    subdir : "activations" (homonym-token position, default) or
+             "activations_final" (final-content-token position — see
+             get_dual_position_activations / H4's final-position centroids).
+    """
+    target_dir = os.path.join(base_dir, subdir, word, model_name.replace('/', '_'))
     os.makedirs(target_dir, exist_ok=True)
     for layer_idx, tensor in activations.items():
         arr = tensor.cpu().numpy()
@@ -183,10 +190,11 @@ def run_gdv_experiment(
     """
     df_flat = flatten_dataframe(df)
 
-    # Drop sentences where the target word does not occur as its own word
-    # (e.g. only "bats"/"Bats", "lighter", "Sunlight" for target "light"). Profiling
-    # centroids must be built from clean occurrences of the literal target word;
-    # silently falling back to a zero vector for these would pollute the centroid.
+    # Drop sentences where the target word (or its plain plural) does not occur
+    # as its own word (e.g. "lighter", "Sunlight" for target "light" — but not
+    # "lights", which is kept). Profiling centroids must be built from clean
+    # occurrences of the target word/sense; silently falling back to a zero
+    # vector for these would pollute the centroid.
     has_span = df_flat.apply(
         lambda row: find_target_span(row["sentence"], row["word"]) is not None, axis=1
     )
@@ -205,16 +213,24 @@ def run_gdv_experiment(
 
     model, tokenizer = load_model_and_tokenizer(model_name, model_type=model_type)
 
-    # Always use target-token pooling for profiling so that centroids are built
-    # from the homonym token's representation, consistent with all downstream tests.
-    # Causal models will only see left context at the homonym position — that is
-    # intentional and correctly reflects the decoder's architectural limitation.
-    activations = get_target_activations(
+    # Always use target-token pooling for profiling (and everything derived from
+    # `activations` below — GDV, plots, H1/H2/H3 centroids) so that centroids are
+    # built from the homonym token's representation, consistent with all
+    # downstream tests. Causal models will only see left context at the homonym
+    # position — that is intentional and correctly reflects the decoder's
+    # architectural limitation.
+    #
+    # get_dual_position_activations gets the final-content-token representation
+    # (skipping trailing special tokens) in the same forward pass at no extra
+    # compute cost. Those are cached separately below (activations_final/) to
+    # build final-position centroids for H4's encoder redesign — H4 must score
+    # final-token activations against centroids from the same position, not
+    # against homonym-position centroids from a different subspace.
+    activations, final_activations = get_dual_position_activations(
         model, tokenizer,
         sentences.tolist(),
         target_words.tolist(),
         batch_size=4,
-        pooling="target",
     )
 
     safe_model_name = model_name.replace('/', '_')
@@ -239,6 +255,18 @@ def run_gdv_experiment(
             labels=word_labels,
             sentences=word_sentences,
             words=target_words[mask],
+        )
+
+        word_final_acts = {layer: final_activations[layer][mask] for layer in sorted_layers}
+        save_target_activations(
+            base_dir='results',
+            word=word,
+            model_name=model_name,
+            activations=word_final_acts,
+            labels=word_labels,
+            sentences=word_sentences,
+            words=target_words[mask],
+            subdir='activations_final',
         )
 
         word_gdv: Dict[int, float] = {}

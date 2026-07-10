@@ -75,22 +75,61 @@ def symmetric_adequacy_margins(
     return np.where(labels == 0, d1 - d0, d0 - d1)
 
 
+# ── Normalized (cross-architecture-comparable) margins ─────────────────────────
+#
+# Raw M_l is not comparable across architectures or layers: decoder-only LLMs
+# develop a handful of very-high-magnitude "massive activation" hidden
+# dimensions concentrated in later layers, which inflate ||h - c|| distances
+# (and thus raw M_l) by 1-2 orders of magnitude for reasons unrelated to sense
+# adequacy. Sign and fraction-adequate are robust to this (they only use the
+# sign of M_l), but raw means are not. Dividing by the inter-centroid distance
+# ||c_correct - c_wrong|| at that layer rescales M_l into a comparable range:
+# +1 means h sits exactly at c_correct, -1 means it sits exactly at c_wrong,
+# 0 is the decision boundary — and the ratio cancels out any shared magnitude
+# inflation common to h, c_correct, and c_wrong.
+
+def normalized_adequacy_margin(
+    h: np.ndarray,
+    c_correct: np.ndarray,
+    c_wrong: np.ndarray,
+) -> float:
+    """Adequacy margin for a single hidden-state vector, scaled by inter-centroid distance."""
+    scale = float(np.linalg.norm(c_correct - c_wrong)) + 1e-12
+    return adequacy_margin(h, c_correct, c_wrong) / scale
+
+
+def symmetric_normalized_adequacy_margins(
+    X: np.ndarray,
+    labels: np.ndarray,
+    c0: np.ndarray,
+    c1: np.ndarray,
+) -> np.ndarray:
+    """Normalized counterpart of symmetric_adequacy_margins — see module note above."""
+    scale = float(np.linalg.norm(c0 - c1)) + 1e-12
+    return symmetric_adequacy_margins(X, labels, c0, c1) / scale
+
+
 # ── Centroid loading from H5 activation cache ─────────────────────────────────
 
 def load_centroids(
     results_dir: str,
     model_name: str,
     word: str,
+    subdir: str = "activations",
 ) -> Dict[int, Dict[int, np.ndarray]]:
     """
     Load per-layer sense centroids from cached H5 activation files.
+
+    subdir : "activations" (homonym-token position, default) or
+             "activations_final" (final-content-token position — see
+             load_final_centroids).
 
     Returns
     -------
     {layer_idx: {sense_id: centroid_array [D]}}
     """
     safe_model = model_name.replace("/", "_")
-    h5_dir = Path(results_dir) / "activations" / word / safe_model
+    h5_dir = Path(results_dir) / subdir / word / safe_model
 
     if not h5_dir.exists():
         raise FileNotFoundError(
@@ -127,6 +166,24 @@ def load_all_word_centroids(
 ) -> Dict[str, Dict[int, Dict[int, np.ndarray]]]:
     """Load centroids for multiple words. Returns {word: centroids}."""
     return {w: load_centroids(results_dir, model_name, w) for w in words}
+
+
+def load_final_centroids(
+    results_dir: str,
+    model_name: str,
+    word: str,
+) -> Dict[int, Dict[int, np.ndarray]]:
+    """
+    Load per-layer sense centroids computed at the final-content-token
+    position (activations_final/), rather than the homonym-token position.
+
+    H4 must score final-token activations against these, not against
+    load_centroids()'s homonym-position centroids: those live in a different
+    representational subspace for encoders, which is why scoring final-token
+    activations against them collapsed frac_adeq_final to exactly chance
+    (0.500 in 16/16 model/word cells) regardless of true separability.
+    """
+    return load_centroids(results_dir, model_name, word, subdir="activations_final")
 
 
 # ── Layer adequacy profile (H1) ───────────────────────────────────────────────
@@ -172,7 +229,8 @@ def layer_adequacy_profile(
         c0 = X[labels == 0].mean(axis=0)
         c1 = X[labels == 1].mean(axis=0)
 
-        margins = symmetric_adequacy_margins(X, labels, c0, c1)
+        margins      = symmetric_adequacy_margins(X, labels, c0, c1)
+        margins_norm = symmetric_normalized_adequacy_margins(X, labels, c0, c1)
 
         # Per-sense margins (diagnostic only — both should now be positive
         # when the representation separates the senses well, since each
@@ -183,6 +241,7 @@ def layer_adequacy_profile(
         profile[layer_idx] = {
             "margins":            margins,
             "mean":               float(margins.mean()),
+            "mean_norm":          float(margins_norm.mean()),
             "fraction_adequate":  float((margins > epsilon).mean()),
             "mean_margin_sense0": float(margins_sense0.mean()),
             "mean_margin_sense1": float(margins_sense1.mean()),
@@ -332,13 +391,14 @@ def save_profile_csv(profile: Dict[int, Dict], output_path: str) -> None:
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow(["Layer", "MeanMargin", "FractionAdequate",
+        writer.writerow(["Layer", "MeanMargin", "MeanMarginNorm", "FractionAdequate",
                          "MeanMarginSense0", "MeanMarginSense1"])
         for layer_idx in sorted(profile):
             r = profile[layer_idx]
             writer.writerow([
                 layer_idx,
                 round(r["mean"], 6),
+                round(r.get("mean_norm", float("nan")), 6),
                 round(r["fraction_adequate"], 4),
                 round(r.get("mean_margin_sense0", float("nan")), 6),
                 round(r.get("mean_margin_sense1", float("nan")), 6),
