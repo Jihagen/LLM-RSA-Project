@@ -321,7 +321,26 @@ def gdv_best_layer(gdv_csv_path: str) -> int:
 
 def adequacy_best_layer(profile: Dict[int, Dict]) -> int:
     """
-    Return the layer with the highest mean adequacy margin.
+    Return the "best" layer by fraction-adequate (primary), with normalized
+    mean margin as a tiebreaker.
+
+    Previously selected by raw mean margin. That is exactly the quantity
+    Section "Statistical treatment" warns is not comparable across layers
+    (decoder massive-activation dimensions inflate it for reasons unrelated
+    to sense separation) — and it wasn't just a theoretical risk: for
+    Qwen2.5-7B, the raw-mean-selected layer got 65.6% of sentences correctly
+    classified (fraction_adequate) versus 88.1% for the plain last layer, and
+    had a lower normalized margin too (0.221 vs. 0.318). The raw-mean rule
+    was picking a demonstrably worse layer for exactly the models where raw
+    magnitude is least trustworthy.
+
+    fraction_adequate is scale-invariant by construction (it only counts
+    which side of zero each margin falls on), so it isn't subject to the
+    same confound as either the raw or the normalized mean. It ties often at
+    the sample sizes used here, so the normalized mean margin (also
+    scale-invariant, see Eq. margin-norm) breaks ties among layers that tie
+    on fraction_adequate, rather than falling back to raw magnitude or
+    layer order.
 
     Layer 0 (the pre-transformer embedding layer) is excluded from the search:
     it carries no contextual mixing, so any separation there reflects token-identity
@@ -329,7 +348,7 @@ def adequacy_best_layer(profile: Dict[int, Dict]) -> int:
     "best contextual layer" answer even if its in-sample margin happens to be highest.
     """
     candidates = [l for l in profile if l != 0] or list(profile)
-    return max(candidates, key=lambda l: profile[l]["mean"])
+    return max(candidates, key=lambda l: (profile[l]["fraction_adequate"], profile[l]["mean_norm"]))
 
 
 # ── I/O helpers ───────────────────────────────────────────────────────────────

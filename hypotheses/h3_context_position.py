@@ -22,6 +22,18 @@ results/study/H3/{safe_model}/h3_{word}.csv
 results/study/H3/h3_aggregate.csv
   mean M_l and fraction adequate per (model, arch_type, condition)
 
+results/study/H3/h3_chance_test.csv
+  per (model, condition): exact binomial test of frac_adequate against
+  chance (0.5), pooled across all words' sentences (~80/model/condition,
+  not collapsed to one binary outcome per word). This directly tests the
+  claims above — decoders at chance in R should fail to reject; L and
+  encoder conditions should reject decisively. An earlier design used a
+  per-word sign test (L-mean > R-mean, n=8 words/model) instead; dropped
+  because with n=8 the test saturates at its floor p-value (0.0078) for
+  every decoder model simultaneously — it can't distinguish models from
+  each other and adds no information beyond what the aggregate table
+  already shows directly.
+
 Required data
 -------------
 - results/activations/{word}/{safe_model}/ (profiling centroids)
@@ -223,3 +235,59 @@ def run_h3(
             writer.writeheader()
             writer.writerows(aggregate_rows)
         logger.info("[H3] Aggregate saved to %s", agg_path)
+
+        compute_chance_level_tests(results_dir)
+
+
+def compute_chance_level_tests(results_dir: str = RESULTS_DIR) -> List[Dict]:
+    """
+    Exact binomial test of frac_adequate against chance (p=0.5), per
+    (model, condition), pooling sentence counts across all words. Requires
+    h3_aggregate.csv (run_h3() writes it, then calls this automatically).
+
+    Uses the full per-sentence N per (model, condition) — roughly 80
+    sentences (8 words x ~10 sentences/word/condition) — rather than
+    collapsing to a per-word binary outcome, which is both much better
+    powered and a direct test of what H3 actually claims: not "does L
+    tend to beat R across words" but "is adequacy in this condition
+    distinguishable from a coin flip at all."
+    """
+    from scipy.stats import binomtest
+
+    agg_path = Path(results_dir) / "study" / "H3" / "h3_aggregate.csv"
+    if not agg_path.exists():
+        raise FileNotFoundError(f"{agg_path} not found — run run_h3() first.")
+
+    pooled: Dict[Tuple[str, str], Dict[str, int]] = {}
+    arch_by_model: Dict[str, str] = {}
+    with open(agg_path) as f:
+        for row in csv.DictReader(f):
+            key = (row["model"], row["condition"])
+            n = int(row["n"])
+            n_adequate = round(float(row["frac_adequate"]) * n)
+            entry = pooled.setdefault(key, {"n": 0, "n_adequate": 0})
+            entry["n"] += n
+            entry["n_adequate"] += n_adequate
+            arch_by_model[row["model"]] = row["arch_type"]
+
+    results = []
+    for (model, condition), counts in pooled.items():
+        n, k = counts["n"], counts["n_adequate"]
+        test = binomtest(k, n, 0.5, alternative="two-sided")
+        results.append({
+            "model":         model,
+            "arch_type":     arch_by_model.get(model, ""),
+            "condition":     condition,
+            "n_sentences":   n,
+            "n_adequate":    k,
+            "frac_adequate": round(k / n, 3),
+            "p_value":       test.pvalue if test.pvalue >= 1e-4 else float(f"{test.pvalue:.2e}"),
+        })
+
+    out_path = Path(results_dir) / "study" / "H3" / "h3_chance_test.csv"
+    with open(out_path, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=results[0].keys())
+        writer.writeheader()
+        writer.writerows(results)
+    logger.info("[H3] Chance-level test saved to %s", out_path)
+    return results
