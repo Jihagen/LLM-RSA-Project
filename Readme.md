@@ -99,13 +99,24 @@ already full-context).
 A bridge to the psycholinguistic notion of commitment-and-revision: humans often commit
 to an initial reading and then revise it when later context contradicts it. H5 asks
 whether models show a geometric analogue. Using curated garden-path sentences
-(`data/garden_path_sentences.json`, labelled with both a `primed_sense` and a
-`correct_sense`), representations at the homonym position and the final position are
-scored against both sense centroids. Expected signature: for encoders, a shift *across
-layers* (early layers closer to the primed sense, late layers closer to the resolved
-sense); for decoders, a shift *across token position* (homonym token stuck on the primed
-sense, final token closer to resolved). This is explicitly exploratory — a directional
-hint worth reporting, not a confirmatory claim of "backtracking."
+(`data/garden_path_sentences.json`, labelled with a `primed_sense`, a `correct_sense`,
+and a `resolution_word`), representations at the homonym position and at the annotated
+resolution word are scored against the homonym-position sense centroids. Expected
+signature: for encoders, a shift *across layers* (early layers closer to the primed
+sense, late layers closer to the resolved sense); for decoders, a shift *across token
+position* (homonym token stuck on the primed sense, resolution-word token closer to
+resolved). This is explicitly exploratory — a directional hint worth reporting, not a
+confirmatory claim of "backtracking."
+
+Scoring is done at the specific word that carries the disambiguation
+(`resolution_word`), not the sentence's last token. An earlier version scored the last
+non-special token as a proxy for "has seen the disambiguating clause," which silently
+breaks whenever a sentence happens to end on a neutral filler or, worse, a word
+associated with the *primed* sense (e.g. a bird-revealing crane sentence ending on
+"...flew over the scaffolding" — a construction noun). Annotating the actual resolving
+word removes that dependency on how each stimulus happens to end, and removes the need
+for a separate final-position centroid baseline the earlier design used to guard
+against exactly that failure mode.
 
 ---
 
@@ -114,7 +125,7 @@ hint worth reporting, not a confirmatory claim of "backtracking."
 ```
 data/
   paired_sentences.json        L/R context-position pairs (H0, H3, H4) — tracked in git
-  garden_path_sentences.json   primed/correct sense pairs (H5) — tracked in git
+  garden_path_sentences.json   primed/correct sense pairs + resolution_word (H5) — tracked in git
   synthetic_data_h2.pkl        profiling sentences used to build sense centroids (H1, H2) — tracked in git
   synthetic_data_preparation.py    flatten_dataframe() — the only actively-used helper here
   synthetic/synthetic_datageneration.py   one-off LLM-based sentence-generation script (needs OPENAI_API_KEY)
@@ -162,9 +173,9 @@ Data prerequisites per hypothesis:
 
 All eight profiling words (bank, bark, bat, crane, spring, match, light, pitch) and all
 eight models currently have cached activations and GDV values, so H1/H2 run at full
-coverage; H0/H3/H4/H5 run on the four-model representative subset (DeBERTa-v3-large,
-RoBERTa-large, Mistral-Nemo-Base-2407, Qwen2.5-3B) since they require fresh forward
-passes over the paired/garden-path stimuli.
+coverage; H0/H3/H4/H5 also default to the full eight-model set (`H3_MODELS` in
+`hypotheses/h3_context_position.py`), requiring a fresh forward pass per model over the
+paired/garden-path stimuli rather than reusing cached activations.
 
 Outputs land under `results/study/H{n}/`, with one CSV per (model, word) and an
 aggregate/summary CSV per hypothesis for cross-model comparison.
@@ -212,11 +223,10 @@ the table above and the notebook reflect all three fixes.
 ### Known open items
 - **Redesign H4's encoder half** around final-position-specific centroids (or drop it) —
   this is now a design question, not a bug to patch.
-- H5 needs a much larger garden-path sentence set per word (currently 2–3) before its
-  aggregate direction can be trusted.
-- H3/H4/H5 use only 2 models per architecture; extending to the full 8-model set (already
-  profiled for H1/H2) would let "encoder vs. decoder" claims rest on 4-vs-4 rather than
-  2-vs-2, and would clarify whether Qwen2.5-7B's unusually low H1 adequacy is a one-off.
+- H5 now runs 6–7 garden-path sentences per word (up from 2–3) across the full 8-model
+  set, and scores the annotated `resolution_word` position instead of the sentence-final
+  token (see H5 section above) — the aggregate direction should be re-checked against
+  this rerun before being treated as confirmed.
 - Raw `M_l` magnitude is not comparable across architectures or even across layers within
   a model: decoder-only LLMs develop a handful of very-high-magnitude ("massive
   activation") hidden dimensions concentrated in later layers, and decoders' best layers

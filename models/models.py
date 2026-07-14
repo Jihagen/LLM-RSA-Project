@@ -324,3 +324,97 @@ def get_dual_position_activations(
         {l: torch.cat(target_acts[l], dim=0) for l in layer_indices},
         {l: torch.cat(final_acts[l],  dim=0) for l in layer_indices},
     )
+
+
+def get_homonym_and_resolution_activations(
+    model: PreTrainedModel,
+    tokenizer: PreTrainedTokenizerFast,
+    texts: List[str],
+    homonym_targets: List[str],
+    resolution_targets: List[str],
+    batch_size: int = 8,
+    layer_indices: List[int] = None,
+) -> Tuple[Dict[int, torch.Tensor], Dict[int, torch.Tensor]]:
+    """
+    Single forward pass returning activations at two content-word positions
+    per sentence, both located via word-boundary-safe string search rather
+    than sequence position:
+
+    homonym_acts    — mean-pooled hidden states at the homonym token(s).
+    resolution_acts — mean-pooled hidden states at the annotated
+                      disambiguating word for that sentence (e.g. "river"
+                      for a garden-path "bank" sentence), wherever in the
+                      sentence it actually falls.
+
+    Unlike get_dual_position_activations's "final position" (the last
+    non-special token, whatever word that happens to be), this targets the
+    specific word that carries the sense resolution. A garden-path sentence
+    that happens to end on a neutral or even primed-sense-associated word
+    (e.g. "...flew over the scaffolding") still gets scored at the word that
+    actually resolves the sense ("wings"), not at whatever token is last.
+
+    Use this for H5. For H4's question (does the model recover by the
+    sentence's actual final position, independent of word identity), use
+    get_dual_position_activations instead.
+    """
+    device = model_device(model)
+    num_hidden = model.config.num_hidden_layers
+    if layer_indices is None:
+        layer_indices = list(range(num_hidden + 1))
+
+    homonym_acts:    Dict[int, List[torch.Tensor]] = {l: [] for l in layer_indices}
+    resolution_acts: Dict[int, List[torch.Tensor]] = {l: [] for l in layer_indices}
+
+    for start in range(0, len(texts), batch_size):
+        batch_texts      = texts[start:start + batch_size]
+        batch_homonyms   = homonym_targets[start:start + batch_size]
+        batch_resolvers  = resolution_targets[start:start + batch_size]
+
+        encoding = tokenizer(
+            batch_texts,
+            return_tensors="pt",
+            padding=True,
+            truncation=True,
+            return_offsets_mapping=True,
+            add_special_tokens=True,
+        )
+        offset_mappings = encoding.pop("offset_mapping")
+        model_inputs    = _move_batch_to_device(dict(encoding), device)
+
+        with _inference_context(device):
+            outputs = model(**model_inputs, output_hidden_states=True)
+        hidden_states = outputs.hidden_states
+
+        def _span_mask(offsets, target, text):
+            offset_list = offsets.tolist()
+            span = find_target_span(text, target)
+            if span is None:
+                return torch.zeros(len(offset_list), dtype=torch.bool)
+            target_start, target_end = span
+            mask = [not (e <= target_start or b >= target_end) for b, e in offset_list]
+            return torch.tensor(mask, dtype=torch.bool)
+
+        homonym_masks    = [_span_mask(o, t, txt) for o, t, txt in zip(offset_mappings, batch_homonyms, batch_texts)]
+        resolution_masks = [_span_mask(o, t, txt) for o, t, txt in zip(offset_mappings, batch_resolvers, batch_texts)]
+
+        for layer in layer_indices:
+            hidden = hidden_states[layer].detach().to(torch.float32).cpu()
+            for i, (hmask, rmask) in enumerate(zip(homonym_masks, resolution_masks)):
+                if hmask.any():
+                    hv = hidden[i][hmask].mean(dim=0, keepdim=True)
+                else:
+                    hv = torch.zeros((1, hidden.size(-1)), dtype=torch.float32)
+                homonym_acts[layer].append(hv)
+
+                if rmask.any():
+                    rv = hidden[i][rmask].mean(dim=0, keepdim=True)
+                else:
+                    rv = torch.zeros((1, hidden.size(-1)), dtype=torch.float32)
+                resolution_acts[layer].append(rv)
+
+        cleanup_torch()
+
+    return (
+        {l: torch.cat(homonym_acts[l],    dim=0) for l in layer_indices},
+        {l: torch.cat(resolution_acts[l], dim=0) for l in layer_indices},
+    )
