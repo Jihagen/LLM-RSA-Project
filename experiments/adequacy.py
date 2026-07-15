@@ -20,6 +20,21 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
+NORMALIZED_MARGIN_TOLERANCE = 1e-5
+
+
+def _assert_normalized_margin_bounds(values, context: str) -> None:
+    """Fail fast if a purported normalized Euclidean margin is invalid."""
+    arr = np.asarray(values, dtype=float)
+    if not np.all(np.isfinite(arr)):
+        raise ValueError(f"{context} contains non-finite normalized margins")
+    if np.any(np.abs(arr) > 1.0 + NORMALIZED_MARGIN_TOLERANCE):
+        extreme = float(np.max(np.abs(arr)))
+        raise ValueError(
+            f"{context} violates the normalized-margin bound [-1, 1]: "
+            f"max |margin|={extreme:.8g}"
+        )
+
 
 # ── Instance-level measures ────────────────────────────────────────────────────
 
@@ -94,8 +109,10 @@ def normalized_adequacy_margin(
     c_wrong: np.ndarray,
 ) -> float:
     """Adequacy margin for a single hidden-state vector, scaled by inter-centroid distance."""
-    scale = float(np.linalg.norm(c_correct - c_wrong)) + 1e-12
-    return adequacy_margin(h, c_correct, c_wrong) / scale
+    scale = max(float(np.linalg.norm(c_correct - c_wrong)), 1e-12)
+    margin = adequacy_margin(h, c_correct, c_wrong) / scale
+    _assert_normalized_margin_bounds(margin, "normalized_adequacy_margin")
+    return margin
 
 
 def symmetric_normalized_adequacy_margins(
@@ -105,8 +122,48 @@ def symmetric_normalized_adequacy_margins(
     c1: np.ndarray,
 ) -> np.ndarray:
     """Normalized counterpart of symmetric_adequacy_margins — see module note above."""
-    scale = float(np.linalg.norm(c0 - c1)) + 1e-12
-    return symmetric_adequacy_margins(X, labels, c0, c1) / scale
+    scale = max(float(np.linalg.norm(c0 - c1)), 1e-12)
+    margins = symmetric_adequacy_margins(X, labels, c0, c1) / scale
+    _assert_normalized_margin_bounds(margins, "symmetric_normalized_adequacy_margins")
+    return margins
+
+
+def leave_one_out_adequacy_margins(
+    X: np.ndarray,
+    labels: np.ndarray,
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Score each row against centroids estimated without that row.
+
+    Returns ``(raw_margins, normalized_margins)``. This is the appropriate
+    estimate for profiling sentences: unlike resubstitution scoring, a point
+    cannot pull its own class centroid toward itself before being evaluated.
+    """
+    X = np.asarray(X)
+    labels = np.asarray(labels)
+    unique = np.unique(labels).astype(int)
+    if set(unique.tolist()) != {0, 1}:
+        raise ValueError(f"Expected binary labels {{0, 1}}, found {unique.tolist()}")
+
+    counts = {sense: int(np.sum(labels == sense)) for sense in (0, 1)}
+    if min(counts.values()) < 2:
+        raise ValueError(
+            "Leave-one-out centroids require at least two observations per sense; "
+            f"found {counts}"
+        )
+    sums = {sense: X[labels == sense].sum(axis=0) for sense in (0, 1)}
+
+    raw = np.empty(len(X), dtype=float)
+    normalized = np.empty(len(X), dtype=float)
+    for i, (h, label_value) in enumerate(zip(X, labels)):
+        sense = int(label_value)
+        wrong = 1 - sense
+        c_correct = (sums[sense] - h) / (counts[sense] - 1)
+        c_wrong = sums[wrong] / counts[wrong]
+        raw[i] = adequacy_margin(h, c_correct, c_wrong)
+        normalized[i] = normalized_adequacy_margin(h, c_correct, c_wrong)
+
+    _assert_normalized_margin_bounds(normalized, "leave_one_out_adequacy_margins")
+    return raw, normalized
 
 
 # ── Centroid loading from H5 activation cache ─────────────────────────────────
@@ -194,12 +251,15 @@ def layer_adequacy_profile(
     word: str,
     correct_sense: int = 0,
     epsilon: float = 0.0,
+    centroid_mode: str = "leave_one_out",
 ) -> Dict[int, Dict]:
     """
     Compute adequacy margin statistics per layer from cached activations.
 
-    Centroids are computed from the full profiling set; margins are evaluated
-    on the same sentences (in-sample — appropriate for H1 layer profiling).
+    By default, each profiling sentence is evaluated against centroids that
+    exclude that sentence (``centroid_mode='leave_one_out'``). The legacy
+    resubstitution estimate remains available as ``centroid_mode='in_sample'``
+    for diagnostics only.
     Each sentence's margin is computed against ITS OWN true sense as "correct"
     (via symmetric_adequacy_margins) — profiling sets contain both senses for
     a word, so a single fixed correct/wrong centroid pair would silently give
@@ -226,11 +286,18 @@ def layer_adequacy_profile(
         if correct_sense not in unique or wrong_sense not in unique:
             continue
 
-        c0 = X[labels == 0].mean(axis=0)
-        c1 = X[labels == 1].mean(axis=0)
-
-        margins      = symmetric_adequacy_margins(X, labels, c0, c1)
-        margins_norm = symmetric_normalized_adequacy_margins(X, labels, c0, c1)
+        if centroid_mode == "leave_one_out":
+            margins, margins_norm = leave_one_out_adequacy_margins(X, labels)
+        elif centroid_mode == "in_sample":
+            c0 = X[labels == 0].mean(axis=0)
+            c1 = X[labels == 1].mean(axis=0)
+            margins = symmetric_adequacy_margins(X, labels, c0, c1)
+            margins_norm = symmetric_normalized_adequacy_margins(X, labels, c0, c1)
+        else:
+            raise ValueError(
+                "centroid_mode must be 'leave_one_out' or 'in_sample', "
+                f"got {centroid_mode!r}"
+            )
 
         # Per-sense margins (diagnostic only — both should now be positive
         # when the representation separates the senses well, since each
@@ -239,10 +306,17 @@ def layer_adequacy_profile(
         margins_sense1 = margins[labels == 1]
 
         profile[layer_idx] = {
-            "margins":            margins,
-            "mean":               float(margins.mean()),
+            "margins_raw":        margins,
+            "margins_norm":       margins_norm,
+            "mean_raw":           float(margins.mean()),
             "mean_norm":          float(margins_norm.mean()),
             "fraction_adequate":  float((margins > epsilon).mean()),
+            "mean_margin_sense0_raw": float(margins_sense0.mean()),
+            "mean_margin_sense1_raw": float(margins_sense1.mean()),
+            "centroid_mode":      centroid_mode,
+            # Backwards-compatible aliases. New outputs use explicit names.
+            "margins":            margins,
+            "mean":               float(margins.mean()),
             "mean_margin_sense0": float(margins_sense0.mean()),
             "mean_margin_sense1": float(margins_sense1.mean()),
         }
@@ -410,16 +484,17 @@ def save_profile_csv(profile: Dict[int, Dict], output_path: str) -> None:
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow(["Layer", "MeanMargin", "MeanMarginNorm", "FractionAdequate",
-                         "MeanMarginSense0", "MeanMarginSense1"])
+        writer.writerow(["Layer", "MeanMarginRaw", "MeanMarginNorm", "FractionAdequate",
+                         "MeanMarginSense0Raw", "MeanMarginSense1Raw", "CentroidMode"])
         for layer_idx in sorted(profile):
             r = profile[layer_idx]
             writer.writerow([
                 layer_idx,
-                round(r["mean"], 6),
+                round(r["mean_raw"], 6),
                 round(r.get("mean_norm", float("nan")), 6),
                 round(r["fraction_adequate"], 4),
-                round(r.get("mean_margin_sense0", float("nan")), 6),
-                round(r.get("mean_margin_sense1", float("nan")), 6),
+                round(r.get("mean_margin_sense0_raw", float("nan")), 6),
+                round(r.get("mean_margin_sense1_raw", float("nan")), 6),
+                r.get("centroid_mode", "unknown"),
             ])
     logger.info("Saved adequacy profile to %s", output_path)

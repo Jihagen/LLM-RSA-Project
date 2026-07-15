@@ -22,17 +22,17 @@ results/study/H3/{safe_model}/h3_{word}.csv
 results/study/H3/h3_aggregate.csv
   mean M_l and fraction adequate per (model, arch_type, condition)
 
-results/study/H3/h3_chance_test.csv
-  per (model, condition): exact binomial test of frac_adequate against
-  chance (0.5), pooled across all words' sentences (~80/model/condition,
-  not collapsed to one binary outcome per word). This directly tests the
-  claims above — decoders at chance in R should fail to reject; L and
-  encoder conditions should reject decisively. An earlier design used a
-  per-word sign test (L-mean > R-mean, n=8 words/model) instead; dropped
-  because with n=8 the test saturates at its floor p-value (0.0078) for
-  every decoder model simultaneously — it can't distinguish models from
-  each other and adds no information beyond what the aggregate table
-  already shows directly.
+results/study/H3/h3_pair_differences.csv
+  paired L-minus-R normalized margins for every rearranged sentence pair.
+
+results/study/H3/h3_paired_summary.csv
+  per-model L-R effects with word-cluster bootstrap intervals. Decoder R=0.5
+  is treated as a deterministic causal-mask sanity check, not a chance test.
+
+results/study/H3/h3_architecture_interaction.csv
+  decoder-minus-encoder difference in the paired L-R effect, using a crossed
+  model-by-word bootstrap so repeated carriers are not treated as independent
+  evidence for the architecture-level claim.
 
 Required data
 -------------
@@ -70,11 +70,11 @@ OUTPUT_BASE       = Path("results/study/H3")
 H3_MODELS         = ALL_MODELS
 
 
-def _load_paired_sentences(path: str, word: str) -> Tuple[List[str], List[str], List[str], List[int]]:
+def _load_paired_sentences(path: str, word: str) -> Tuple[List[str], List[str], List[str], List[int], List[str]]:
     """
     Load paired sentences for a given word from the JSON dataset.
 
-    Returns (sentences, conditions, sentence_ids, senses)
+    Returns (sentences, conditions, sentence_ids, senses, carriers)
     where condition is 'L' or 'R' and sense is each item's own true sense
     (0 or 1) — paired_sentences.json is balanced across both senses per
     word/condition, so callers must score each sentence against its own
@@ -84,13 +84,14 @@ def _load_paired_sentences(path: str, word: str) -> Tuple[List[str], List[str], 
         data = json.load(f)
     if word not in data:
         raise KeyError(f"Word '{word}' not found in {path}. Add it via the paired sentences notebook.")
-    sentences, conditions, ids, senses = [], [], [], []
+    sentences, conditions, ids, senses, carriers = [], [], [], [], []
     for item in data[word]:
         sentences.append(item["sentence"])
         conditions.append(item["condition"])
         ids.append(item.get("id", f"{word}_{len(ids)}"))
         senses.append(item["sense"])
-    return sentences, conditions, ids, senses
+        carriers.append(item["carrier"])
+    return sentences, conditions, ids, senses, carriers
 
 
 def _select_layer(model_name: str, results_dir: str, word: str) -> int:
@@ -123,7 +124,7 @@ def run_h3(
     Requires paired_sentences.json and H5 profiling files.
     """
     model_names = model_names or H3_MODELS
-    words       = words or ["bank", "bark", "bat", "crane"]
+    words = words or ["bank", "bark", "bat", "crane", "spring", "match", "light", "pitch"]
     OUTPUT_BASE.mkdir(parents=True, exist_ok=True)
 
     if not Path(paired_data_path).exists():
@@ -150,7 +151,7 @@ def run_h3(
 
         for word in words:
             try:
-                sentences, conditions, sent_ids, senses = _load_paired_sentences(paired_data_path, word)
+                sentences, conditions, sent_ids, senses, carriers = _load_paired_sentences(paired_data_path, word)
             except KeyError as e:
                 logger.warning("[H3] %s", e)
                 continue
@@ -190,11 +191,16 @@ def run_h3(
             # Write per-sentence results
             csv_path = model_out / f"h3_{word}.csv"
             rows = []
-            for sid, cond, margin, margin_norm in zip(sent_ids, conditions, margins, margins_norm):
+            for sid, cond, sense, carrier, margin, margin_norm in zip(
+                sent_ids, conditions, senses, carriers, margins, margins_norm
+            ):
                 rows.append({
                     "sentence_id": sid,
+                    "pair_id":     sid.replace("_L_", "_").replace("_R_", "_"),
                     "condition":   cond,
-                    "M_l":         round(float(margin), 4),
+                    "sense":       sense,
+                    "carrier":     carrier,
+                    "M_l_raw":     round(float(margin), 4),
                     "M_l_norm":    round(float(margin_norm), 4),
                     "adequate":    margin > epsilon,
                     "layer":       layer_idx,
@@ -217,7 +223,7 @@ def run_h3(
                     "word":            word,
                     "condition":       cond,
                     "n":               len(cond_margins),
-                    "mean_M_l":        round(float(cond_margins.mean()), 4),
+                    "mean_M_l_raw":    round(float(cond_margins.mean()), 4),
                     "mean_M_l_norm":   round(float(cond_margins_norm.mean()), 4),
                     "frac_adequate":   round(float((cond_margins > epsilon).mean()), 3),
                     "layer_used":      layer_idx,
@@ -236,58 +242,200 @@ def run_h3(
             writer.writerows(aggregate_rows)
         logger.info("[H3] Aggregate saved to %s", agg_path)
 
-        compute_chance_level_tests(results_dir)
+        compute_paired_context_tests(results_dir, paired_data_path)
 
 
-def compute_chance_level_tests(results_dir: str = RESULTS_DIR) -> List[Dict]:
+def _bootstrap_mean_interval(values, rng, n_bootstrap: int = 20000):
+    values = np.asarray(values, dtype=float)
+    draws = rng.choice(values, size=(n_bootstrap, len(values)), replace=True).mean(axis=1)
+    return np.quantile(draws, [0.025, 0.975])
+
+
+def compute_paired_context_tests(
+    results_dir: str = RESULTS_DIR,
+    paired_data_path: str = PAIRED_DATA_PATH,
+) -> List[Dict]:
+    """Estimate paired L-R effects without treating carriers as independent.
+
+    Sentence pairs are first differenced, then averaged within word. Per-model
+    intervals resample the eight word means. The architecture interaction uses
+    a crossed model-by-word bootstrap. This is intentionally about L-R change;
+    it does not test decoder R against 0.5 because that value is guaranteed by
+    the mirrored stimulus/scoring construction.
     """
-    Exact binomial test of frac_adequate against chance (p=0.5), per
-    (model, condition), pooling sentence counts across all words. Requires
-    h3_aggregate.csv (run_h3() writes it, then calls this automatically).
+    output_dir = Path(results_dir) / "study" / "H3"
+    aggregate_path = output_dir / "h3_aggregate.csv"
+    if not aggregate_path.exists():
+        raise FileNotFoundError(f"{aggregate_path} not found — run H3 first")
 
-    Uses the full per-sentence N per (model, condition) — roughly 80
-    sentences (8 words x ~10 sentences/word/condition) — rather than
-    collapsing to a per-word binary outcome, which is both much better
-    powered and a direct test of what H3 actually claims: not "does L
-    tend to beat R across words" but "is adequacy in this condition
-    distinguishable from a coin flip at all."
-    """
-    from scipy.stats import binomtest
-
-    agg_path = Path(results_dir) / "study" / "H3" / "h3_aggregate.csv"
-    if not agg_path.exists():
-        raise FileNotFoundError(f"{agg_path} not found — run run_h3() first.")
-
-    pooled: Dict[Tuple[str, str], Dict[str, int]] = {}
-    arch_by_model: Dict[str, str] = {}
-    with open(agg_path) as f:
-        for row in csv.DictReader(f):
-            key = (row["model"], row["condition"])
-            n = int(row["n"])
-            n_adequate = round(float(row["frac_adequate"]) * n)
-            entry = pooled.setdefault(key, {"n": 0, "n_adequate": 0})
-            entry["n"] += n
-            entry["n_adequate"] += n_adequate
+    with open(paired_data_path) as handle:
+        stimulus_data = json.load(handle)
+    metadata = {
+        item["id"]: {
+            "sense": int(item["sense"]),
+            "carrier": item["carrier"],
+        }
+        for items in stimulus_data.values()
+        for item in items
+    }
+    arch_by_model = {}
+    with open(aggregate_path) as handle:
+        for row in csv.DictReader(handle):
             arch_by_model[row["model"]] = row["arch_type"]
 
-    results = []
-    for (model, condition), counts in pooled.items():
-        n, k = counts["n"], counts["n_adequate"]
-        test = binomtest(k, n, 0.5, alternative="two-sided")
-        results.append({
-            "model":         model,
-            "arch_type":     arch_by_model.get(model, ""),
-            "condition":     condition,
-            "n_sentences":   n,
-            "n_adequate":    k,
-            "frac_adequate": round(k / n, 3),
-            "p_value":       test.pvalue if test.pvalue >= 1e-4 else float(f"{test.pvalue:.2e}"),
+    pair_rows = []
+    mirrored_r_values: Dict[Tuple[str, str, str], List[Tuple[int, float]]] = {}
+    for model_dir in sorted(path for path in output_dir.iterdir() if path.is_dir()):
+        model = model_dir.name
+        for csv_path in sorted(model_dir.glob("h3_*.csv")):
+            word = csv_path.stem.removeprefix("h3_")
+            by_pair: Dict[str, Dict[str, Dict]] = {}
+            with open(csv_path) as handle:
+                for row in csv.DictReader(handle):
+                    sid = row["sentence_id"]
+                    condition = row["condition"]
+                    pair_id = row.get("pair_id") or sid.replace("_L_", "_").replace("_R_", "_")
+                    meta = metadata[sid]
+                    value = float(row["M_l_norm"])
+                    adequate = str(row["adequate"]).lower() == "true"
+                    by_pair.setdefault(pair_id, {})[condition] = {
+                        "sid": sid,
+                        "value": value,
+                        "adequate": adequate,
+                        **meta,
+                    }
+                    if condition == "R":
+                        mirrored_r_values.setdefault(
+                            (model, word, meta["carrier"]), []
+                        ).append((meta["sense"], value))
+
+            for pair_id, conditions in by_pair.items():
+                if set(conditions) != {"L", "R"}:
+                    continue
+                left, right = conditions["L"], conditions["R"]
+                pair_rows.append({
+                    "model": model,
+                    "arch_type": arch_by_model.get(model, ""),
+                    "word": word,
+                    "pair_id": pair_id,
+                    "sense": left["sense"],
+                    "carrier": left["carrier"],
+                    "M_norm_L": left["value"],
+                    "M_norm_R": right["value"],
+                    "delta_M_norm_L_minus_R": left["value"] - right["value"],
+                    "adequate_L": left["adequate"],
+                    "adequate_R": right["adequate"],
+                    "delta_adequate_L_minus_R": int(left["adequate"]) - int(right["adequate"]),
+                })
+
+    if not pair_rows:
+        raise ValueError("No complete H3 L/R pairs found")
+    pair_path = output_dir / "h3_pair_differences.csv"
+    with open(pair_path, "w", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=pair_rows[0].keys())
+        writer.writeheader()
+        writer.writerows(pair_rows)
+
+    rng = np.random.default_rng(20260714)
+    model_summaries = []
+    models = sorted({row["model"] for row in pair_rows})
+    effect_by_model_word = {}
+    for model in models:
+        model_rows = [row for row in pair_rows if row["model"] == model]
+        words = sorted({row["word"] for row in model_rows})
+        word_margin_effects = []
+        word_adequacy_effects = []
+        for word in words:
+            rows = [row for row in model_rows if row["word"] == word]
+            margin_effect = float(np.mean([row["delta_M_norm_L_minus_R"] for row in rows]))
+            adequacy_effect = float(np.mean([row["delta_adequate_L_minus_R"] for row in rows]))
+            effect_by_model_word[(model, word)] = margin_effect
+            word_margin_effects.append(margin_effect)
+            word_adequacy_effects.append(adequacy_effect)
+        margin_ci = _bootstrap_mean_interval(word_margin_effects, rng)
+        adequacy_ci = _bootstrap_mean_interval(word_adequacy_effects, rng)
+
+        mirror_errors = []
+        mirror_signs_opposite = []
+        for (group_model, _, _), values in mirrored_r_values.items():
+            if group_model != model or {sense for sense, _ in values} != {0, 1}:
+                continue
+            by_sense = {sense: value for sense, value in values}
+            mirror_errors.append(abs(by_sense[0] + by_sense[1]))
+            mirror_signs_opposite.append(by_sense[0] * by_sense[1] <= 0.0)
+        max_mirror_error = max(mirror_errors, default=float("nan"))
+        is_decoder = arch_by_model.get(model) == "decoder"
+        model_summaries.append({
+            "model": model,
+            "arch_type": arch_by_model.get(model, ""),
+            "n_words": len(words),
+            "n_sentence_pairs": len(model_rows),
+            "mean_delta_M_norm_L_minus_R": round(float(np.mean(word_margin_effects)), 6),
+            "ci95_low_delta_M_norm": round(float(margin_ci[0]), 6),
+            "ci95_high_delta_M_norm": round(float(margin_ci[1]), 6),
+            "mean_delta_fraction_adequate_L_minus_R": round(float(np.mean(word_adequacy_effects)), 6),
+            "ci95_low_delta_fraction": round(float(adequacy_ci[0]), 6),
+            "ci95_high_delta_fraction": round(float(adequacy_ci[1]), 6),
+            "decoder_R_theoretically_deterministic": is_decoder,
+            "decoder_R_observed_mirrored_signs_opposite": (
+                bool(all(mirror_signs_opposite)) if is_decoder else "not_applicable"
+            ),
+            "max_abs_mirrored_R_margin_sum": (
+                round(float(max_mirror_error), 6) if is_decoder else ""
+            ),
         })
 
-    out_path = Path(results_dir) / "study" / "H3" / "h3_chance_test.csv"
-    with open(out_path, "w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=results[0].keys())
+    summary_path = output_dir / "h3_paired_summary.csv"
+    with open(summary_path, "w", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=model_summaries[0].keys())
         writer.writeheader()
-        writer.writerows(results)
-    logger.info("[H3] Chance-level test saved to %s", out_path)
-    return results
+        writer.writerows(model_summaries)
+
+    encoder_models = [model for model in models if arch_by_model.get(model) == "encoder"]
+    decoder_models = [model for model in models if arch_by_model.get(model) == "decoder"]
+    common_words = sorted(set.intersection(*[
+        {word for candidate, word in effect_by_model_word if candidate == model}
+        for model in models
+    ]))
+    encoder_matrix = np.array([
+        [effect_by_model_word[(model, word)] for word in common_words]
+        for model in encoder_models
+    ])
+    decoder_matrix = np.array([
+        [effect_by_model_word[(model, word)] for word in common_words]
+        for model in decoder_models
+    ])
+    n_bootstrap = 20000
+    interaction_draws = np.empty(n_bootstrap)
+    for draw in range(n_bootstrap):
+        word_idx = rng.integers(0, len(common_words), len(common_words))
+        encoder_idx = rng.integers(0, len(encoder_models), len(encoder_models))
+        decoder_idx = rng.integers(0, len(decoder_models), len(decoder_models))
+        encoder_effect = encoder_matrix[encoder_idx][:, word_idx].mean()
+        decoder_effect = decoder_matrix[decoder_idx][:, word_idx].mean()
+        interaction_draws[draw] = decoder_effect - encoder_effect
+    interaction_ci = np.quantile(interaction_draws, [0.025, 0.975])
+    interaction_row = {
+        "effect_definition": "(decoder L-R) - (encoder L-R)",
+        "n_encoder_models": len(encoder_models),
+        "n_decoder_models": len(decoder_models),
+        "n_words": len(common_words),
+        "encoder_mean_delta_M_norm_L_minus_R": round(float(encoder_matrix.mean()), 6),
+        "decoder_mean_delta_M_norm_L_minus_R": round(float(decoder_matrix.mean()), 6),
+        "architecture_interaction": round(float(decoder_matrix.mean() - encoder_matrix.mean()), 6),
+        "ci95_low_interaction": round(float(interaction_ci[0]), 6),
+        "ci95_high_interaction": round(float(interaction_ci[1]), 6),
+        "bootstrap_unit": "crossed model-by-word",
+    }
+    interaction_path = output_dir / "h3_architecture_interaction.csv"
+    with open(interaction_path, "w", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=interaction_row.keys())
+        writer.writeheader()
+        writer.writerow(interaction_row)
+
+    legacy_path = output_dir / "h3_chance_test.csv"
+    if legacy_path.exists():
+        legacy_path.unlink()
+        logger.info("[H3] Removed invalid legacy chance-test output: %s", legacy_path)
+    logger.info("[H3] Paired summaries saved under %s", output_dir)
+    return model_summaries

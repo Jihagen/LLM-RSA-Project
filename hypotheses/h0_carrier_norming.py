@@ -16,20 +16,24 @@ Computes M_l at three levels for each (model, word):
   3. context_gain    — M_l(full sentence) - M_l(carrier)   [computed in H3]
                        Shows what the context clause specifically adds.
 
+Each ambiguous carrier state was historically scored once under each opposing
+label, yielding mirrored values M and -M and an apparent count of ten. The
+current output collapses those into five independent signed carrier priors:
+positive means closer to sense 0 and negative means closer to sense 1.
+
 Output
 ------
 results/study/H0/{safe_model}/h0_{word}.csv
-  columns: carrier, sense, M_l_word_alone, M_l_carrier,
-           carrier_shift (carrier - word_alone), biased (|M_l_carrier| > 0.3)
+  one row per independent carrier, with signed raw/normalized prior and shift
 
 results/study/H0/h0_summary.csv
-  per (model, word): mean |M_l_word_alone|, mean |M_l_carrier|, mean carrier_shift
+  signed direction, magnitude, and cross-carrier directional consistency
 
 Required data
 -------------
 - data/paired_sentences.json (must contain 'carrier' field on each item)
 - results/activations/{word}/{safe_model}/ (centroids)
-- Models: all 4 H3 models
+- Models: all 8 registered study models
 """
 
 import csv
@@ -54,6 +58,7 @@ logger = logging.getLogger(__name__)
 
 RESULTS_DIR = "results"
 OUTPUT_BASE = Path("results/study/H0")
+BIAS_SENSITIVITY_THRESHOLD_NORM = 0.3
 
 
 def _extract_unique_carriers(paired_data: dict, word: str) -> List[dict]:
@@ -68,6 +73,56 @@ def _extract_unique_carriers(paired_data: dict, word: str) -> List[dict]:
             seen.add(key)
             records.append({"word": word, "carrier": item["carrier"], "sense": item["sense"]})
     return records
+
+
+def _collapse_mirrored_carriers(
+    records: List[dict],
+    word_alone_raw: float,
+    scale: float,
+) -> List[dict]:
+    """Collapse M/-M label mirrors into independent signed carrier states."""
+    by_carrier = {}
+    for record in records:
+        by_carrier.setdefault(record["carrier"], {})[int(record["sense"])] = record
+
+    collapsed = []
+    for carrier, by_sense in by_carrier.items():
+        if 0 in by_sense and 1 in by_sense:
+            signed_raw = 0.5 * (
+                float(by_sense[0]["M_l_carrier"])
+                - float(by_sense[1]["M_l_carrier"])
+            )
+        elif 0 in by_sense:
+            signed_raw = float(by_sense[0]["M_l_carrier"])
+        elif 1 in by_sense:
+            signed_raw = -float(by_sense[1]["M_l_carrier"])
+        else:
+            continue
+
+        signed_norm = signed_raw / scale
+        if abs(signed_norm) > 1.00001:
+            raise ValueError(
+                f"H0 normalized carrier prior outside [-1, 1] for {carrier!r}: "
+                f"{signed_norm}"
+            )
+        shift_raw = signed_raw - word_alone_raw
+        shift_norm = shift_raw / scale
+        direction = "sense_0" if signed_norm > 0 else "sense_1" if signed_norm < 0 else "tie"
+        collapsed.append({
+            "word": by_sense[next(iter(by_sense))]["word"],
+            "carrier": carrier,
+            "signed_M_l_word_alone_raw": round(float(word_alone_raw), 4),
+            "signed_M_l_word_alone_norm": round(float(word_alone_raw / scale), 4),
+            "signed_M_l_carrier_raw": round(float(signed_raw), 4),
+            "signed_M_l_carrier_norm": round(float(signed_norm), 4),
+            "signed_carrier_shift_raw": round(float(shift_raw), 4),
+            "signed_carrier_shift_norm": round(float(shift_norm), 4),
+            "prior_direction": direction,
+            "abs_norm_gt_0p3": abs(signed_norm) > BIAS_SENSITIVITY_THRESHOLD_NORM,
+            "threshold_status": "descriptive_sensitivity_only",
+            "layer": by_sense[next(iter(by_sense))]["layer"],
+        })
+    return collapsed
 
 
 def run_h0(
@@ -131,46 +186,44 @@ def run_h0(
             if not records:
                 continue
 
-            # Enrich each carrier record with the word-alone baseline
-            for r in records:
-                r["M_l_word_alone"]      = round(m_word_alone, 4)
-                r["M_l_word_alone_norm"] = round(m_word_alone / scale, 4)
-                r["M_l_carrier_norm"]    = round(r["M_l_carrier"] / scale, 4)
-                r["carrier_shift"]       = round(r["M_l_carrier"] - m_word_alone, 4)
-                r["carrier_shift_norm"]  = round(r["carrier_shift"] / scale, 4)
+            independent = _collapse_mirrored_carriers(records, m_word_alone, scale)
+            if not independent:
+                continue
 
             csv_path = model_out / f"h0_{word}.csv"
-            fieldnames = ["word", "carrier", "sense",
-                          "M_l_word_alone", "M_l_word_alone_norm",
-                          "M_l_carrier", "M_l_carrier_norm",
-                          "carrier_shift", "carrier_shift_norm",
-                          "biased", "layer"]
             with open(csv_path, "w", newline="") as f:
-                writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
+                writer = csv.DictWriter(f, fieldnames=independent[0].keys())
                 writer.writeheader()
-                writer.writerows(records)
+                writer.writerows(independent)
 
-            carrier_margins = [abs(r["M_l_carrier"]) for r in records]
-            carrier_shifts  = [abs(r["carrier_shift"]) for r in records]
-            n_biased = sum(1 for r in records if r["biased"])
+            signed_raw = np.asarray([r["signed_M_l_carrier_raw"] for r in independent])
+            signed_norm = np.asarray([r["signed_M_l_carrier_norm"] for r in independent])
+            shift_raw = np.asarray([r["signed_carrier_shift_raw"] for r in independent])
+            nonzero = signed_norm[np.abs(signed_norm) > 1e-8]
+            direction_consistency = (
+                max(float((nonzero > 0).mean()), float((nonzero < 0).mean()))
+                if len(nonzero) else 0.5
+            )
             summary_rows.append({
                 "model":                 safe_model,
                 "word":                  word,
-                "n_carriers":            len(records),
-                "mean_abs_M_l_word":     round(abs(m_word_alone), 4),
-                "mean_abs_M_l_carrier":  round(np.mean(carrier_margins), 4),
-                "mean_abs_carrier_shift":round(np.mean(carrier_shifts), 4),
-                "mean_abs_M_l_word_norm":     round(abs(m_word_alone) / scale, 4),
-                "mean_abs_M_l_carrier_norm":  round(np.mean(carrier_margins) / scale, 4),
-                "mean_abs_carrier_shift_norm":round(np.mean(carrier_shifts) / scale, 4),
-                "n_biased":              n_biased,
+                "n_independent_carriers": len(independent),
+                "signed_M_l_word_alone_raw": round(float(m_word_alone), 4),
+                "signed_M_l_word_alone_norm": round(float(m_word_alone / scale), 4),
+                "mean_signed_M_l_carrier_raw": round(float(signed_raw.mean()), 4),
+                "mean_signed_M_l_carrier_norm": round(float(signed_norm.mean()), 4),
+                "mean_abs_M_l_carrier_norm": round(float(np.abs(signed_norm).mean()), 4),
+                "mean_abs_carrier_shift_raw": round(float(np.abs(shift_raw).mean()), 4),
+                "direction_consistency": round(direction_consistency, 3),
+                "n_abs_norm_gt_0p3": int(np.sum(np.abs(signed_norm) > BIAS_SENSITIVITY_THRESHOLD_NORM)),
+                "threshold_status": "descriptive_sensitivity_only",
                 "layer_used":            layer_idx,
             })
             logger.info(
-                "[H0] %s / %s | word_alone=%.3f carrier=%.3f shift=%.3f biased=%d",
+                "[H0] %s / %s | word_prior=%+.3f carrier_prior=%+.3f | n=%d consistency=%.2f",
                 model_name, word,
-                abs(m_word_alone), np.mean(carrier_margins),
-                np.mean(carrier_shifts), n_biased,
+                m_word_alone / scale, signed_norm.mean(),
+                len(independent), direction_consistency,
             )
 
     if summary_rows:

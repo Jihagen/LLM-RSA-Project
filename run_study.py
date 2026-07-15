@@ -26,14 +26,16 @@ H3  Right-context vulnerability
     Data   : data/paired_sentences.json  +  H5 profiling files
     Models : all 8
 
-H4  Token-position dissociation
+H4  Token-position sense decodability
     Data   : data/paired_sentences.json (R-condition only)  +  H5 files
              (homonym-position) + activations_final/ files (final-position,
              for encoder final-token scoring — see hypotheses/h4_dissociation.py)
     Models : all 8
 
-H5  Garden-path / representational revision (exploratory)
-    Data   : data/garden_path_sentences.json  +  H5 files
+H5  Incremental garden-path updating at a fixed sentinel (exploratory)
+    Data   : data/garden_path_sentences.json + data/synthetic_data_h2.pkl
+    Guard  : blocked until direction/control/structure audit passes unless the
+             explicitly exploratory override is supplied
     Models : all 8
 """
 
@@ -103,16 +105,21 @@ def _run_h3(args):
 def _run_h4(args):
     from hypotheses.h4_dissociation import run_h4
     models = _resolve_models(args.models) if args.models else H3_MODELS
-    logger.info("=== H4: Token Dissociation | %d models ===", len(models))
-    run_h4(model_names=models, words=args.words)
+    logger.info("=== H4: Token-position decodability | %d models ===", len(models))
+    run_h4(model_names=models, words=args.words, epsilon=args.epsilon)
     gc.collect()
 
 
 def _run_h5(args):
     from hypotheses.h5_garden_path import run_h5
     models = _resolve_models(args.models) if args.models else H3_MODELS
-    logger.info("=== H5: Garden-Path (exploratory) | %d models ===", len(models))
-    run_h5(model_names=models, words=args.words)
+    logger.info("=== H5: Incremental fixed-sentinel updating | %d models ===", len(models))
+    run_h5(
+        model_names=models,
+        words=args.words,
+        epsilon=args.epsilon,
+        allow_incomplete_design=args.allow_incomplete_h5,
+    )
     gc.collect()
 
 
@@ -151,16 +158,31 @@ def main():
         "--epsilon", type=float, default=0.0,
         help="Adequacy threshold epsilon (default: 0.0).",
     )
+    parser.add_argument(
+        "--allow-incomplete-h5",
+        action="store_true",
+        help=(
+            "Run H5 despite missing reverse directions, matched controls, or "
+            "structurally valid resolver order. Outputs are labelled "
+            "exploratory_incomplete_design."
+        ),
+    )
     args = parser.parse_args()
 
     logger.info("Study run: hypotheses=%s, words=%s", args.hypotheses, args.words)
 
+    failures = []
     for hyp in args.hypotheses:
         try:
             RUNNERS[hyp](args)
         except Exception as exc:
+            failures.append((hyp, str(exc)))
             logger.error("=== %s FAILED: %s ===", hyp, exc, exc_info=True)
 
+    if failures:
+        failed_names = ", ".join(hyp for hyp, _ in failures)
+        logger.error("Study failed for: %s", failed_names)
+        raise SystemExit(1)
     logger.info("Study complete.")
 
 

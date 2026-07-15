@@ -2,7 +2,8 @@ import csv
 import logging
 import os
 import pickle
-from typing import Any, Dict, List
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 import h5py
 import matplotlib.pyplot as plt
@@ -48,21 +49,119 @@ def compute_gdv(X: np.ndarray, labels: np.ndarray) -> float:
     """
     Geometric Discriminability Value (GDV):
 
-        GDV = (1/√D) * ( (1/L)*intra - (2/(L*(L-1)))*inter )
+        GDV = (1/√D) * (mean_class_intra - mean_class_pair_inter)
 
-    where D is the hidden dimension and L the number of classes, computed on
-    z-score-normalised activations. More negative → better class separation.
+    where D is the hidden dimension. The helper functions already average
+    over classes and class pairs, so the 1/L and 2/(L(L-1)) factors from the
+    summation form of the published equation must NOT be applied a second
+    time here. Features are z-scored and multiplied by 1/2 as specified in
+    Schilling et al. (2021). More negative → better class separation.
     """
     mu = X.mean(axis=0, keepdims=True)
     sigma = X.std(axis=0, keepdims=True) + 1e-12
-    Xz = (X - mu) / sigma
+    Xz = 0.5 * (X - mu) / sigma
     L = len(np.unique(labels))
     if L < 2:
         return 0.0
     intra = compute_mean_intra_class_distance(Xz, labels)
     inter = compute_mean_inter_class_distance(Xz, labels)
     D = Xz.shape[1]
-    return float((1 / np.sqrt(D)) * ((1 / L) * intra - (2 / (L * (L - 1))) * inter))
+    return float((intra - inter) / np.sqrt(D))
+
+
+def recompute_gdv_from_cache(
+    results_dir: str,
+    model_name: str,
+    words: Optional[List[str]] = None,
+) -> Dict[int, float]:
+    """Recompute corrected GDV CSVs from cached H5 activations only.
+
+    This deliberately performs no model loading or forward passes. Existing
+    per-word and aggregate GDV CSVs are replaced with values derived from the
+    current ``compute_gdv`` implementation.
+    """
+    results_path = Path(results_dir)
+    safe_model = model_name.replace("/", "_")
+    activations_root = results_path / "activations"
+    if words is None:
+        words = sorted(
+            word_dir.name
+            for word_dir in activations_root.iterdir()
+            if word_dir.is_dir() and (word_dir / safe_model).is_dir()
+        )
+    if not words:
+        raise FileNotFoundError(f"No cached words found for model={model_name!r}")
+
+    gdv_per_word: Dict[str, Dict[int, float]] = {}
+    for word in words:
+        h5_dir = activations_root / word / safe_model
+        h5_files = sorted(
+            h5_dir.glob("layer_*.h5"),
+            key=lambda path: int(path.stem.split("_")[1]),
+        )
+        if not h5_files:
+            raise FileNotFoundError(f"No activation cache found at {h5_dir}")
+
+        word_gdv: Dict[int, float] = {}
+        for h5_path in h5_files:
+            layer = int(h5_path.stem.split("_")[1])
+            with h5py.File(h5_path, "r") as handle:
+                X = handle["X"][:]
+                labels = handle["labels"][:]
+            word_gdv[layer] = compute_gdv(X, labels)
+        gdv_per_word[word] = word_gdv
+
+    layer_sets = [set(values) for values in gdv_per_word.values()]
+    common_layers = sorted(set.intersection(*layer_sets))
+    if not common_layers:
+        raise ValueError(f"Cached words for {model_name!r} have no common layers")
+
+    output_dir = results_path / f"{safe_model}_gdv"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    for word, values in gdv_per_word.items():
+        word_csv = output_dir / f"gdv_values_{word}.csv"
+        with open(word_csv, "w", newline="") as handle:
+            writer = csv.writer(handle)
+            writer.writerow(["Layer", "GDV"])
+            for layer in sorted(values):
+                writer.writerow([layer, values[layer]])
+
+    gdv_all = {
+        layer: float(np.mean([gdv_per_word[word][layer] for word in words]))
+        for layer in common_layers
+    }
+    with open(output_dir / "gdv_values.csv", "w", newline="") as handle:
+        writer = csv.writer(handle)
+        writer.writerow(["Layer", "GDV"])
+        writer.writerows(sorted(gdv_all.items()))
+
+    rank_values = _compute_rank_aggregated_gdv(gdv_per_word, common_layers)
+    with open(output_dir / "gdv_rank_aggregated.csv", "w", newline="") as handle:
+        writer = csv.writer(handle)
+        writer.writerow(["Layer", "MeanRank"])
+        writer.writerows(sorted(rank_values.items()))
+
+    pkl_path = output_dir / f"{safe_model}_gdv.pkl"
+    if pkl_path.exists():
+        with open(pkl_path, "rb") as handle:
+            dashboard_data = pickle.load(handle)
+        dashboard_data["gdv_per_layer"] = gdv_all
+        dashboard_data["gdv_per_word"] = gdv_per_word
+        dashboard_data["gdv_rank"] = rank_values
+        dashboard_data.setdefault("meta", {}).update({
+            "gdv_per_layer": gdv_all,
+            "gdv_per_word": gdv_per_word,
+            "gdv_rank": rank_values,
+            "gdv_definition": "Schilling2021_corrected",
+        })
+        with open(pkl_path, "wb") as handle:
+            pickle.dump(dashboard_data, handle)
+
+    logging.info(
+        "Recomputed corrected GDV from cache for %s: %d words, %d layers",
+        model_name, len(words), len(common_layers),
+    )
+    return gdv_all
 
 
 def _key_layer_indices(sorted_layers: List[int], gdv_by_layer: Dict[int, float]) -> List[int]:

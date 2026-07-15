@@ -241,8 +241,9 @@ def get_dual_position_activations(
 
     Returns (target_acts, final_acts) where each maps layer_idx → Tensor[N, D].
 
-    Use this for H4: compare M_l at the homonym position vs the sentence-final
-    position to test the decoder dissociation hypothesis.
+    H4 uses this to compare within-position sense decodability at the homonym
+    and final positions. That is a token-position comparison from one forward
+    pass, not evidence of incremental recovery or backtracking.
 
     Note: "final position" must skip trailing special tokens (e.g. [SEP] for
     BERT-family encoders). Those are structural markers whose hidden state does
@@ -353,9 +354,10 @@ def get_homonym_and_resolution_activations(
     (e.g. "...flew over the scaffolding") still gets scored at the word that
     actually resolves the sense ("wings"), not at whatever token is last.
 
-    Use this for H5. For H4's question (does the model recover by the
-    sentence's actual final position, independent of word identity), use
-    get_dual_position_activations instead.
+    This helper is retained for cross-token diagnostics only. Comparing the
+    homonym to a different resolution word changes token identity and cannot
+    demonstrate revision. The corrected H5 reruns prefixes and reads the same
+    appended sentinel via get_dual_position_activations.
     """
     device = model_device(model)
     num_hidden = model.config.num_hidden_layers

@@ -16,6 +16,8 @@ hf_cache/
 
 legacy/*
 
+report_revision/*
+data/h5_additions_proposal.md
 # Stimulus/profiling data is small, hand-curated, and required to reproduce
 # H0/H1/H2/H3/H4/H5 — track it despite the blanket *.pkl/*.json rules above.
 !data/synthetic_data_h2.pkl

@@ -5,49 +5,112 @@
       "sentence": "She finished her loan application and walked to the bank to sit by the river.",
       "primed_sense": 1,
       "correct_sense": 0,
-      "resolution_word": "river"
+      "resolution_word": "river",
+      "matched_control_sentence": "After following the riverside path, she walked to the bank to sit by the river."
     },
     {
       "id": "bank_gp_02",
       "sentence": "The branch manager waited at the bank until a fish took the bait.",
       "primed_sense": 1,
       "correct_sense": 0,
-      "resolution_word": "fish"
+      "resolution_word": "fish",
+      "matched_control_sentence": "The angler waited at the bank until a fish took the bait."
     },
     {
       "id": "bank_gp_03",
       "sentence": "He discussed his mortgage at the bank until a passing boat drenched him.",
       "primed_sense": 1,
       "correct_sense": 0,
-      "resolution_word": "boat"
+      "resolution_word": "boat",
+      "matched_control_sentence": "He checked his fishing line at the bank until a passing boat drenched him."
     },
     {
       "id": "bank_gp_04",
       "sentence": "The loan officer met her at the bank and helped her into the kayak.",
       "primed_sense": 1,
       "correct_sense": 0,
-      "resolution_word": "kayak"
+      "resolution_word": "kayak",
+      "matched_control_sentence": "The canoe instructor met her at the bank and helped her into the kayak."
     },
     {
       "id": "bank_gp_05",
       "sentence": "He took his overdraft papers to the bank and threw them angrily into the river.",
       "primed_sense": 1,
       "correct_sense": 0,
-      "resolution_word": "river"
+      "resolution_word": "river",
+      "matched_control_sentence": "He took his fishing supplies to the bank and threw them angrily into the river."
     },
     {
       "id": "bank_gp_06",
       "sentence": "Her account adviser met her at the bank and stripped down to his swimming trunks.",
       "primed_sense": 1,
       "correct_sense": 0,
-      "resolution_word": "swimming"
+      "resolution_word": "swimming",
+      "matched_control_sentence": "Her swimming instructor met her at the bank and stripped down to his swimming trunks."
     },
     {
       "id": "bank_gp_07",
       "sentence": "The mortgage broker suggested they meet at the bank and paddle into the sunset together.",
       "primed_sense": 1,
       "correct_sense": 0,
-      "resolution_word": "paddle"
+      "resolution_word": "paddle",
+      "matched_control_sentence": "The canoe guide suggested they meet at the bank and paddle into the sunset together."
+    },
+    {
+      "id": "bank_gp_08",
+      "sentence": "After checking the river level, she waited at the bank until the teller called her inside.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "teller",
+      "matched_control_sentence": "After completing her loan form, she waited at the bank until the teller called her inside."
+    },
+    {
+      "id": "bank_gp_09",
+      "sentence": "After packing away his fishing rod, he sat by the bank, until the loan officer waved him inside.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "loan",
+      "matched_control_sentence": "After completing his mortgage application, he sat by the bank, until the loan officer waved him inside."
+    },
+    {
+      "id": "bank_gp_10",
+      "sentence": "The canoe guide pointed toward the bank as the cashier locked the front doors.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "cashier",
+      "matched_control_sentence": "The branch manager pointed toward the bank as the cashier locked the front doors."
+    },
+    {
+      "id": "bank_gp_11",
+      "sentence": "Following the river path, they stopped at the bank to open a business account.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "account",
+      "matched_control_sentence": "Following their financial adviser, they stopped at the bank to open a business account."
+    },
+    {
+      "id": "bank_gp_12",
+      "sentence": "The flood inspector photographed the bank before its cash machine was replaced.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "cash",
+      "matched_control_sentence": "The security inspector photographed the bank before its cash machine was replaced."
+    },
+    {
+      "id": "bank_gp_13",
+      "sentence": "The kayaker returned to the bank because the mortgage adviser had left a message.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "mortgage",
+      "matched_control_sentence": "The account holder returned to the bank because the mortgage adviser had left a message."
+    },
+    {
+      "id": "bank_gp_14",
+      "sentence": "After rowing practice, she returned to the bank because the vault alarm had sounded.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "vault",
+      "matched_control_sentence": "After meeting her accountant, she returned to the bank because the vault alarm had sounded."
     }
   ],
   "bat": [
@@ -56,49 +119,112 @@
       "sentence": "He handed her the bat, which spread its wings and flew away.",
       "primed_sense": 0,
       "correct_sense": 1,
-      "resolution_word": "wings"
+      "resolution_word": "wings",
+      "matched_control_sentence": "The wildlife handler handed her the bat, which spread its wings and flew away."
     },
     {
       "id": "bat_gp_02",
       "sentence": "After practice, he carried the bat into the shed, where it hung upside down from a rafter.",
       "primed_sense": 0,
       "correct_sense": 1,
-      "resolution_word": "rafter"
+      "resolution_word": "rafter",
+      "matched_control_sentence": "After the wildlife rescue, he carried the bat into the shed, where it hung upside down from a rafter."
     },
     {
       "id": "bat_gp_03",
       "sentence": "She reached for the bat beside the wicket, but it shrieked and flew away.",
       "primed_sense": 0,
       "correct_sense": 1,
-      "resolution_word": "shrieked"
+      "resolution_word": "shrieked",
+      "matched_control_sentence": "The wildlife handler reached for the bat beside the wicket, but it shrieked and flew away."
     },
     {
       "id": "bat_gp_04",
       "sentence": "The umpire inspected the bat, which bit his finger and flew over the boundary.",
       "primed_sense": 0,
       "correct_sense": 1,
-      "resolution_word": "flew"
+      "resolution_word": "flew",
+      "matched_control_sentence": "The veterinarian inspected the bat, which bit his finger and flew over the boundary."
     },
     {
       "id": "bat_gp_05",
       "sentence": "The player reached into the kit bag for the bat, which unfurled its wings and clung to his sleeve.",
       "primed_sense": 0,
       "correct_sense": 1,
-      "resolution_word": "wings"
+      "resolution_word": "wings",
+      "matched_control_sentence": "The wildlife rehabilitator reached into the kit bag for the bat, which unfurled its wings and clung to his sleeve."
     },
     {
       "id": "bat_gp_06",
       "sentence": "She locked the bat in the equipment room, but by morning it was sleeping upside down from the ceiling.",
       "primed_sense": 0,
       "correct_sense": 1,
-      "resolution_word": "sleeping"
+      "resolution_word": "sleeping",
+      "matched_control_sentence": "She secured the rescued bat in the equipment room, but by morning it was sleeping upside down from the ceiling."
     },
     {
       "id": "bat_gp_07",
       "sentence": "The boy tucked the bat under his arm, but it wriggled free and flew into the rafters.",
       "primed_sense": 0,
       "correct_sense": 1,
-      "resolution_word": "rafters"
+      "resolution_word": "rafters",
+      "matched_control_sentence": "The wildlife handler tucked the bat under his arm, but it wriggled free and flew into the rafters."
+    },
+    {
+      "id": "bat_gp_08",
+      "sentence": "After monitoring the cave all night, she carried the bat until the batter asked for it back.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "batter",
+      "matched_control_sentence": "After clearing the dugout, she carried the bat until the batter asked for it back."
+    },
+    {
+      "id": "bat_gp_09",
+      "sentence": "The wildlife officer inspected the bat before the umpire ruled it illegal.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "umpire",
+      "matched_control_sentence": "The equipment manager inspected the bat before the umpire ruled it illegal."
+    },
+    {
+      "id": "bat_gp_10",
+      "sentence": "The zoologist photographed the bat that the batsman had cracked during practice.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "batsman",
+      "matched_control_sentence": "The sports reporter photographed the bat that the batsman had cracked during practice."
+    },
+    {
+      "id": "bat_gp_11",
+      "sentence": "The cave guide returned the bat to the coach's equipment bag.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "coach",
+      "matched_control_sentence": "The cricket player returned the bat to the coach's equipment bag."
+    },
+    {
+      "id": "bat_gp_12",
+      "sentence": "At dusk, the ranger spotted the bat lying beside the wicket.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "wicket",
+      "matched_control_sentence": "During practice, the player spotted the bat lying beside the wicket."
+    },
+    {
+      "id": "bat_gp_13",
+      "sentence": "The conservationist tagged the bat before the slugger took it to home plate.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "slugger",
+      "matched_control_sentence": "The equipment assistant tagged the bat before the slugger took it to home plate."
+    },
+    {
+      "id": "bat_gp_14",
+      "sentence": "The cave researcher found the bat before the pitcher asked to use it during warm-up.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "pitcher",
+      "matched_control_sentence": "The clubhouse attendant found the bat before the pitcher asked to use it during warm-up."
     }
   ],
   "bark": [
@@ -107,42 +233,112 @@
       "sentence": "The dog warden investigated the bark, which was peeling from the old elm.",
       "primed_sense": 0,
       "correct_sense": 1,
-      "resolution_word": "elm"
+      "resolution_word": "elm",
+      "matched_control_sentence": "The arborist investigated the bark, which was peeling from the old elm."
     },
     {
       "id": "bark_gp_02",
       "sentence": "The dog trainer studied the bark until she found beetles crawling underneath it.",
       "primed_sense": 0,
       "correct_sense": 1,
-      "resolution_word": "beetles"
+      "resolution_word": "beetles",
+      "matched_control_sentence": "The forester studied the bark until she found beetles crawling underneath it."
     },
     {
       "id": "bark_gp_03",
       "sentence": "The dog warden recorded the bark before the forester stripped it from the tree.",
       "primed_sense": 0,
       "correct_sense": 1,
-      "resolution_word": "tree"
+      "resolution_word": "tree",
+      "matched_control_sentence": "The arborist recorded the bark before the forester stripped it from the tree."
     },
     {
       "id": "bark_gp_04",
       "sentence": "The neighbour complained about the bark until the wind tore it from the birch.",
       "primed_sense": 0,
       "correct_sense": 1,
-      "resolution_word": "birch"
+      "resolution_word": "birch",
+      "matched_control_sentence": "The forester complained about the bark until the wind tore it from the birch."
     },
     {
       "id": "bark_gp_05",
       "sentence": "Beside the dog kennel, the children noticed the bark, which their father peeled from the elm.",
       "primed_sense": 0,
       "correct_sense": 1,
-      "resolution_word": "elm"
+      "resolution_word": "elm",
+      "matched_control_sentence": "Beside the old elm, the children noticed the bark, which their father peeled from the elm."
     },
     {
       "id": "bark_gp_06",
       "sentence": "She complained to the neighbours about the bark, which an arborist later cut from the dying sycamore.",
       "primed_sense": 0,
       "correct_sense": 1,
-      "resolution_word": "sycamore"
+      "resolution_word": "sycamore",
+      "matched_control_sentence": "She spoke to the arborist about the bark, which an arborist later cut from the dying sycamore."
+    },
+    {
+      "id": "bark_gp_07",
+      "sentence": "After examining the damaged oak, she recorded the bark when the terrier began growling.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "terrier",
+      "matched_control_sentence": "After setting up her microphone, she recorded the bark when the terrier began growling."
+    },
+    {
+      "id": "bark_gp_08",
+      "sentence": "The arborist complained about the bark until the spaniel was taken indoors.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "spaniel",
+      "matched_control_sentence": "The neighbour complained about the bark until the spaniel was taken indoors."
+    },
+    {
+      "id": "bark_gp_09",
+      "sentence": "While cataloguing trees, the researcher analysed the bark that the puppy produced during the test.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "puppy",
+      "matched_control_sentence": "While studying canine behaviour, the researcher analysed the bark that the puppy produced during the test."
+    },
+    {
+      "id": "bark_gp_10",
+      "sentence": "The lumberjack recognised the bark as soon as the dog made the noise again.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "dog",
+      "matched_control_sentence": "The dog trainer recognised the bark as soon as the dog made the noise again."
+    },
+    {
+      "id": "bark_gp_11",
+      "sentence": "Beside the timber yard, they discussed the bark until a terrier repeated it from behind the gate.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "terrier",
+      "matched_control_sentence": "Beside the dog kennel, they discussed the bark until a terrier repeated it from behind the gate."
+    },
+    {
+      "id": "bark_gp_12",
+      "sentence": "The botanist tried to identify the bark before the hound made the sound a second time.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "hound",
+      "matched_control_sentence": "The animal behaviourist tried to identify the bark before the hound made the sound a second time."
+    },
+    {
+      "id": "bark_gp_13",
+      "sentence": "After the terrier woke the neighbours, she noticed the bark, where sap was seeping from the trunk.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "sap",
+      "matched_control_sentence": "After the storm split the old oak, she noticed the bark, where sap was seeping from the trunk."
+    },
+    {
+      "id": "bark_gp_14",
+      "sentence": "After inspecting the split trunk, she noted the bark that echoed across the empty yard.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "echoed",
+      "matched_control_sentence": "After listening beside the kennel, she noted the bark that echoed across the empty yard."
     }
   ],
   "crane": [
@@ -151,42 +347,112 @@
       "sentence": "The site manager watched the crane step into the reeds.",
       "primed_sense": 1,
       "correct_sense": 0,
-      "resolution_word": "reeds"
+      "resolution_word": "reeds",
+      "matched_control_sentence": "The ornithologist watched the crane step into the reeds."
     },
     {
       "id": "crane_gp_02",
       "sentence": "The operator waited beside the crane until it spread its wings and flew over the scaffolding.",
       "primed_sense": 1,
       "correct_sense": 0,
-      "resolution_word": "wings"
+      "resolution_word": "wings",
+      "matched_control_sentence": "The birdwatcher waited beside the crane until it spread its wings and flew over the scaffolding."
     },
     {
       "id": "crane_gp_03",
       "sentence": "The foreman pointed to the crane, which dipped its beak into the drainage ditch.",
       "primed_sense": 1,
       "correct_sense": 0,
-      "resolution_word": "beak"
+      "resolution_word": "beak",
+      "matched_control_sentence": "The ornithologist pointed to the crane, which dipped its beak into the drainage ditch."
     },
     {
       "id": "crane_gp_04",
       "sentence": "The safety inspector examined the crane, which tucked its head beneath one wing.",
       "primed_sense": 1,
       "correct_sense": 0,
-      "resolution_word": "wing"
+      "resolution_word": "wing",
+      "matched_control_sentence": "The wildlife veterinarian examined the crane, which tucked its head beneath one wing."
     },
     {
       "id": "crane_gp_05",
       "sentence": "The steelworkers watched the crane arrive, fold its legs, and begin to preen.",
       "primed_sense": 1,
       "correct_sense": 0,
-      "resolution_word": "preen"
+      "resolution_word": "preen",
+      "matched_control_sentence": "The birdwatchers watched the crane arrive, fold its legs, and begin to preen."
     },
     {
       "id": "crane_gp_06",
       "sentence": "The contractor followed the crane to the drainage ditch, where it speared a fish.",
       "primed_sense": 1,
       "correct_sense": 0,
-      "resolution_word": "fish"
+      "resolution_word": "fish",
+      "matched_control_sentence": "The ornithologist followed the crane to the drainage ditch, where it speared a fish."
+    },
+    {
+      "id": "crane_gp_07",
+      "sentence": "The ornithologist watched the crane until the operator lifted a steel girder.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "operator",
+      "matched_control_sentence": "The site manager watched the crane until the operator lifted a steel girder."
+    },
+    {
+      "id": "crane_gp_08",
+      "sentence": "The birdwatcher pointed to the crane as it raised a pallet above the roof.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "pallet",
+      "matched_control_sentence": "The foreman pointed to the crane as it raised a pallet above the roof."
+    },
+    {
+      "id": "crane_gp_09",
+      "sentence": "The ornithologists tracked the crane to the site, where it hoisted concrete panels.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "hoisted",
+      "matched_control_sentence": "The construction supervisor tracked the crane to the site, where it hoisted concrete panels."
+    },
+    {
+      "id": "crane_gp_10",
+      "sentence": "The wildlife photographer examined the crane while the foreman attached a load to its hook.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "hook",
+      "matched_control_sentence": "The safety inspector examined the crane while the foreman attached a load to its hook."
+    },
+    {
+      "id": "crane_gp_11",
+      "sentence": "The ecologist reported the crane whose hydraulic boom had jammed above the road.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "hydraulic",
+      "matched_control_sentence": "The contractor reported the crane whose hydraulic boom had jammed above the road."
+    },
+    {
+      "id": "crane_gp_12",
+      "sentence": "The ranger photographed the crane before the construction crew dismantled it.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "construction",
+      "matched_control_sentence": "The project manager photographed the crane before the construction crew dismantled it."
+    },
+    {
+      "id": "crane_gp_13",
+      "sentence": "After counting the nesting birds, the ranger photographed the crane as its cable lifted a generator.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "cable",
+      "matched_control_sentence": "After inspecting the building site, the foreman photographed the crane as its cable lifted a generator."
+    },
+    {
+      "id": "crane_gp_14",
+      "sentence": "After inspecting the construction equipment, the engineer watched the crane as it swallowed a frog.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "swallowed",
+      "matched_control_sentence": "During the wetland survey, the ornithologist watched the crane as it swallowed a frog."
     }
   ],
   "spring": [
@@ -195,42 +461,112 @@
       "sentence": "They waited all winter for the spring, which finally bubbled from the rocks.",
       "primed_sense": 0,
       "correct_sense": 1,
-      "resolution_word": "bubbled"
+      "resolution_word": "bubbled",
+      "matched_control_sentence": "They searched the hillside for the spring, which finally bubbled from the rocks."
     },
     {
       "id": "spring_gp_02",
       "sentence": "After the harsh winter, the villagers celebrated the spring until it ran dry.",
       "primed_sense": 0,
       "correct_sense": 1,
-      "resolution_word": "dry"
+      "resolution_word": "dry",
+      "matched_control_sentence": "After weeks of drought, the villagers celebrated the spring until it ran dry."
     },
     {
       "id": "spring_gp_03",
       "sentence": "The valley welcomed the spring until it swept away the pasture fence.",
       "primed_sense": 0,
       "correct_sense": 1,
-      "resolution_word": "swept"
+      "resolution_word": "swept",
+      "matched_control_sentence": "The surveyors monitored the spring until it swept away the pasture fence."
     },
     {
       "id": "spring_gp_04",
       "sentence": "The children hurried outside to see the spring, then knelt to drink from it.",
       "primed_sense": 0,
       "correct_sense": 1,
-      "resolution_word": "drink"
+      "resolution_word": "drink",
+      "matched_control_sentence": "The hikers hurried outside to see the spring, then knelt to drink from it."
     },
     {
       "id": "spring_gp_05",
       "sentence": "After months without water, they prayed for the spring, which arrived with blossoms and longer days.",
       "primed_sense": 1,
       "correct_sense": 0,
-      "resolution_word": "blossoms"
+      "resolution_word": "blossoms",
+      "matched_control_sentence": "After months of cold weather, they prayed for the spring, which arrived with blossoms and longer days."
     },
     {
       "id": "spring_gp_06",
       "sentence": "The estate expected the spring in March, but the surveyor found it bubbling beneath the old wall.",
       "primed_sense": 0,
       "correct_sense": 1,
-      "resolution_word": "bubbling"
+      "resolution_word": "bubbling",
+      "matched_control_sentence": "The hydrologist expected the spring in March, but the surveyor found it bubbling beneath the old wall."
+    },
+    {
+      "id": "spring_gp_07",
+      "sentence": "After testing the village well, they waited for the spring, when the orchards would bloom.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "orchards",
+      "matched_control_sentence": "After enduring the long winter, they waited for the spring, when the orchards would bloom."
+    },
+    {
+      "id": "spring_gp_08",
+      "sentence": "The hydrologist predicted the spring would bring warmer days to the valley.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "warmer",
+      "matched_control_sentence": "The meteorologist predicted the spring would bring warmer days to the valley."
+    },
+    {
+      "id": "spring_gp_09",
+      "sentence": "During the drought survey, she wrote about the spring that began with late snowstorms.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "snowstorms",
+      "matched_control_sentence": "During the climate survey, she wrote about the spring that began with late snowstorms."
+    },
+    {
+      "id": "spring_gp_10",
+      "sentence": "After mapping the underground water, they prepared for the spring by ordering seeds.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "seeds",
+      "matched_control_sentence": "After checking the planting calendar, they prepared for the spring by ordering seeds."
+    },
+    {
+      "id": "spring_gp_11",
+      "sentence": "After celebrating the end of winter, the villagers welcomed the spring, which supplied their drinking water throughout the drought.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "water",
+      "matched_control_sentence": "After the village well failed, the villagers welcomed the spring, which supplied their drinking water throughout the drought."
+    },
+    {
+      "id": "spring_gp_12",
+      "sentence": "After pruning the orchard, she wrote about the spring that fed a stream below the ridge.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "stream",
+      "matched_control_sentence": "After mapping the aquifer, she wrote about the spring that fed a stream below the ridge."
+    },
+    {
+      "id": "spring_gp_13",
+      "sentence": "After inspecting the dried-up well, the hydrologist described the spring that arrived unusually early that year.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "arrived",
+      "matched_control_sentence": "After reviewing the winter temperatures, the meteorologist described the spring that arrived unusually early that year."
+    },
+    {
+      "id": "spring_gp_14",
+      "sentence": "After surveying the aquifer, the engineer described the spring that followed the coldest winter on record.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "winter",
+      "matched_control_sentence": "After analysing the climate records, the meteorologist described the spring that followed the coldest winter on record."
     }
   ],
   "match": [
@@ -239,42 +575,112 @@
       "sentence": "The referee held up the match, then struck it against the box.",
       "primed_sense": 0,
       "correct_sense": 1,
-      "resolution_word": "struck"
+      "resolution_word": "struck",
+      "matched_control_sentence": "The camper held up the match, then struck it against the box."
     },
     {
       "id": "match_gp_02",
       "sentence": "The boxer threw the match, which landed in the dry grass and started a fire.",
       "primed_sense": 0,
       "correct_sense": 1,
-      "resolution_word": "fire"
+      "resolution_word": "fire",
+      "matched_control_sentence": "The camper threw the match, which landed in the dry grass and started a fire."
     },
     {
       "id": "match_gp_03",
       "sentence": "The captain cursed the match, then struck it against the box.",
       "primed_sense": 0,
       "correct_sense": 1,
-      "resolution_word": "struck"
+      "resolution_word": "struck",
+      "matched_control_sentence": "The camper cursed the match, then struck it against the box."
     },
     {
       "id": "match_gp_04",
       "sentence": "The crowd watched the match until it burned out.",
       "primed_sense": 0,
       "correct_sense": 1,
-      "resolution_word": "burned"
+      "resolution_word": "burned",
+      "matched_control_sentence": "The campers watched the match until it burned out."
     },
     {
       "id": "match_gp_05",
       "sentence": "The whole town waited for the match, which the mayor struck to light the bonfire.",
       "primed_sense": 0,
       "correct_sense": 1,
-      "resolution_word": "bonfire"
+      "resolution_word": "bonfire",
+      "matched_control_sentence": "The fire-lighting team waited for the match, which the mayor struck to light the bonfire."
     },
     {
       "id": "match_gp_06",
       "sentence": "Before kickoff, the referee checked the match and put it into his pocket.",
       "primed_sense": 0,
       "correct_sense": 1,
-      "resolution_word": "pocket"
+      "resolution_word": "pocket",
+      "matched_control_sentence": "Before lighting the stove, the camper checked the match and put it into his pocket."
+    },
+    {
+      "id": "match_gp_07",
+      "sentence": "After inspecting the burned shed, the marshal discussed the match until the referee showed the replay.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "referee",
+      "matched_control_sentence": "After reviewing the disputed result, the marshal discussed the match until the referee showed the replay."
+    },
+    {
+      "id": "match_gp_08",
+      "sentence": "Beside the dying campfire, they were looking for the match, which was streamed by all the major TV services.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "streamed",
+      "matched_control_sentence": "Beside the television studio, they were looking for the match, which was streamed by all the major TV services."
+    },
+    {
+      "id": "match_gp_09",
+      "sentence": "The candle maker described the match that ended in a penalty shootout.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "penalty",
+      "matched_control_sentence": "The sports reporter described the match that ended in a penalty shootout."
+    },
+    {
+      "id": "match_gp_10",
+      "sentence": "Although she was soaked, the match had remained dry, and the home side won in extra time.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "side",
+      "matched_control_sentence": "Although rain had soaked the training ground, the match had remained dry, and the home side won in extra time."
+    },
+    {
+      "id": "match_gp_11",
+      "sentence": "In the dark, the match illuminated the entire city once the stadium lights came on.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "stadium",
+      "matched_control_sentence": "During the evening broadcast, the match illuminated the entire city once the stadium lights came on."
+    },
+    {
+      "id": "match_gp_12",
+      "sentence": "The arson investigator reconstructed the match that the home side won in extra time.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "won",
+      "matched_control_sentence": "The television analyst reconstructed the match that the home side won in extra time."
+    },
+    {
+      "id": "match_gp_13",
+      "sentence": "With the final score still disputed, the referee examined the match until its head flared orange.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "flared",
+      "matched_control_sentence": "With the camp stove refusing to light, the camper examined the match until its head flared orange."
+    },
+    {
+      "id": "match_gp_14",
+      "sentence": "After gathering dry kindling, they waited for the match, which went into extra time.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "time",
+      "matched_control_sentence": "After taking their seats in the stadium, they waited for the match, which went into extra time."
     }
   ],
   "pitch": [
@@ -283,49 +689,113 @@
       "sentence": "The investors checked the pitch, which had just been freshly mown.",
       "primed_sense": 1,
       "correct_sense": 0,
-      "resolution_word": "mown"
+      "resolution_word": "mown",
+      "matched_control_sentence": "The groundskeeper checked the pitch, which had just been freshly mown."
     },
     {
       "id": "pitch_gp_02",
       "sentence": "She walked the investors through the pitch, careful not to scuff the fresh touchlines.",
       "primed_sense": 1,
       "correct_sense": 0,
-      "resolution_word": "touchlines"
+      "resolution_word": "touchlines",
+      "matched_control_sentence": "She walked the players through the pitch, careful not to scuff the fresh touchlines."
     },
     {
       "id": "pitch_gp_03",
       "sentence": "He reviewed the pitch and asked the groundskeeper to repaint the lines.",
       "primed_sense": 1,
       "correct_sense": 0,
-      "resolution_word": "lines"
+      "resolution_word": "lines",
+      "matched_control_sentence": "The referee reviewed the pitch and asked the groundskeeper to repaint the lines."
     },
     {
       "id": "pitch_gp_04",
       "sentence": "The investors rejected the pitch because the rain had left it waterlogged.",
       "primed_sense": 1,
       "correct_sense": 0,
-      "resolution_word": "waterlogged"
+      "resolution_word": "waterlogged",
+      "matched_control_sentence": "The referee rejected the pitch because the rain had left it waterlogged."
     },
     {
       "id": "pitch_gp_05",
       "sentence": "The investors asked to see the pitch, so the groundskeeper led them onto it.",
       "primed_sense": 1,
       "correct_sense": 0,
-      "resolution_word": "groundskeeper"
+      "resolution_word": "groundskeeper",
+      "matched_control_sentence": "The players asked to see the pitch, so the groundskeeper led them onto it."
     },
     {
       "id": "pitch_gp_06",
       "sentence": "The board reviewed the pitch until a groundskeeper asked them to keep off the grass.",
       "primed_sense": 1,
       "correct_sense": 0,
-      "resolution_word": "grass"
+      "resolution_word": "grass",
+      "matched_control_sentence": "The coaching staff reviewed the pitch until a groundskeeper asked them to keep off the grass."
     },
     {
       "id": "pitch_gp_07",
       "sentence": "Her slides were ready, but the pitch was still too wet for kickoff.",
       "primed_sense": 1,
       "correct_sense": 0,
-      "resolution_word": "wet"
+      "resolution_word": "wet",
+      "matched_control_sentence": "Her football boots were ready, but the pitch was still too wet for kickoff."
+    },
+    {
+      "id": "pitch_gp_08",
+      "sentence": "The pitch was poorly kept; the slides hadn't been updated.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "slides",
+      "matched_control_sentence": "The pitch was poorly prepared; the slides hadn't been updated."
+    },
+    {
+      "id": "pitch_gp_09",
+      "sentence": "The groundskeeper criticised the pitch because its market analysis lacked evidence.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "market",
+      "matched_control_sentence": "The business consultant criticised the pitch because its market analysis lacked evidence."
+    },
+    {
+      "id": "pitch_gp_10",
+      "sentence": "The football coach discussed the pitch until the board asked about projected profits.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "profits",
+      "matched_control_sentence": "The startup adviser discussed the pitch until the board asked about projected profits."
+    },
+    {
+      "id": "pitch_gp_11",
+      "sentence": "With the goalposts still being repaired, he was puzzled by the state of the pitch, which the entrepreneur had based on outdated figures.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "entrepreneur",
+      "matched_control_sentence": "With the financial forecasts still being revised, he was puzzled by the state of the pitch, which the entrepreneur had based on outdated figures."
+    },
+    {
+      "id": "pitch_gp_12",
+      "sentence": "The team captain revised the pitch before the investors arrived for the presentation.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "investors",
+      "matched_control_sentence": "The company founder revised the pitch before the investors arrived for the presentation."
+    },
+    {
+      "id": "pitch_gp_13",
+      "sentence": "The sports reporter analysed the pitch, which promised rapid growth in subscriber revenue.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "revenue",
+      "matched_control_sentence": "The financial reporter analysed the pitch, which promised rapid growth in subscriber revenue."
+    },
+    {
+      "id": "pitch_gp_14",
+      "sentence": "While the players warmed up on their pitch, the investors were already waiting.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "investors",
+      "matched_control_sentence": "While the founders rehearsed their pitch, the investors were already waiting.",
+      "design_note": "The phrase 'on their pitch' grammatically fixes the field reading; retain as a lexical-switch control rather than primary evidence of reanalysis."
     }
   ]
 }
