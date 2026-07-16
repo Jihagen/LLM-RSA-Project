@@ -169,6 +169,24 @@ def _load_h5_cells(results_dir):
                 "arch": arch,
                 "word": word,
                 "stages": stage_means,
+                "homonym": stage_means[1],
+                "resolution": stage_means[2],
+                "matched_control": float(
+                    np.mean(
+                        [
+                            float(row["matched_control_correct_margin_norm"])
+                            for row in cell_rows
+                        ]
+                    )
+                ),
+                "isolated_resolver": float(
+                    np.mean(
+                        [
+                            float(row["resolver_isolated_correct_margin_norm"])
+                            for row in cell_rows
+                        ]
+                    )
+                ),
                 "delta": float(
                     np.mean(
                         [
@@ -209,8 +227,8 @@ def plot_h5_trajectories(cells, output_path):
     x = np.arange(3)
 
     for ax, word in zip(axes, WORDS):
-        ax.axhspan(lower, 0, color=OUTCOME["wrong"], alpha=0.075)
-        ax.axhspan(0, upper, color=OUTCOME["correct"], alpha=0.075)
+        ax.axhspan(lower, 0, color="#F2CDC7", alpha=0.62)
+        ax.axhspan(0, upper, color="#D5E8D9", alpha=0.62)
         ax.axhline(0, color=INK, linewidth=1.0)
         word_cells = [cell for cell in cells if cell["word"] == word]
         for arch in ("encoder", "decoder"):
@@ -250,7 +268,7 @@ def plot_h5_trajectories(cells, output_path):
     axes[-1].text(
         0.5,
         0.30,
-        "Thin lines: model means\nThick lines: architecture means\n\nAbove 0: correct-sense side\nBelow 0: primed-sense side",
+        "Thin lines: model means\nThick lines: architecture means\n\nGreen background: resolved/correct side\nRed background: primed/incorrect side",
         transform=axes[-1].transAxes,
         ha="center",
         va="center",
@@ -267,51 +285,89 @@ def plot_h5_trajectories(cells, output_path):
 
 def plot_h5_effects(cells, output_path):
     panels = [
-        ("delta", "Resolver − homonym", "Positive = update toward correct sense"),
         (
-            "matched_cost",
-            "Conflict − matched control",
-            "Negative = residual conflict cost",
+            "homonym",
+            "resolution",
+            "Through homonym",
+            "Conflict resolver",
+            "Rightward = update toward resolved sense",
         ),
         (
-            "isolated_difference",
-            "Conflict − isolated resolver",
-            "Negative = resolver alone scores higher",
+            "matched_control",
+            "resolution",
+            "Matched-control resolver",
+            "Conflict resolver",
+            "Leftward = conflict remains below its matched control",
+        ),
+        (
+            "isolated_resolver",
+            "resolution",
+            "Resolver in isolation",
+            "Conflict resolver",
+            "Leftward = resolver alone scores higher",
         ),
     ]
-    fig, axes = plt.subplots(1, 3, figsize=(14.2, 6.1), sharey=True, constrained_layout=True)
-    model_offsets = np.linspace(-0.20, 0.20, 8)
-    model_order = [_safe(model) for model in ALL_MODELS]
+    fig, axes = plt.subplots(
+        1,
+        3,
+        figsize=(15.0, 7.0),
+        sharey=True,
+        sharex=True,
+        constrained_layout=True,
+    )
+    arch_offsets = {"encoder": -0.16, "decoder": 0.16}
 
-    for ax, (metric, title, note) in zip(axes, panels):
+    for ax, (start_key, end_key, start_label, end_label, note) in zip(axes, panels):
         ax.axvline(0, color=INK, linewidth=1.05)
         for word_index, word in enumerate(WORDS):
             word_cells = [cell for cell in cells if cell["word"] == word]
-            by_model = {cell["model"]: cell for cell in word_cells}
-            for model_index, model in enumerate(model_order):
-                cell = by_model[model]
-                ax.scatter(
-                    cell[metric],
-                    word_index + model_offsets[model_index],
-                    s=25,
-                    color=ARCHITECTURE[cell["arch"]],
-                    alpha=0.63,
-                    edgecolor="white",
-                    linewidth=0.35,
-                    zorder=3,
+            for arch in ("encoder", "decoder"):
+                arch_cells = [cell for cell in word_cells if cell["arch"] == arch]
+                y = word_index + arch_offsets[arch]
+                for cell in arch_cells:
+                    ax.plot(
+                        [cell[start_key], cell[end_key]],
+                        [y, y],
+                        color=ARCHITECTURE[arch],
+                        alpha=0.16,
+                        linewidth=0.9,
+                        zorder=1,
+                    )
+                start = np.mean([cell[start_key] for cell in arch_cells])
+                end = np.mean([cell[end_key] for cell in arch_cells])
+                ax.annotate(
+                    "",
+                    xy=(end, y),
+                    xytext=(start, y),
+                    arrowprops={
+                        "arrowstyle": "-|>",
+                        "color": ARCHITECTURE[arch],
+                        "linewidth": 2.0,
+                        "shrinkA": 2,
+                        "shrinkB": 2,
+                    },
+                    zorder=4,
                 )
-            ax.scatter(
-                np.mean([cell[metric] for cell in word_cells]),
-                word_index,
-                marker="D",
-                s=54,
-                color=INK,
-                edgecolor="white",
-                linewidth=0.6,
-                zorder=5,
-            )
-        ax.set_title(title, loc="left", fontweight="bold")
-        ax.set_xlabel(note)
+                ax.scatter(
+                    start,
+                    y,
+                    s=48,
+                    facecolor="white",
+                    edgecolor=ARCHITECTURE[arch],
+                    linewidth=1.5,
+                    zorder=5,
+                )
+                ax.scatter(
+                    end,
+                    y,
+                    s=48,
+                    facecolor=ARCHITECTURE[arch],
+                    edgecolor="white",
+                    linewidth=0.7,
+                    zorder=5,
+                )
+        ax.set_title(f"{start_label} → {end_label}", loc="left", fontweight="bold")
+        ax.set_xlabel(f"Correct-sense margin\n{note}")
         ax.grid(axis="x")
         ax.grid(axis="y", visible=False)
 
@@ -319,17 +375,34 @@ def plot_h5_effects(cells, output_path):
     axes[0].invert_yaxis()
     fig.legend(
         handles=[
-            Line2D([0], [0], marker="o", linestyle="", color=color, label=arch.capitalize())
+            Line2D([0], [0], color=color, linewidth=2, label=arch.capitalize())
             for arch, color in ARCHITECTURE.items()
         ]
         + [
-            Line2D([0], [0], marker="D", linestyle="", color=INK, label="Word mean")
+            Line2D(
+                [0],
+                [0],
+                marker="o",
+                linestyle="",
+                markerfacecolor="white",
+                markeredgecolor=INK,
+                label="Reference/start",
+            ),
+            Line2D(
+                [0],
+                [0],
+                marker="o",
+                linestyle="",
+                markerfacecolor=INK,
+                markeredgecolor="white",
+                label="Conflict resolver endpoint",
+            ),
         ],
         loc="outside lower center",
-        ncol=3,
+        ncol=4,
     )
     fig.suptitle(
-        "Incremental updating and its controls vary across homonyms",
+        "How preceding context changes the fixed-sentinel endpoint",
         fontsize=14,
         fontweight="bold",
     )

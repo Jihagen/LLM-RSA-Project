@@ -49,6 +49,7 @@ def plot_h3(results, output):
     )}
     fig, ax = plt.subplots(figsize=(9.2, 5.4), constrained_layout=True)
     ax.axvline(0, color=INK, linewidth=1.1)
+    ax.axhline(3.5, color="#E7E4DE", linewidth=2.0)
     for index, model in enumerate(ALL_MODELS):
         row = rows[_safe(model)]
         value = float(row["mean_delta_M_norm_L_minus_R"])
@@ -68,14 +69,31 @@ def plot_h3(results, output):
         )
     ax.set_yticks(range(len(ALL_MODELS)), [DISPLAY_NAMES[m] for m in ALL_MODELS])
     ax.invert_yaxis()
-    ax.set_xlabel(r"Mean paired effect $\hat{M}_{L}-\hat{M}_{R}$ · 95% word bootstrap interval")
-    ax.set_title("Right-context availability at the homonym", loc="left", fontweight="bold")
+    ax.set_xlabel(
+        r"Paired margin difference $\hat{M}_{L}-\hat{M}_{R}$"
+        "\n(horizontal line = 95% word-bootstrap interval)"
+    )
+    ax.set_title(
+        "Effect of moving decisive context behind the homonym",
+        loc="left",
+        fontweight="bold",
+    )
+    ax.text(
+        0.01,
+        0.02,
+        "L: decisive clause before homonym\nR: same clause after homonym",
+        transform=ax.transAxes,
+        ha="left",
+        color=MUTED,
+    )
     ax.text(
         0.99,
-        0.02,
-        "Positive = context-before advantage",
+        0.98,
+        "Right of zero: L gives the stronger correct-sense margin\n"
+        "Near zero: moving the clause has little effect",
         transform=ax.transAxes,
         ha="right",
+        va="top",
         color=MUTED,
     )
     ax.legend(

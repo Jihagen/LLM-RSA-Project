@@ -1,4 +1,4 @@
-"""Plot signed bare-word and neutral-carrier priors by model and homonym."""
+"""Plot signed bare-word and neutral-carrier lean by model and homonym."""
 
 import argparse
 import csv
@@ -17,13 +17,13 @@ from visual_style import GRID, INK, PRIOR_CMAP, SENSE, apply_report_style
 
 WORDS = ["bank", "bark", "bat", "crane", "spring", "match", "light", "pitch"]
 SENSE_LABELS = {
-    "bank": ("river", "finance"),
-    "bark": ("sound", "tree"),
+    "bank": ("river", "financial"),
+    "bark": ("dog", "tree"),
     "bat": ("sports", "animal"),
     "crane": ("bird", "machine"),
     "spring": ("season", "water"),
-    "match": ("game", "fire"),
-    "light": ("bright", "weight"),
+    "match": ("sport", "fire"),
+    "light": ("illumination", "low weight"),
     "pitch": ("field", "proposal"),
 }
 DISPLAY_NAMES = {
@@ -88,18 +88,14 @@ def _load_priors(results_dir: Path):
     return bare, carrier, consistency
 
 
-def _cell_label(value):
-    direction = "S0" if value >= 0 else "S1"
-    return f"{direction}\n{abs(value):.2f}"
+def _cell_label(value, word):
+    sense_index = 0 if value >= 0 else 1
+    return f"{SENSE_LABELS[word][sense_index]}\n{abs(value):.2f}"
 
 
 def _prior_panel(ax, values, norm, title, consistency=None):
     image = ax.imshow(values, cmap=PRIOR_CMAP, norm=norm, aspect="auto")
-    labels = [
-        f"{word}\n{SENSE_LABELS[word][0]} / {SENSE_LABELS[word][1]}"
-        for word in WORDS
-    ]
-    ax.set_xticks(range(len(WORDS)), labels, fontsize=9)
+    ax.set_xticks(range(len(WORDS)), WORDS, fontsize=9)
     ax.set_yticks(
         range(len(ALL_MODELS)),
         [DISPLAY_NAMES[model] for model in ALL_MODELS],
@@ -118,7 +114,7 @@ def _prior_panel(ax, values, norm, title, consistency=None):
             ax.text(
                 column,
                 row,
-                _cell_label(value),
+                _cell_label(value, WORDS[column]),
                 ha="center",
                 va="center",
                 fontsize=8.6,
@@ -156,17 +152,15 @@ def make_figure(results_dir: Path, output_path: Path):
         axes[1],
         carrier,
         norm,
-        "Neutral carriers · mean signed prior",
+        "Neutral carriers · mean signed lean",
         consistency=consistency,
     )
     colorbar = fig.colorbar(image, ax=axes, fraction=0.022, pad=0.02)
-    colorbar.set_label("Signed normalized prior · saturation = strength")
+    colorbar.set_label("Signed normalized lean · saturation = strength")
     colorbar.set_ticks([-limit, 0, limit])
-    colorbar.set_ticklabels(["sense 1", "neutral", "sense 0"])
+    colorbar.set_ticklabels(["negative lean", "neutral", "positive lean"])
     fig.legend(
         handles=[
-            Patch(facecolor=SENSE[0], label="toward sense 0 (first label)"),
-            Patch(facecolor=SENSE[1], label="toward sense 1 (second label)"),
             Line2D([0], [0], marker="o", linestyle="", markerfacecolor=INK, markeredgecolor=INK, label="≥80% carrier-direction consistency"),
             Line2D([0], [0], marker="o", linestyle="", markerfacecolor="white", markeredgecolor=INK, label="<80% consistency"),
         ],
@@ -174,7 +168,7 @@ def make_figure(results_dir: Path, output_path: Path):
         ncol=2,
     )
     fig.suptitle(
-        "Lexical and carrier priors by model and homonym",
+        "Bare-word and neutral-carrier sense lean",
         fontsize=15,
         fontweight="bold",
     )
