@@ -1,4 +1,4 @@
-# LLM-RSA-Project
+# llm_homonym_semantics
 
 A reproducible study of whether transformer hidden states carry word-sense information in a way that can be read out across layers, token positions, and context conditions.
 
@@ -20,7 +20,7 @@ A reproducible study of whether transformer hidden states carry word-sense infor
 ## Quick start
 
 ```bash
-cd LLM-RSA-Project
+cd llm_homonym_semantics
 python run_study.py --hypotheses H1 H2
 python recompute_geometry.py
 python plot_geometry_audit.py

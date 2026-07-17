@@ -6,7 +6,7 @@ This document captures the minimal workflow needed to reproduce the study from a
 
 - Use the Python environment that has the required dependencies installed.
 - Ensure the offline Hugging Face cache is available under the workspace-level hf_cache directory.
-- Confirm that the project root is the LLM-RSA-Project directory.
+- Confirm that the project root is the llm_homonym_semantics directory.
 
 ## 2. Data dependencies
 
