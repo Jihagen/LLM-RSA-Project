@@ -17,7 +17,7 @@ from pathlib import Path
 from model_registry import ALL_MODELS
 
 
-WORDS = ["bank", "bark", "bat", "crane", "spring", "match", "light", "pitch"]
+WORDS = ["bank", "bark", "bat", "crane", "spring", "match", "pitch"]
 RESULTS = Path("results")
 _FRESH_AFTER = None
 
@@ -59,6 +59,8 @@ def _selected_layers():
     for model in ALL_MODELS:
         safe = model.replace("/", "_")
         path = RESULTS / "study" / "H1" / safe / "h1_summary.csv"
+        if not path.exists():
+            return {}
         rows = _read_csv(path)
         by_word = {row["word"]: int(row["best_layer_M"]) for row in rows}
         if set(by_word) != set(WORDS):
@@ -145,7 +147,7 @@ def validate_postflight(marker_path=None, full=False):
             h1_summary_path = RESULTS / "study" / "H1" / safe / "h1_summary.csv"
             h1_summary = _read_csv(h1_summary_path)
             if len(h1_summary) != len(WORDS):
-                raise AssertionError(f"{h1_summary_path}: expected 8 words")
+                raise AssertionError(f"{h1_summary_path}: expected {len(WORDS)} words")
             h1_by_word = {row["word"]: row for row in h1_summary}
             for word in WORDS:
                 nested_path = RESULTS / "study" / "H1" / safe / f"h1_nested_loo_{word}.csv"
@@ -171,7 +173,7 @@ def validate_postflight(marker_path=None, full=False):
                 },
             )
             if len(h2_rows) != len(WORDS):
-                raise AssertionError(f"{h2_path}: expected 8 held-out words")
+                raise AssertionError(f"{h2_path}: expected {len(WORDS)} held-out words")
         h2_summary = _read_csv(RESULTS / "study" / "H2" / "h2_strategy_summary.csv")
         if len(h2_summary) != len(ALL_MODELS):
             raise AssertionError("H2 strategy summary must contain one row per model")
@@ -189,7 +191,9 @@ def validate_postflight(marker_path=None, full=False):
     )
     h0_cells = {(row["model"], row["word"]) for row in h0_summary}
     if h0_cells != expected_cells or len(h0_summary) != len(expected_cells):
-        raise AssertionError("H0 summary does not contain exactly all 64 model-word cells")
+        raise AssertionError(
+            f"H0 summary does not contain exactly all {len(ALL_MODELS) * len(WORDS)} model-word cells"
+        )
     for row in h0_summary:
         if int(row["n_independent_carriers"]) != 5:
             raise AssertionError(
@@ -217,7 +221,9 @@ def validate_postflight(marker_path=None, full=False):
     expected_h3 = {(model, word, condition) for model, word in expected_cells for condition in ("L", "R")}
     observed_h3 = {(row["model"], row["word"], row["condition"]) for row in h3_rows}
     if observed_h3 != expected_h3 or len(h3_rows) != len(expected_h3):
-        raise AssertionError("H3 aggregate does not contain exactly all 128 model-word-condition cells")
+        raise AssertionError(
+            f"H3 aggregate does not contain exactly all {len(ALL_MODELS) * len(WORDS) * 2} model-word-condition cells"
+        )
     _require_norm_bounds(h3_path, h3_rows, ["mean_M_l_norm"])
     for model, word in sorted(expected_cells):
         path = RESULTS / "study" / "H3" / model / f"h3_{word}.csv"
@@ -246,7 +252,9 @@ def validate_postflight(marker_path=None, full=False):
     )
     h4_cells = {(row["model"], row["word"]) for row in h4_rows}
     if h4_cells != expected_cells or len(h4_rows) != len(expected_cells):
-        raise AssertionError("H4 aggregate does not contain exactly all 64 model-word cells")
+        raise AssertionError(
+            f"H4 aggregate does not contain exactly all {len(ALL_MODELS) * len(WORDS)} model-word cells"
+        )
     if any(row["primary_estimand"] != "within-position sense decodability" for row in h4_rows):
         raise AssertionError("H4 primary estimand is not the corrected local-decoding analysis")
     for model, word in sorted(expected_cells):
@@ -260,7 +268,7 @@ def validate_postflight(marker_path=None, full=False):
     h5_path = RESULTS / "study" / "H5" / "h5_design_audit.csv"
     h5_rows = _read_csv(h5_path)
     if {row["word"] for row in h5_rows} != set(WORDS) or len(h5_rows) != len(WORDS):
-        raise AssertionError("H5 audit must contain exactly the eight study homonyms")
+        raise AssertionError("H5 audit must contain exactly the seven study homonyms")
     light = next(row for row in h5_rows if row["word"] == "light")
     if light["eligible_for_h5"].lower() != "false" or "parts of speech" not in light["exclusion_reason"]:
         raise AssertionError("H5 light exclusion is missing or incorrectly documented")
@@ -290,7 +298,9 @@ def validate_postflight(marker_path=None, full=False):
         )
         observed_h5 = {(row["model"], row["word"]) for row in aggregate}
         if observed_h5 != expected_h5 or len(aggregate) != len(expected_h5):
-            raise AssertionError("H5 aggregate does not contain all 56 eligible model-word cells")
+            raise AssertionError(
+                f"H5 aggregate does not contain all {len(ALL_MODELS) * len(h5_words)} eligible model-word cells"
+            )
         if any(row["analysis_status"] != "model_internal_ready" for row in aggregate):
             raise AssertionError("H5 output is not labelled model_internal_ready")
         sentence_path = RESULTS / "study" / "H5" / "h5_sentence_level.csv"

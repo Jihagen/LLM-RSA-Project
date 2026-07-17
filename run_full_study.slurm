@@ -51,7 +51,7 @@ touch "$RUN_MARKER"
 # Forward-pass analyses, including the now-ready fixed-sentinel H5 design.
 "$PYTHON" "$PROJECT_DIR/run_study.py" \
     --hypotheses H0 H3 H4 H5 \
-    --words bank bark bat crane spring match light pitch
+    --words bank bark bat crane spring match pitch
 
 "$PYTHON" "$PROJECT_DIR/plot_geometry_audit.py"
 "$PYTHON" "$PROJECT_DIR/plot_semantic_layer_atlas.py"

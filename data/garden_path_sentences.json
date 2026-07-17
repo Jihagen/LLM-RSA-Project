@@ -113,120 +113,6 @@
       "matched_control_sentence": "After meeting her accountant, she returned to the bank because the vault alarm had sounded."
     }
   ],
-  "bat": [
-    {
-      "id": "bat_gp_01",
-      "sentence": "He handed her the bat, which spread its wings and flew away.",
-      "primed_sense": 0,
-      "correct_sense": 1,
-      "resolution_word": "wings",
-      "matched_control_sentence": "The wildlife handler handed her the bat, which spread its wings and flew away."
-    },
-    {
-      "id": "bat_gp_02",
-      "sentence": "After practice, he carried the bat into the shed, where it hung upside down from a rafter.",
-      "primed_sense": 0,
-      "correct_sense": 1,
-      "resolution_word": "rafter",
-      "matched_control_sentence": "After the wildlife rescue, he carried the bat into the shed, where it hung upside down from a rafter."
-    },
-    {
-      "id": "bat_gp_03",
-      "sentence": "She reached for the bat beside the wicket, but it shrieked and flew away.",
-      "primed_sense": 0,
-      "correct_sense": 1,
-      "resolution_word": "shrieked",
-      "matched_control_sentence": "The wildlife handler reached for the bat beside the wicket, but it shrieked and flew away."
-    },
-    {
-      "id": "bat_gp_04",
-      "sentence": "The umpire inspected the bat, which bit his finger and flew over the boundary.",
-      "primed_sense": 0,
-      "correct_sense": 1,
-      "resolution_word": "flew",
-      "matched_control_sentence": "The veterinarian inspected the bat, which bit his finger and flew over the boundary."
-    },
-    {
-      "id": "bat_gp_05",
-      "sentence": "The player reached into the kit bag for the bat, which unfurled its wings and clung to his sleeve.",
-      "primed_sense": 0,
-      "correct_sense": 1,
-      "resolution_word": "wings",
-      "matched_control_sentence": "The wildlife rehabilitator reached into the kit bag for the bat, which unfurled its wings and clung to his sleeve."
-    },
-    {
-      "id": "bat_gp_06",
-      "sentence": "She locked the bat in the equipment room, but by morning it was sleeping upside down from the ceiling.",
-      "primed_sense": 0,
-      "correct_sense": 1,
-      "resolution_word": "sleeping",
-      "matched_control_sentence": "She secured the rescued bat in the equipment room, but by morning it was sleeping upside down from the ceiling."
-    },
-    {
-      "id": "bat_gp_07",
-      "sentence": "The boy tucked the bat under his arm, but it wriggled free and flew into the rafters.",
-      "primed_sense": 0,
-      "correct_sense": 1,
-      "resolution_word": "rafters",
-      "matched_control_sentence": "The wildlife handler tucked the bat under his arm, but it wriggled free and flew into the rafters."
-    },
-    {
-      "id": "bat_gp_08",
-      "sentence": "After monitoring the cave all night, she carried the bat until the batter asked for it back.",
-      "primed_sense": 1,
-      "correct_sense": 0,
-      "resolution_word": "batter",
-      "matched_control_sentence": "After clearing the dugout, she carried the bat until the batter asked for it back."
-    },
-    {
-      "id": "bat_gp_09",
-      "sentence": "The wildlife officer inspected the bat before the umpire ruled it illegal.",
-      "primed_sense": 1,
-      "correct_sense": 0,
-      "resolution_word": "umpire",
-      "matched_control_sentence": "The equipment manager inspected the bat before the umpire ruled it illegal."
-    },
-    {
-      "id": "bat_gp_10",
-      "sentence": "The zoologist photographed the bat that the batsman had cracked during practice.",
-      "primed_sense": 1,
-      "correct_sense": 0,
-      "resolution_word": "batsman",
-      "matched_control_sentence": "The sports reporter photographed the bat that the batsman had cracked during practice."
-    },
-    {
-      "id": "bat_gp_11",
-      "sentence": "The cave guide returned the bat to the coach's equipment bag.",
-      "primed_sense": 1,
-      "correct_sense": 0,
-      "resolution_word": "coach",
-      "matched_control_sentence": "The cricket player returned the bat to the coach's equipment bag."
-    },
-    {
-      "id": "bat_gp_12",
-      "sentence": "At dusk, the ranger spotted the bat lying beside the wicket.",
-      "primed_sense": 1,
-      "correct_sense": 0,
-      "resolution_word": "wicket",
-      "matched_control_sentence": "During practice, the player spotted the bat lying beside the wicket."
-    },
-    {
-      "id": "bat_gp_13",
-      "sentence": "The conservationist tagged the bat before the slugger took it to home plate.",
-      "primed_sense": 1,
-      "correct_sense": 0,
-      "resolution_word": "slugger",
-      "matched_control_sentence": "The equipment assistant tagged the bat before the slugger took it to home plate."
-    },
-    {
-      "id": "bat_gp_14",
-      "sentence": "The cave researcher found the bat before the pitcher asked to use it during warm-up.",
-      "primed_sense": 1,
-      "correct_sense": 0,
-      "resolution_word": "pitcher",
-      "matched_control_sentence": "The clubhouse attendant found the bat before the pitcher asked to use it during warm-up."
-    }
-  ],
   "bark": [
     {
       "id": "bark_gp_01",
@@ -339,6 +225,120 @@
       "correct_sense": 0,
       "resolution_word": "echoed",
       "matched_control_sentence": "After listening beside the kennel, she noted the bark that echoed across the empty yard."
+    }
+  ],
+  "bat": [
+    {
+      "id": "bat_gp_01",
+      "sentence": "He handed her the bat, which spread its wings and flew away.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "wings",
+      "matched_control_sentence": "The wildlife handler handed her the bat, which spread its wings and flew away."
+    },
+    {
+      "id": "bat_gp_02",
+      "sentence": "After practice, he carried the bat into the shed, where it hung upside down from a rafter.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "rafter",
+      "matched_control_sentence": "After the wildlife rescue, he carried the bat into the shed, where it hung upside down from a rafter."
+    },
+    {
+      "id": "bat_gp_03",
+      "sentence": "She reached for the bat beside the wicket, but it shrieked and flew away.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "shrieked",
+      "matched_control_sentence": "The wildlife handler reached for the bat beside the wicket, but it shrieked and flew away."
+    },
+    {
+      "id": "bat_gp_04",
+      "sentence": "The umpire inspected the bat, which bit his finger and flew over the boundary.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "flew",
+      "matched_control_sentence": "The veterinarian inspected the bat, which bit his finger and flew over the boundary."
+    },
+    {
+      "id": "bat_gp_05",
+      "sentence": "The player reached into the kit bag for the bat, which unfurled its wings and clung to his sleeve.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "wings",
+      "matched_control_sentence": "The wildlife rehabilitator reached into the kit bag for the bat, which unfurled its wings and clung to his sleeve."
+    },
+    {
+      "id": "bat_gp_06",
+      "sentence": "She locked the bat in the equipment room, but by morning it was sleeping upside down from the ceiling.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "sleeping",
+      "matched_control_sentence": "She secured the rescued bat in the equipment room, but by morning it was sleeping upside down from the ceiling."
+    },
+    {
+      "id": "bat_gp_07",
+      "sentence": "The boy tucked the bat under his arm, but it wriggled free and flew into the rafters.",
+      "primed_sense": 0,
+      "correct_sense": 1,
+      "resolution_word": "rafters",
+      "matched_control_sentence": "The wildlife handler tucked the bat under his arm, but it wriggled free and flew into the rafters."
+    },
+    {
+      "id": "bat_gp_08",
+      "sentence": "After monitoring the cave all night, she carried the bat until the batter asked for it back.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "batter",
+      "matched_control_sentence": "After clearing the dugout, she carried the bat until the batter asked for it back."
+    },
+    {
+      "id": "bat_gp_09",
+      "sentence": "The wildlife officer inspected the bat before the umpire ruled it illegal.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "umpire",
+      "matched_control_sentence": "The equipment manager inspected the bat before the umpire ruled it illegal."
+    },
+    {
+      "id": "bat_gp_10",
+      "sentence": "The zoologist photographed the bat that the batsman had cracked during practice.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "batsman",
+      "matched_control_sentence": "The sports reporter photographed the bat that the batsman had cracked during practice."
+    },
+    {
+      "id": "bat_gp_11",
+      "sentence": "The cave guide returned the bat to the coach's equipment bag.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "coach",
+      "matched_control_sentence": "The cricket player returned the bat to the coach's equipment bag."
+    },
+    {
+      "id": "bat_gp_12",
+      "sentence": "At dusk, the ranger spotted the bat lying beside the wicket.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "wicket",
+      "matched_control_sentence": "During practice, the player spotted the bat lying beside the wicket."
+    },
+    {
+      "id": "bat_gp_13",
+      "sentence": "The conservationist tagged the bat before the slugger took it to home plate.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "slugger",
+      "matched_control_sentence": "The equipment assistant tagged the bat before the slugger took it to home plate."
+    },
+    {
+      "id": "bat_gp_14",
+      "sentence": "The cave researcher found the bat before the pitcher asked to use it during warm-up.",
+      "primed_sense": 1,
+      "correct_sense": 0,
+      "resolution_word": "pitcher",
+      "matched_control_sentence": "The clubhouse attendant found the bat before the pitcher asked to use it during warm-up."
     }
   ],
   "crane": [

@@ -50,7 +50,7 @@ touch "$RUN_MARKER"
 
 "$PYTHON" "$PROJECT_DIR/run_study.py" \
     --hypotheses H0 H3 H4 \
-    --words bank bark bat crane spring match light pitch
+    --words bank bark bat crane spring match pitch
 
 # H5 is audited here but intentionally not run while directions and matched controls
 # are incomplete. Human validation is not claimed or required; light is excluded.

@@ -15,7 +15,7 @@ from model_registry import ALL_MODELS
 from visual_style import GRID, INK, PRIOR_CMAP, SENSE, apply_report_style
 
 
-WORDS = ["bank", "bark", "bat", "crane", "spring", "match", "light", "pitch"]
+WORDS = ["bank", "bark", "bat", "crane", "spring", "match", "pitch"]
 SENSE_LABELS = {
     "bank": ("river", "financial"),
     "bark": ("dog", "tree"),

@@ -17,7 +17,7 @@ from model_registry import ALL_MODELS
 from visual_style import AGREEMENT, GRID, INK, apply_report_style
 
 
-WORDS = ["bank", "bark", "bat", "crane", "spring", "match", "light", "pitch"]
+WORDS = ["bank", "bark", "bat", "crane", "spring", "match", "pitch"]
 DISPLAY_NAMES = {
     "answerdotai/ModernBERT-large": "ModernBERT",
     "microsoft/deberta-v3-large": "DeBERTa",

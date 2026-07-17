@@ -107,7 +107,7 @@ def run_h2(
     epsilon: float = 0.0,
 ) -> None:
     """Run leave-one-word-out strategy comparison for every model."""
-    words = words or ["bank", "bark", "bat", "crane", "spring", "match", "light", "pitch"]
+    words = words or ["bank", "bark", "bat", "crane", "spring", "match", "pitch"]
     if len(words) < 2:
         raise ValueError("H2 requires at least two words")
 

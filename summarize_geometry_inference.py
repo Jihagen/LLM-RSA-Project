@@ -8,7 +8,7 @@ import numpy as np
 from model_registry import ALL_MODELS
 
 
-WORDS = ["bank", "bark", "bat", "crane", "spring", "match", "light", "pitch"]
+WORDS = ["bank", "bark", "bat", "crane", "spring", "match", "pitch"]
 ENCODERS = {
     "answerdotai/ModernBERT-large",
     "microsoft/deberta-v3-large",

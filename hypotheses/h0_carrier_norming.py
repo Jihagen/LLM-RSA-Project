@@ -136,7 +136,7 @@ def run_h0(
     Results are saved to results/study/H0/ and used by H3 for context_gain.
     """
     model_names = model_names or H3_MODELS
-    words       = words or ["bank", "bark", "bat", "crane", "spring", "match", "light", "pitch"]
+    words       = words or ["bank", "bark", "bat", "crane", "spring", "match", "pitch"]
     OUTPUT_BASE.mkdir(parents=True, exist_ok=True)
 
     if not Path(paired_data_path).exists():

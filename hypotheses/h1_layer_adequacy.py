@@ -48,7 +48,7 @@ logger = logging.getLogger(__name__)
 
 RESULTS_DIR   = "results"
 OUTPUT_BASE   = Path("results/study/H1")
-DEFAULT_WORDS = ["bank", "bark", "bat", "crane", "spring", "match", "light", "pitch"]
+DEFAULT_WORDS = ["bank", "bark", "bat", "crane", "spring", "match", "pitch"]
 
 
 def _score_outer_sentence(X_train, labels_train, h_test, label_test):

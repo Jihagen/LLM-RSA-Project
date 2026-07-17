@@ -23,7 +23,7 @@ DISPLAY_NAMES = {
     "mistralai/Mistral-Nemo-Base-2407": "Mistral-Nemo",
     "allenai/OLMo-2-1124-7B": "OLMo-7B",
 }
-WORDS = ["bank", "bark", "bat", "crane", "spring", "match", "light", "pitch"]
+WORDS = ["bank", "bark", "bat", "crane", "spring", "match", "pitch"]
 WORD_MARKERS = ["o", "s", "^", "v", "D", "P", "X", "*"]
 
 

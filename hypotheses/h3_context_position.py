@@ -124,7 +124,7 @@ def run_h3(
     Requires paired_sentences.json and H5 profiling files.
     """
     model_names = model_names or H3_MODELS
-    words = words or ["bank", "bark", "bat", "crane", "spring", "match", "light", "pitch"]
+    words = words or ["bank", "bark", "bat", "crane", "spring", "match", "pitch"]
     OUTPUT_BASE.mkdir(parents=True, exist_ok=True)
 
     if not Path(paired_data_path).exists():

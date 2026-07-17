@@ -141,148 +141,6 @@
       "carrier": "The bank became difficult to access."
     }
   ],
-  "bat": [
-    {
-      "id": "bat_L_01",
-      "sentence": "During the final inning, they watched the bat.",
-      "condition": "L",
-      "sense": 0,
-      "carrier": "They watched the bat."
-    },
-    {
-      "id": "bat_R_01",
-      "sentence": "They watched the bat during the final inning.",
-      "condition": "R",
-      "sense": 0,
-      "carrier": "They watched the bat."
-    },
-    {
-      "id": "bat_L_03",
-      "sentence": "Before the player stepped up to home plate, she checked the bat.",
-      "condition": "L",
-      "sense": 0,
-      "carrier": "She checked the bat."
-    },
-    {
-      "id": "bat_R_03",
-      "sentence": "She checked the bat before the player stepped up to home plate.",
-      "condition": "R",
-      "sense": 0,
-      "carrier": "She checked the bat."
-    },
-    {
-      "id": "bat_L_05",
-      "sentence": "After the equipment bag fell open, he moved the bat carefully.",
-      "condition": "L",
-      "sense": 0,
-      "carrier": "He moved the bat carefully."
-    },
-    {
-      "id": "bat_R_05",
-      "sentence": "He moved the bat carefully after the equipment bag fell open.",
-      "condition": "R",
-      "sense": 0,
-      "carrier": "He moved the bat carefully."
-    },
-    {
-      "id": "bat_L_07",
-      "sentence": "Because the coach wanted to identify the team gear, the bat was marked.",
-      "condition": "L",
-      "sense": 0,
-      "carrier": "The bat was marked."
-    },
-    {
-      "id": "bat_R_07",
-      "sentence": "The bat was marked because the coach wanted to identify the team gear.",
-      "condition": "R",
-      "sense": 0,
-      "carrier": "The bat was marked."
-    },
-    {
-      "id": "bat_L_09",
-      "sentence": "After the umpire questioned the equipment, the bat was kept aside.",
-      "condition": "L",
-      "sense": 0,
-      "carrier": "The bat was kept aside."
-    },
-    {
-      "id": "bat_R_09",
-      "sentence": "The bat was kept aside after the umpire questioned the equipment.",
-      "condition": "R",
-      "sense": 0,
-      "carrier": "The bat was kept aside."
-    },
-    {
-      "id": "bat_L_02",
-      "sentence": "During the cave survey, they watched the bat.",
-      "condition": "L",
-      "sense": 1,
-      "carrier": "They watched the bat."
-    },
-    {
-      "id": "bat_R_02",
-      "sentence": "They watched the bat during the cave survey.",
-      "condition": "R",
-      "sense": 1,
-      "carrier": "They watched the bat."
-    },
-    {
-      "id": "bat_L_04",
-      "sentence": "Before the wildlife team released it outside, she checked the bat.",
-      "condition": "L",
-      "sense": 1,
-      "carrier": "She checked the bat."
-    },
-    {
-      "id": "bat_R_04",
-      "sentence": "She checked the bat before the wildlife team released it outside.",
-      "condition": "R",
-      "sense": 1,
-      "carrier": "She checked the bat."
-    },
-    {
-      "id": "bat_L_06",
-      "sentence": "After the animal rescue box tipped over, he moved the bat carefully.",
-      "condition": "L",
-      "sense": 1,
-      "carrier": "He moved the bat carefully."
-    },
-    {
-      "id": "bat_R_06",
-      "sentence": "He moved the bat carefully after the animal rescue box tipped over.",
-      "condition": "R",
-      "sense": 1,
-      "carrier": "He moved the bat carefully."
-    },
-    {
-      "id": "bat_L_08",
-      "sentence": "Because the researchers wanted to track the colony, the bat was marked.",
-      "condition": "L",
-      "sense": 1,
-      "carrier": "The bat was marked."
-    },
-    {
-      "id": "bat_R_08",
-      "sentence": "The bat was marked because the researchers wanted to track the colony.",
-      "condition": "R",
-      "sense": 1,
-      "carrier": "The bat was marked."
-    },
-    {
-      "id": "bat_L_10",
-      "sentence": "After the veterinarian noticed signs of stress, the bat was kept aside.",
-      "condition": "L",
-      "sense": 1,
-      "carrier": "The bat was kept aside."
-    },
-    {
-      "id": "bat_R_10",
-      "sentence": "The bat was kept aside after the veterinarian noticed signs of stress.",
-      "condition": "R",
-      "sense": 1,
-      "carrier": "The bat was kept aside."
-    }
-  ],
   "bark": [
     {
       "id": "bark_L_01",
@@ -423,6 +281,148 @@
       "condition": "R",
       "sense": 1,
       "carrier": "The bark became the focus."
+    }
+  ],
+  "bat": [
+    {
+      "id": "bat_L_01",
+      "sentence": "During the final inning, they watched the bat.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "They watched the bat."
+    },
+    {
+      "id": "bat_R_01",
+      "sentence": "They watched the bat during the final inning.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "They watched the bat."
+    },
+    {
+      "id": "bat_L_03",
+      "sentence": "Before the player stepped up to home plate, she checked the bat.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "She checked the bat."
+    },
+    {
+      "id": "bat_R_03",
+      "sentence": "She checked the bat before the player stepped up to home plate.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "She checked the bat."
+    },
+    {
+      "id": "bat_L_05",
+      "sentence": "After the equipment bag fell open, he moved the bat carefully.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "He moved the bat carefully."
+    },
+    {
+      "id": "bat_R_05",
+      "sentence": "He moved the bat carefully after the equipment bag fell open.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "He moved the bat carefully."
+    },
+    {
+      "id": "bat_L_07",
+      "sentence": "Because the coach wanted to identify the team gear, the bat was marked.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "The bat was marked."
+    },
+    {
+      "id": "bat_R_07",
+      "sentence": "The bat was marked because the coach wanted to identify the team gear.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "The bat was marked."
+    },
+    {
+      "id": "bat_L_09",
+      "sentence": "After the umpire questioned the equipment, the bat was kept aside.",
+      "condition": "L",
+      "sense": 0,
+      "carrier": "The bat was kept aside."
+    },
+    {
+      "id": "bat_R_09",
+      "sentence": "The bat was kept aside after the umpire questioned the equipment.",
+      "condition": "R",
+      "sense": 0,
+      "carrier": "The bat was kept aside."
+    },
+    {
+      "id": "bat_L_02",
+      "sentence": "During the cave survey, they watched the bat.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "They watched the bat."
+    },
+    {
+      "id": "bat_R_02",
+      "sentence": "They watched the bat during the cave survey.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "They watched the bat."
+    },
+    {
+      "id": "bat_L_04",
+      "sentence": "Before the wildlife team released it outside, she checked the bat.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "She checked the bat."
+    },
+    {
+      "id": "bat_R_04",
+      "sentence": "She checked the bat before the wildlife team released it outside.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "She checked the bat."
+    },
+    {
+      "id": "bat_L_06",
+      "sentence": "After the animal rescue box tipped over, he moved the bat carefully.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "He moved the bat carefully."
+    },
+    {
+      "id": "bat_R_06",
+      "sentence": "He moved the bat carefully after the animal rescue box tipped over.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "He moved the bat carefully."
+    },
+    {
+      "id": "bat_L_08",
+      "sentence": "Because the researchers wanted to track the colony, the bat was marked.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "The bat was marked."
+    },
+    {
+      "id": "bat_R_08",
+      "sentence": "The bat was marked because the researchers wanted to track the colony.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "The bat was marked."
+    },
+    {
+      "id": "bat_L_10",
+      "sentence": "After the veterinarian noticed signs of stress, the bat was kept aside.",
+      "condition": "L",
+      "sense": 1,
+      "carrier": "The bat was kept aside."
+    },
+    {
+      "id": "bat_R_10",
+      "sentence": "The bat was kept aside after the veterinarian noticed signs of stress.",
+      "condition": "R",
+      "sense": 1,
+      "carrier": "The bat was kept aside."
     }
   ],
   "crane": [
@@ -849,148 +849,6 @@
       "condition": "R",
       "sense": 1,
       "carrier": "The match was watched closely."
-    }
-  ],
-  "light": [
-    {
-      "id": "light_L_01",
-      "sentence": "After the curtains were opened, it was light.",
-      "condition": "L",
-      "sense": 0,
-      "carrier": "It was light."
-    },
-    {
-      "id": "light_R_01",
-      "sentence": "It was light after the curtains were opened.",
-      "condition": "R",
-      "sense": 0,
-      "carrier": "It was light."
-    },
-    {
-      "id": "light_L_03",
-      "sentence": "Once the lamp was repaired, it became light.",
-      "condition": "L",
-      "sense": 0,
-      "carrier": "It became light."
-    },
-    {
-      "id": "light_R_03",
-      "sentence": "It became light once the lamp was repaired.",
-      "condition": "R",
-      "sense": 0,
-      "carrier": "It became light."
-    },
-    {
-      "id": "light_L_05",
-      "sentence": "Even after sunset, it stayed light.",
-      "condition": "L",
-      "sense": 0,
-      "carrier": "It stayed light."
-    },
-    {
-      "id": "light_R_05",
-      "sentence": "It stayed light even after sunset.",
-      "condition": "R",
-      "sense": 0,
-      "carrier": "It stayed light."
-    },
-    {
-      "id": "light_L_07",
-      "sentence": "Because the white walls reflected the sun, it seemed light.",
-      "condition": "L",
-      "sense": 0,
-      "carrier": "It seemed light."
-    },
-    {
-      "id": "light_R_07",
-      "sentence": "It seemed light because the white walls reflected the sun.",
-      "condition": "R",
-      "sense": 0,
-      "carrier": "It seemed light."
-    },
-    {
-      "id": "light_L_09",
-      "sentence": "By adding mirrors near the window, they made it light.",
-      "condition": "L",
-      "sense": 0,
-      "carrier": "They made it light."
-    },
-    {
-      "id": "light_R_09",
-      "sentence": "They made it light by adding mirrors near the window.",
-      "condition": "R",
-      "sense": 0,
-      "carrier": "They made it light."
-    },
-    {
-      "id": "light_L_02",
-      "sentence": "After the batteries were removed, it was light.",
-      "condition": "L",
-      "sense": 1,
-      "carrier": "It was light."
-    },
-    {
-      "id": "light_R_02",
-      "sentence": "It was light after the batteries were removed.",
-      "condition": "R",
-      "sense": 1,
-      "carrier": "It was light."
-    },
-    {
-      "id": "light_L_04",
-      "sentence": "Once the heavy cover was replaced, it became light.",
-      "condition": "L",
-      "sense": 1,
-      "carrier": "It became light."
-    },
-    {
-      "id": "light_R_04",
-      "sentence": "It became light once the heavy cover was replaced.",
-      "condition": "R",
-      "sense": 1,
-      "carrier": "It became light."
-    },
-    {
-      "id": "light_L_06",
-      "sentence": "Even after the extra parts were added, it stayed light.",
-      "condition": "L",
-      "sense": 1,
-      "carrier": "It stayed light."
-    },
-    {
-      "id": "light_R_06",
-      "sentence": "It stayed light even after the extra parts were added.",
-      "condition": "R",
-      "sense": 1,
-      "carrier": "It stayed light."
-    },
-    {
-      "id": "light_L_08",
-      "sentence": "Because the frame was made of carbon, it seemed light.",
-      "condition": "L",
-      "sense": 1,
-      "carrier": "It seemed light."
-    },
-    {
-      "id": "light_R_08",
-      "sentence": "It seemed light because the frame was made of carbon.",
-      "condition": "R",
-      "sense": 1,
-      "carrier": "It seemed light."
-    },
-    {
-      "id": "light_L_10",
-      "sentence": "By replacing the metal frame with foam, they made it light.",
-      "condition": "L",
-      "sense": 1,
-      "carrier": "They made it light."
-    },
-    {
-      "id": "light_R_10",
-      "sentence": "They made it light by replacing the metal frame with foam.",
-      "condition": "R",
-      "sense": 1,
-      "carrier": "They made it light."
     }
   ],
   "pitch": [

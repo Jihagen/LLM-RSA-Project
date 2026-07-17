@@ -9,7 +9,7 @@ import logging
 from experiments.gdv_experiments import recompute_gdv_from_cache
 from model_registry import ALL_MODELS, MODEL_ALIASES
 
-DEFAULT_WORDS = ["bank", "bark", "bat", "crane", "spring", "match", "light", "pitch"]
+DEFAULT_WORDS = ["bank", "bark", "bat", "crane", "spring", "match", "pitch"]
 
 
 def _resolve_models(names):

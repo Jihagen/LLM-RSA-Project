@@ -46,7 +46,7 @@ logger = logging.getLogger(__name__)
 
 RESULTS_DIR = "results"
 OUTPUT_BASE = Path("results/study/H4")
-DEFAULT_WORDS = ["bank", "bark", "bat", "crane", "spring", "match", "light", "pitch"]
+DEFAULT_WORDS = ["bank", "bark", "bat", "crane", "spring", "match", "pitch"]
 
 
 def _wilson_interval(successes: int, total: int, z: float = 1.96) -> tuple[float, float]:

@@ -57,7 +57,7 @@ logger = logging.getLogger("run_study")
 # representative subset) — see model_registry.py, the single source of truth.
 H3_MODELS = ALL_MODELS
 
-WORDS_DEFAULT = ["bank", "bark", "bat", "crane", "spring", "match", "light", "pitch"]
+WORDS_DEFAULT = ["bank", "bark", "bat", "crane", "spring", "match", "pitch"]
 
 
 def _resolve_models(names):

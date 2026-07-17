@@ -57,7 +57,7 @@ RESULTS_DIR = "results"
 GP_DATA_PATH = "data/garden_path_sentences.json"
 PROFILING_DATA_PATH = "data/synthetic_data_h2.pkl"
 OUTPUT_BASE = Path("results/study/H5")
-DEFAULT_WORDS = ["bank", "bark", "bat", "crane", "spring", "match", "light", "pitch"]
+DEFAULT_WORDS = ["bank", "bark", "bat", "crane", "spring", "match", "pitch"]
 H5_EXCLUSIONS = {
     "light": (
         "The study senses are different parts of speech (illumination noun vs "
