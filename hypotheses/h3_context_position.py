@@ -54,7 +54,7 @@ import torch
 
 from experiments.adequacy import symmetric_adequacy_margins, symmetric_normalized_adequacy_margins, load_centroids
 from models import get_target_activations, is_decoder_only, load_model_and_tokenizer  # is_decoder_only used for arch_type label only
-from model_registry import ALL_MODELS
+from utils.model_registry import ALL_MODELS
 from utils.hpc import configure_hpc_runtime
 
 configure_hpc_runtime()

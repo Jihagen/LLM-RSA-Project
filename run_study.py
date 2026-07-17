@@ -44,7 +44,7 @@ import gc
 import logging
 import sys
 
-from model_registry import ALL_MODELS, MODEL_ALIASES
+from utils.model_registry import ALL_MODELS, MODEL_ALIASES
 
 logging.basicConfig(
     level=logging.INFO,
