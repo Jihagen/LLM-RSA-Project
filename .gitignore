@@ -1,4 +1,5 @@
 run.slurm
+*.slurm
 logs/
 /env.yml
 /data/synthetic/.env
