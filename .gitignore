@@ -6,7 +6,18 @@ logs/
 
 results/
 __pycache__/
+**/__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
 *.gif
+*.png
+*.svg
+*.pdf
+.pytest_cache/
+.ipynb_checkpoints/
+.mypy_cache/
+.ruff_cache/
 .DS_Store
 offload_dir/
 
