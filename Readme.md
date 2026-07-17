@@ -1,4 +1,4 @@
-# llm_homonym_semantics
+#  A Homonym-Based Study of Semantic Disambiguation in Large Language Models
 
 A reproducible study of whether transformer hidden states carry word-sense information in a way that can be read out across layers, token positions, and context conditions.
 
