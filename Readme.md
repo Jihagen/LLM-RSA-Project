@@ -4,7 +4,7 @@ A reproducible study of whether transformer hidden states carry word-sense infor
 
 ## Project report
 
-The full write-up is [Project_Report_LLM_homonym_disambiguation.pdf](Project_Report_LLM_homonym_disambiguation.pdf), covering methods, results, and discussion for all six analyses (H0–H5).
+The full write-up is [llm brainscore - homonym disambiguation study.pdf](llm%20brainscore%20-%20homonym%20disambiguation%20study.pdf), covering methods, results, and discussion for all six analyses (H0–H5).
 
 ## Abstract
 
