@@ -35,3 +35,6 @@ data/h5_additions_proposal.md
 !data/synthetic_data_h2.pkl
 !data/paired_sentences.json
 !data/garden_path_sentences.json
+
+# Final project report — track despite the blanket *.pdf rule above.
+!/Project_Report_LLM_homonym_disambiguation.pdf
