@@ -364,7 +364,11 @@ def run_h5(
 
     with open(gp_data_path) as f:
         gp_data = json.load(f)
-    audit_rows, model_internal_ready = audit_h5_design(gp_data, words)
+    # Documented exclusions (e.g. "light") must appear in the audit for
+    # transparency even when the caller's word list omits them; the model
+    # loop below still skips any word in H5_EXCLUSIONS regardless.
+    audit_words = list(words) + [w for w in H5_EXCLUSIONS if w not in words]
+    audit_rows, model_internal_ready = audit_h5_design(gp_data, audit_words)
     write_h5_design_audit(audit_rows)
     if not model_internal_ready and not allow_incomplete_design:
         logger.error(

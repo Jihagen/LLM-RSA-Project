@@ -289,6 +289,12 @@ def compute_paired_context_tests(
         model = model_dir.name
         for csv_path in sorted(model_dir.glob("h3_*.csv")):
             word = csv_path.stem.removeprefix("h3_")
+            if word not in stimulus_data:
+                logger.warning(
+                    "[H3] Skipping stale output %s: %r not in current paired dataset",
+                    csv_path, word,
+                )
+                continue
             by_pair: Dict[str, Dict[str, Dict]] = {}
             with open(csv_path) as handle:
                 for row in csv.DictReader(handle):
