@@ -36,7 +36,7 @@ import logging
 import math
 import re
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Sequence, Tuple
+from typing import Callable, Dict, Iterable, List, Optional, Sequence, Tuple
 
 import numpy as np
 
@@ -356,11 +356,23 @@ def run_h5(
     epsilon: float = 0.0,
     sentinel: str = DEFAULT_SENTINEL,
     allow_incomplete_design: bool = False,
+    output_base: Path = OUTPUT_BASE,
+    layer_lookup: Optional[Callable[[str, str, str], int]] = None,
 ) -> None:
-    """Run fixed-sentinel prefix reruns; block incomplete designs by default."""
+    """Run fixed-sentinel prefix reruns; block incomplete designs by default.
+
+    layer_lookup, if given, replaces _select_layer (the H1-homonym-position
+    best layer) as the (model_name, results_dir, word) -> layer_idx callable
+    used for every readout (prime/homonym/resolution/matched-control/
+    resolver-only). Pass hypotheses.q4_endpoint_layer_selection.q4_selected_layer
+    to rerun H5 on the endpoint-selected layer instead. output_base lets that
+    alternate run write to a separate directory so the original H1-based H5
+    results are never overwritten.
+    """
     model_names = model_names or H3_MODELS
     words = words or DEFAULT_WORDS
-    OUTPUT_BASE.mkdir(parents=True, exist_ok=True)
+    select_layer = layer_lookup or _select_layer
+    output_base.mkdir(parents=True, exist_ok=True)
 
     with open(gp_data_path) as f:
         gp_data = json.load(f)
@@ -369,13 +381,13 @@ def run_h5(
     # loop below still skips any word in H5_EXCLUSIONS regardless.
     audit_words = list(words) + [w for w in H5_EXCLUSIONS if w not in words]
     audit_rows, model_internal_ready = audit_h5_design(gp_data, audit_words)
-    write_h5_design_audit(audit_rows)
+    write_h5_design_audit(audit_rows, output_base=output_base)
     if not model_internal_ready and not allow_incomplete_design:
         logger.error(
             "[H5] Design audit failed. No model was loaded. See %s. "
             "Add both directions and matched controls, and fix structural errors, or pass "
             "allow_incomplete_design=True for explicitly exploratory output.",
-            OUTPUT_BASE / "h5_design_audit.md",
+            output_base / "h5_design_audit.md",
         )
         return
 
@@ -384,7 +396,7 @@ def run_h5(
 
     for model_name in model_names:
         safe_model = model_name.replace("/", "_")
-        model_out = OUTPUT_BASE / safe_model
+        model_out = output_base / safe_model
         model_out.mkdir(parents=True, exist_ok=True)
         model, tokenizer = load_model_and_tokenizer(model_name)
         arch_type = "decoder" if is_decoder_only(model) else "encoder"
@@ -398,7 +410,7 @@ def run_h5(
                 logger.warning("[H5] No items for '%s'", word)
                 continue
             try:
-                layer_idx = _select_layer(model_name, results_dir, word)
+                layer_idx = select_layer(model_name, results_dir, word)
                 profile_sentences, profile_senses = _load_profiling_examples(
                     profiling_data_path, word
                 )
@@ -590,12 +602,12 @@ def run_h5(
             )
 
     if aggregate_rows:
-        with open(OUTPUT_BASE / "h5_aggregate.csv", "w", newline="") as f:
+        with open(output_base / "h5_aggregate.csv", "w", newline="") as f:
             writer = csv.DictWriter(f, fieldnames=aggregate_rows[0].keys())
             writer.writeheader()
             writer.writerows(aggregate_rows)
     if all_sentence_rows:
-        with open(OUTPUT_BASE / "h5_sentence_level.csv", "w", newline="") as f:
+        with open(output_base / "h5_sentence_level.csv", "w", newline="") as f:
             writer = csv.DictWriter(f, fieldnames=all_sentence_rows[0].keys())
             writer.writeheader()
             writer.writerows(all_sentence_rows)
